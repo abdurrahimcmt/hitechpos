@@ -1,8 +1,89 @@
 // Food
+
 import 'package:hitechpos/models/food.dart';
+import 'package:hitechpos/models/food_category.dart';
 import 'package:hitechpos/models/order.dart';
 import 'package:hitechpos/models/restaurant.dart';
 import 'package:hitechpos/models/user.dart';
+
+
+
+final List<FoodCategory> foodCategoryAll = [
+  FoodCategory(
+    catid: 1,
+    catName: "Burger",
+    imageUrl: "assets/images/1.png",
+    menu: [_steak, _pasta, _ramen, _pancakes, _burger, _pizza],
+  ),
+  FoodCategory(
+    catid: 2,
+    catName: "Pizza",
+    imageUrl: "assets/images/2.png",
+    menu: [_steak, _pasta, _pancakes, _burger, _pizza, _salmon],
+  ),
+  FoodCategory(
+    catid: 3,
+    catName: "Chicken",
+    imageUrl: "assets/images/3.png",
+    menu: [_steak, _pasta, _pancakes, _burger, _pizza, _salmon],
+  ),
+  FoodCategory(
+    catid: 4,
+    catName: "Spagethi",
+    imageUrl: "assets/images/4.png",
+    menu: [_burrito, _ramen, _pancakes, _salmon],
+  ),
+  FoodCategory(
+    catid: 5,
+    catName: "Burger",
+    imageUrl: "assets/images/1.png",
+    menu: [_steak, _pasta, _ramen, _pancakes, _burger, _pizza]
+  ),
+  FoodCategory(
+    catid: 6,
+    catName: "Pizza",
+    imageUrl: "assets/images/2.png",
+    menu: [_burrito, _ramen, _pancakes, _salmon],
+  ),
+  FoodCategory(
+    catid: 7,
+    catName: "Chicken",
+    imageUrl: "assets/images/3.png",
+    menu: [_burrito, _steak, _pasta, _ramen, _pancakes, _burger, _pizza, _salmon],
+  ),
+  FoodCategory(
+    catid: 8,
+    catName: "Spagethi",
+    imageUrl: "assets/images/4.png",
+    menu: [_burrito, _ramen, _pancakes, _salmon],
+  ),
+  FoodCategory(
+    catid: 9,
+    catName: "Burger",
+    imageUrl: "assets/images/1.png",
+    menu: [_burrito, _ramen, _pancakes, _salmon],
+  ),
+  FoodCategory(
+    catid: 10,
+    catName: "Pizza",
+    imageUrl: "assets/images/2.png",
+    menu: [_burrito, _steak, _pasta, _ramen, _pancakes, _burger, _pizza, _salmon],
+  ),
+  FoodCategory(
+    catid: 11,
+    catName: "Chicken",
+    imageUrl: "assets/images/3.png",
+    menu: [_burrito, _steak, _pasta, _ramen, _pancakes, _burger, _pizza, _salmon],
+  ),
+  FoodCategory(
+    catid: 12,
+    catName: "Spagethi",
+    imageUrl: "assets/images/4.png",
+    menu: [_burrito, _steak, _pasta, _ramen, _pancakes, _burger, _pizza, _salmon],
+  )
+];
+
+final List<Food> foodlist = [_burrito, _steak, _pasta, _ramen, _pancakes, _burger, _pizza, _salmon];
 
 final _burrito =
     Food(imageUrl: 'assets/images/burrito.jpg', name: 'Burrito', price: 8.99);
@@ -24,14 +105,14 @@ final _salmon = Food(
 // Restaurants
 final _restaurant0 = Restaurant(
   imageUrl: 'assets/images/restaurant0.jpg',
-  name: 'Restaurant 0',
+  name: 'Category1',
   address: '200 Main St, New York, NY',
   rating: 5,
   menu: [_burrito, _steak, _pasta, _ramen, _pancakes, _burger, _pizza, _salmon],
 );
 final _restaurant1 = Restaurant(
   imageUrl: 'assets/images/restaurant1.jpg',
-  name: 'Restaurant 1',
+  name: 'Category1',
   address: '200 Main St, New York, NY',
   rating: 4,
   menu: [_steak, _pasta, _ramen, _pancakes, _burger, _pizza],

@@ -138,7 +138,7 @@ class _HomeScreenState extends State<HomeScreen> {
         //   ),
         // ),
         title: const Text(
-          "Food Delivery",
+          "Hi-Tech Pos",
           style: TextStyle(
             color: Colors.white,
             fontSize: 20,
@@ -194,7 +194,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Container(
                   alignment: Alignment.bottomLeft,
                   child: const Text(
-                    "Food Delivery",
+                    "Hi-Tech",
                     style: TextStyle(
                         fontSize: 25,
                         color: Colors.white,
