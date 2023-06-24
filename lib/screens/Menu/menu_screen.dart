@@ -2,10 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:hitechpos/common/palette.dart';
 import 'package:hitechpos/data/data.dart';
 import 'package:hitechpos/models/food.dart';
-import 'package:hitechpos/models/food_category.dart';
-
+import 'package:hitechpos/screens/order/order_screen.dart';
 import 'package:hitechpos/screens/responsive/responsive_layout.dart';
-import 'package:hitechpos/screens/Menu/component/category.dart';
+import 'package:hitechpos/screens/menu/component/category.dart';
 import 'package:hitechpos/screens/cart_screen.dart';
 import 'package:hitechpos/widgets/custom_drawer.dart';
 import 'package:hitechpos/widgets/searchbox.dart';
@@ -19,8 +18,17 @@ class MenuScreen extends StatefulWidget {
 }
 
 class _MenuScreenState extends State<MenuScreen> {
+  String currentItem = "";
+  
+  @override
+  void initState(){
+    currentItem = orderTypes[0];
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
+    Size size= MediaQuery.of(context).size;
     int  menuItemGridcrossAxisCount = ResponsiveLayout.isDesktop(context) ? 7 : 
     ResponsiveLayout.isTablet(context) ? 3 : 
     ResponsiveLayout.isMTablet(context) ? 4 :
@@ -32,7 +40,7 @@ class _MenuScreenState extends State<MenuScreen> {
         backgroundColor: Palette.bgColorPerple,
         centerTitle: true,
         title: const Text(
-          "Hi-Tech Pos",
+          "HIPOS",
           style: TextStyle(
             color: Colors.white,
             fontSize: 20,
@@ -56,10 +64,8 @@ class _MenuScreenState extends State<MenuScreen> {
           ),
         ],
       ),
-      drawer: const CustomDrawer(),
       body: Row(
         children: [
-      
           Expanded(
             child: Container(
               decoration: const BoxDecoration(
@@ -67,12 +73,51 @@ class _MenuScreenState extends State<MenuScreen> {
               ),
               child: CustomScrollView(
                 slivers: [
-                  const SliverToBoxAdapter(
+                  //Order Type Work start
+                  SliverToBoxAdapter(
+                    
                     child: Padding(
                       padding: EdgeInsets.all(15.0),
-                      child: SearchBox(),
+                      child: SizedBox(
+                        height: 120,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            DropdownButtonFormField(
+                              decoration: InputDecoration(
+                                enabledBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(color: Palette.iconBackgroundColorPurple,width: 1),
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                border: OutlineInputBorder(
+                                  borderSide: BorderSide(color: Palette.iconBackgroundColorPurple, width: 1),
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                filled: true,
+                                fillColor: Colors.grey[300],
+                              ),
+                              dropdownColor: Colors.white,
+                              value: currentItem,
+                              items: orderTypes.
+                              map<DropdownMenuItem<String>>((e) => DropdownMenuItem(
+                                value: e,
+                                alignment: Alignment.center,
+                                child: Text(e),
+                                ),
+                              ).toList(),
+                              onChanged: (String? value) => setState(() {
+                               if(value!=null) currentItem = value; 
+                                },
+                              ),
+                            ),
+                            SearchBox(),
+                          ],
+                        ),
+                      ),
                     ),
                   ),
+                  //Order Type Work End
+                  //Category Work start
                   SliverPadding(
                     padding: const EdgeInsets.all(8.0),
                     sliver:SliverToBoxAdapter(
@@ -81,14 +126,24 @@ class _MenuScreenState extends State<MenuScreen> {
                       ),
                     ),
                   ),
+                  //Category Work End
+                  //Menu Work Start 
                   SliverGrid.count(
                     crossAxisCount: menuItemGridcrossAxisCount,
                     children: List.generate(foodlist.length, (index) {
                         Food food = foodlist[index];
-                        return _buildMenuItem(food);
+                        return GestureDetector(
+                          onTap: () => Navigator.push(
+                            context, 
+                            MaterialPageRoute(builder: (_) => OrderScreen(food: food,),
+                            ),
+                          ),
+                          child: _buildMenuItem(food),
+                      );
                     }
                    ),
                   ),
+                  // Menu Work End
                 ],
               ),
             )

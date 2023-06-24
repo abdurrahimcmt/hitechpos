@@ -1,13 +1,12 @@
-// Food
-
 import 'package:hitechpos/models/food.dart';
 import 'package:hitechpos/models/food_category.dart';
+import 'package:hitechpos/models/food_size.dart';
 import 'package:hitechpos/models/order.dart';
 import 'package:hitechpos/models/restaurant.dart';
 import 'package:hitechpos/models/user.dart';
+import '../models/modifier.dart';
 
-
-
+List<String> orderTypes = ["Dine In", "Take Away", "Delivery", "Drive Through"];
 final List<FoodCategory> foodCategoryAll = [
   FoodCategory(
     catid: 1,
@@ -84,23 +83,38 @@ final List<FoodCategory> foodCategoryAll = [
 ];
 
 final List<Food> foodlist = [_burrito, _steak, _pasta, _ramen, _pancakes, _burger, _pizza, _salmon];
+ List<FoodSize> foodSizeList = [
+    FoodSize(sizeId: 1, sizeName: "Mini", price: 2.00),
+    FoodSize(sizeId: 1, sizeName: "Small", price: 5.00),
+    FoodSize(sizeId: 1, sizeName: "Large", price: 10.00),
+    FoodSize(sizeId: 1, sizeName: "E Large", price: 19.00)
+];
 
+final List<Modifier> modifierList = [
+  Modifier(imageUrl: 'assets/images/CocaCola.jpg', name: 'Coca Cola', price: 8.00, discription: 'variations'),
+  Modifier(imageUrl: 'assets/images/extracheese.jpg', name: 'Cheese', price: 8.00, discription: 'variations'),
+  Modifier(imageUrl: 'assets/images/LemonDrinks.jpg', name: 'Mayonnaise', price: 17.00, discription: 'variations'),
+  Modifier(imageUrl: 'assets/images/FruitDrinks.jpg', name: 'Fruit D', price: 14.00, discription: 'variations'),
+  Modifier(imageUrl: 'assets/images/LemonDrinks.jpg', name: 'Lemon D', price: 13.00, discription: 'variations'),
+  Modifier(imageUrl: 'assets/images/OrangeDrinks.jpg', name: 'Orange D', price: 13.00, discription: 'variations'),
+  Modifier(imageUrl: 'assets/images/Pepsi.jpg', name: 'Pepsi', price: 13.00, discription: 'variations'),
+];
 final _burrito =
-    Food(imageUrl: 'assets/images/burrito.jpg', name: 'Burrito', price: 8.99);
+    Food(imageUrl: 'assets/images/burrito.jpg', name: 'Burrito', price: 8.00, discription: 'here are many variations');
 final _steak =
-    Food(imageUrl: 'assets/images/steak.jpg', name: 'Steak', price: 17.99);
+    Food(imageUrl: 'assets/images/steak.jpg', name: 'Steak', price: 17.00, discription: 'here are many variations');
 final _pasta =
-    Food(imageUrl: 'assets/images/pasta.jpg', name: 'Pasta', price: 14.99);
+    Food(imageUrl: 'assets/images/pasta.jpg', name: 'Pasta', price: 14.00, discription: 'here are many variations');
 final _ramen =
-    Food(imageUrl: 'assets/images/ramen.jpg', name: 'Ramen', price: 13.99);
+    Food(imageUrl: 'assets/images/ramen.jpg', name: 'Ramen', price: 13.00, discription: 'here are many variations');
 final _pancakes =
-    Food(imageUrl: 'assets/images/pancakes.jpg', name: 'Pancakes', price: 9.99);
+    Food(imageUrl: 'assets/images/pancakes.jpg', name: 'Pancakes', price: 9.00, discription: 'here are many variations');
 final _burger =
-    Food(imageUrl: 'assets/images/burger.jpg', name: 'Burger', price: 14.99);
+    Food(imageUrl: 'assets/images/burger.jpg', name: 'Burger', price: 14.00, discription: 'here are many variations');
 final _pizza =
-    Food(imageUrl: 'assets/images/pizza.jpg', name: 'Pizza', price: 11.99);
+    Food(imageUrl: 'assets/images/pizza.jpg', name: 'Pizza', price: 11.00, discription: 'here are many variations');
 final _salmon = Food(
-    imageUrl: 'assets/images/salmon.jpg', name: 'Salmon Salad', price: 12.99);
+    imageUrl: 'assets/images/salmon.jpg', name: 'Salmon Salad', price: 12.00, discription: 'here are many variations');
 
 // Restaurants
 final _restaurant0 = Restaurant(

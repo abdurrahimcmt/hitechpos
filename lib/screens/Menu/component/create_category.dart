@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hitechpos/common/palette.dart';
-import 'package:hitechpos/screens/Menu/menu_screen.dart';
+import 'package:hitechpos/screens/menu/menu_screen.dart';
 
 
 class CreateCategory extends StatelessWidget {
@@ -34,7 +34,7 @@ class CreateCategory extends StatelessWidget {
               children: [
                 Image.asset(categoryImage,height: 30,width: 30,),
                 Text(categoryName,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
                       color: Colors.white,

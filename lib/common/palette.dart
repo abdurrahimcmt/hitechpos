@@ -3,8 +3,9 @@ import 'package:flutter/material.dart';
 class Palette{
   //Common for whole layout
   static const layoutFont = "Lato";
-  static const fontbg = Color(0xff6d6d6d);
+  static const fontBgGray = Color(0xff6d6d6d);
   static const btnBoxShadowColor = Color(0x7caa68d2);
+  static const textColorLightPurple = Color.fromARGB(255, 89, 73, 95);
 
   static const LinearGradient welcomeBg = LinearGradient(
     colors: [Color(0x00fffafb), Color(0x00f3dcff)],

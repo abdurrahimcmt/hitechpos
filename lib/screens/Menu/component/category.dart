@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hitechpos/models/food_category.dart';
-import 'package:hitechpos/screens/Menu/component/create_category.dart';
+import 'package:hitechpos/screens/menu/component/create_category.dart';
 class Cagetory extends StatelessWidget {
   final List<FoodCategory> categoryList;
   const Cagetory({Key?key, required this.categoryList}) : super(key: key);

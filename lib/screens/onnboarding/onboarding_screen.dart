@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hitechpos/common/palette.dart';
 import 'package:hitechpos/screens/Registration/login_screen.dart';
-import 'package:hitechpos/widgets/curb_button.dart';
 import '../../data/onboarding.dart';
 
 class OnBoardingScreen extends StatefulWidget {

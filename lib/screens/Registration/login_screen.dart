@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hitechpos/common/palette.dart';
 import 'package:hitechpos/screens/responsive/responsive_layout.dart';
-import 'package:hitechpos/screens/Menu/menu_screen.dart';
+import 'package:hitechpos/screens/menu/menu_screen.dart';
 import 'package:hitechpos/screens/forgot_password_page.dart';
 import 'package:hitechpos/widgets/curb_button.dart';
 import 'package:hitechpos/widgets/curb_buttonLight.dart';
