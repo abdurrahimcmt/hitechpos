@@ -90,6 +90,12 @@ final List<Food> foodlist = [_burrito, _steak, _pasta, _ramen, _pancakes, _burge
     FoodSize(sizeId: 1, sizeName: "E Large", price: 19.00)
 ];
 
+List<String> kitchenNotes = ["Extra Sauce", "Medium Spicy", "No Oil", 
+                            "Spicy","No Sauce","Rare","Medium Rare",
+                            "Medium","Medium Well","Well Done","Extra Chicken"];
+
+List<String> invoiceNotes = ["After 1 Hour","After Noon","Evening","Tomorrow Dinner","Today Lunch"];
+
 final List<Modifier> modifierList = [
   Modifier(imageUrl: 'assets/images/CocaCola.jpg', name: 'Coca Cola', price: 8.00, discription: 'variations'),
   Modifier(imageUrl: 'assets/images/extracheese.jpg', name: 'Cheese', price: 8.00, discription: 'variations'),

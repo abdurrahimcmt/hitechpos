@@ -11,12 +11,7 @@ class CreateCategory extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) => MenuScreen(),
-            ),
-          ),
+      onTap:() {},
       child: Container(
         height: 120,
         width: 120,

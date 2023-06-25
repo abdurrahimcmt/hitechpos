@@ -6,7 +6,6 @@ import 'package:hitechpos/screens/order/order_screen.dart';
 import 'package:hitechpos/screens/responsive/responsive_layout.dart';
 import 'package:hitechpos/screens/menu/component/category.dart';
 import 'package:hitechpos/screens/cart_screen.dart';
-import 'package:hitechpos/widgets/custom_drawer.dart';
 import 'package:hitechpos/widgets/searchbox.dart';
 
 class MenuScreen extends StatefulWidget {
@@ -19,6 +18,7 @@ class MenuScreen extends StatefulWidget {
 
 class _MenuScreenState extends State<MenuScreen> {
   String currentItem = "";
+  int selectedOrderType = 0;
   
   @override
   void initState(){
@@ -75,44 +75,67 @@ class _MenuScreenState extends State<MenuScreen> {
                 slivers: [
                   //Order Type Work start
                   SliverToBoxAdapter(
-                    
-                    child: Padding(
-                      padding: EdgeInsets.all(15.0),
-                      child: SizedBox(
-                        height: 120,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            DropdownButtonFormField(
-                              decoration: InputDecoration(
-                                enabledBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(color: Palette.iconBackgroundColorPurple,width: 1),
-                                  borderRadius: BorderRadius.circular(20),
+                    child: SizedBox(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const SizedBox(
+                            height: 10,
+                          ),
+                           Row(
+                            children: [
+                              Expanded(
+                                child: Wrap(
+                                  alignment: WrapAlignment.start,
+                                  direction: Axis.horizontal,
+                                  spacing: 0,
+                                  runSpacing: 0,
+                                  children: List.generate(orderTypes.length, (index) {
+                                    return TextButton(
+                                        onPressed: (){
+                                          setState(() {
+                                            selectedOrderType = index;
+                                          });
+                                        }, 
+                                        child: Container(
+                                          //margin: const EdgeInsets.only(right: 2, bottom: 2 ),
+                                          width: size.width > 600 ? 120 : size.width > 500 ? 100 : size.width > 400 ? 80 : 70,
+                                          height: 50,
+                                          
+                                          decoration: BoxDecoration(
+                                            gradient: selectedOrderType == index? Palette.btnGradientColor : Palette.bgGradient,
+                                            borderRadius: const BorderRadius.all(Radius.circular(15)),
+                                            border: Border.all(
+                                              color: Palette.btnBoxShadowColor,
+                                              width: 2,
+                                            ),
+                                          ),
+                                          child: Center(
+                                            child: Text(orderTypes[index],
+                                                  style: TextStyle(
+                                                    fontSize: 15,
+                                                    fontWeight: FontWeight.bold,
+                                                    color: selectedOrderType == index? Colors.white: Palette.textColorLightPurple,
+                                                  ),
+                                                  textAlign: TextAlign.center,
+                                                  overflow: TextOverflow.ellipsis,
+                                                  maxLines: 2,
+                                                  softWrap: false,
+                                                ),
+                                          ),
+                                          ),
+                                        );
+                                  }),
                                 ),
-                                border: OutlineInputBorder(
-                                  borderSide: BorderSide(color: Palette.iconBackgroundColorPurple, width: 1),
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
-                                filled: true,
-                                fillColor: Colors.grey[300],
                               ),
-                              dropdownColor: Colors.white,
-                              value: currentItem,
-                              items: orderTypes.
-                              map<DropdownMenuItem<String>>((e) => DropdownMenuItem(
-                                value: e,
-                                alignment: Alignment.center,
-                                child: Text(e),
-                                ),
-                              ).toList(),
-                              onChanged: (String? value) => setState(() {
-                               if(value!=null) currentItem = value; 
-                                },
-                              ),
-                            ),
-                            SearchBox(),
-                          ],
-                        ),
+                            ],
+                          ),
+                          SizedBox(
+                            height: 10,
+                          ),
+                          SearchBox(),
+                        ],
                       ),
                     ),
                   ),

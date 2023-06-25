@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hitechpos/common/palette.dart';
 import 'package:hitechpos/data/data.dart';
-import 'package:hitechpos/data/data.dart';
 import 'package:hitechpos/models/food.dart';
 import 'package:hitechpos/screens/Menu/menu_screen.dart';
 import 'package:hitechpos/widgets/curb_button.dart';
@@ -15,143 +14,32 @@ class OrderScreen extends StatefulWidget {
 }
 
 class _OrderScreenState extends State<OrderScreen> {
-  @override
-  void initState() {
-    super.initState();
-  }
+  final TextEditingController _txtKitchenNotesController = TextEditingController();
+  final TextEditingController _txtInvoiceNotesController = TextEditingController();
   int selectedFoodItemSizeIndex = 0;
   int orderQuentity = 1;
   List<String> isSelectedModifier = <String>[];
+  List<String> isSelectedKitchenNotes = <String>[];
+  String concatedKitchenNotes= "";
+  List<String> isSelectedInvoiceNotes = <String>[];
+  String concatedInvoiceNotes= "";
   double modifierTotalPrice = 0;
   @override
+  void dispose(){
+    _txtKitchenNotesController.dispose();
+    _txtInvoiceNotesController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    concatedKitchenNotes = isSelectedKitchenNotes.join(",");
+    concatedInvoiceNotes = isSelectedInvoiceNotes.join(",");
+    _txtKitchenNotesController.text = concatedKitchenNotes;
+    _txtInvoiceNotesController.text = concatedInvoiceNotes;
     Size size = MediaQuery.of(context).size;
     bool isPortrait = MediaQuery.of(context).orientation == Orientation.portrait;
     double price = foodSizeList[selectedFoodItemSizeIndex].price + modifierTotalPrice;
-    
-    _buildModiriers() {
-    List<Widget> creatModifierList = [];
-    for (int i=0; i<modifierList.length; i++) {
-      creatModifierList.add(
-          Container(
-          //width: 320.0,
-          margin: const EdgeInsets.only(bottom: 10),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(15.0),
-            color: Colors.white,
-            border: Border.all(
-              width: 1.0, 
-              color: Colors.grey.shade200
-              ),
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              //Using an Expanded widget makes a child of a Row or Column (also for Flex) expand to fill
-              //the available space in the main axis ( horizontally for a Row or vertically for a Column).
-              // If multiple children are expanded, the available space is divided among them according to
-              //the flex factor.
-              Expanded(
-                child: Row(
-                  children: [
-                    //The ClipRRect class in Flutter provides us with a widget that clips its child using
-                    //a rounded rectangle. The extra R in clipRRect stands for rounded.
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(15),
-                      child: Image(
-                        image: AssetImage(
-                          modifierList[i].imageUrl,
-                        ),
-                        height: 100,
-                        width: size.width > 500 ? 100 : 50,
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                    
-                    Expanded(
-                      child: Container(
-                        margin: const EdgeInsets.all(12.0),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              modifierList[i].name,
-                              style: const TextStyle(
-                                fontSize: 18.0,
-                                fontWeight: FontWeight.bold,
-                                fontFamily: Palette.layoutFont
-                              ),
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            const SizedBox(
-                              height: 4.0,
-                            ),
-                            Text(
-                              modifierList[i].discription,
-                              style: const TextStyle(
-                                fontSize: 15.0,
-                                fontWeight: FontWeight.w400,
-                                fontFamily: Palette.layoutFont
-                              ),
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            const SizedBox(
-                              height: 4.0,
-                            ),
-                            Text(
-                              modifierList[i].price.toString(),
-                              style: const TextStyle(
-                                fontSize: 15.0,
-                                fontWeight: FontWeight.w400,
-                                fontFamily: Palette.layoutFont
-                              ),
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    Container(
-                      margin: const EdgeInsets.only(right: 20.0),
-                      width: size.width < 500 ?  48.0 : 100.0,
-                      height: size.width < 500 ?  48.0 : 100.0,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(30),
-                        color: Palette.bgColorPerple,
-                      ),
-                      child: IconButton(
-                        onPressed: () {
-                            setState(() {
-                              if(!isSelectedModifier.contains(modifierList[i].name)){
-                                isSelectedModifier.add(modifierList[i].name);
-                                modifierTotalPrice = modifierTotalPrice + modifierList[i].price;
-                              }
-                              else{
-                                isSelectedModifier.remove(modifierList[i].name);
-                                modifierTotalPrice = modifierTotalPrice - modifierList[i].price;
-                              }
-                            });
-                        },
-                        icon: Icon(!isSelectedModifier.contains(modifierList[i].name) ?
-                          Icons.add : Icons.delete,
-                          size: size.width < 500? 30.0 : 60.0,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      );
-    }
-    return Column(
-      children: creatModifierList,
-    );
-  }
     return Scaffold(
       // appBar: AppBar(
       //   backgroundColor: Palette.bgColorPerple,
@@ -463,7 +351,7 @@ class _OrderScreenState extends State<OrderScreen> {
                                     
                                     decoration: BoxDecoration(
                                       gradient: selectedFoodItemSizeIndex == index? Palette.btnGradientColor : Palette.bgGradient,
-                                      borderRadius: BorderRadius.all(Radius.circular(15)),
+                                      borderRadius: const BorderRadius.all(Radius.circular(15)),
                                       border: Border.all(
                                         color: Palette.btnBoxShadowColor,
                                         width: 2,
@@ -593,50 +481,179 @@ class _OrderScreenState extends State<OrderScreen> {
                     const SizedBox(
                       height: 30,
                      ),
-                    const Text("Kitchen Note(s)",
-                        style: TextStyle(
-                        fontFamily: Palette.layoutFont,
-                        color: Palette.textColorLightPurple,
-                        fontWeight: FontWeight.w500,
-                        fontSize: 23,
-                      ),
-                    ),
-                     const SizedBox(
-                      height: 15,
-                     ),                    
-                    const TextField(
-                      decoration: InputDecoration(
-                        hintText: "Kitchen Note(s)",
-                        prefixIcon: Icon(
-                          Icons.kitchen_outlined,
-                          color: Color.fromARGB(106, 113, 15, 131),
+
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text("Kitchen Note(s)",
+                            style: TextStyle(
+                            fontFamily: Palette.layoutFont,
+                            color: Palette.textColorLightPurple,
+                            fontWeight: FontWeight.w500,
+                            fontSize: 23,
+                          ),
                         ),
-                      ),
+                        const SizedBox(
+                          height: 15,
+                        ),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Wrap(
+                                alignment: WrapAlignment.start,
+                                direction: Axis.horizontal,
+                                spacing: 2,
+                                runSpacing: 8,
+                                children: List.generate(kitchenNotes.length, (index) {
+                                  return TextButton(
+                                      onPressed: (){
+                                        setState(() {
+                                          if(!isSelectedKitchenNotes.contains(kitchenNotes[index])){
+                                            isSelectedKitchenNotes.add(kitchenNotes[index]);
+                                          }
+                                          else{
+                                            isSelectedKitchenNotes.remove(kitchenNotes[index]);
+                                          }
+                                        });
+                                      }, 
+                                      child: Container(
+                                        //margin: const EdgeInsets.only(right: 2, bottom: 2 ),
+                                        width: 100,
+                                        height: 100,
+                                        decoration: BoxDecoration(
+                                          gradient: isSelectedKitchenNotes.contains(kitchenNotes[index])? Palette.btnGradientColor : Palette.bgGradient,
+                                          borderRadius: BorderRadius.all(Radius.circular(15)),
+                                          border: Border.all(
+                                            color: Palette.btnBoxShadowColor,
+                                            width: 2,
+                                          ),
+                                        ),
+                                        child: Center(
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: Text(kitchenNotes[index],
+                                                  textAlign: TextAlign.center,
+                                                  style: TextStyle(
+                                                    fontSize: 15,
+                                                    fontWeight: FontWeight.bold,
+                                                    color: isSelectedKitchenNotes.contains(kitchenNotes[index])? Colors.white: Palette.textColorLightPurple,
+                                                  ),
+                                                  overflow: TextOverflow.ellipsis,
+                                                  maxLines: 3,
+                                                  softWrap: false,
+                                            ),
+                                          ),
+                                        ),
+                                    ),
+                                  );
+                                }),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(
+                          height: 15,
+                        ),                    
+                        TextField(
+                          controller: _txtKitchenNotesController,
+                          decoration: const InputDecoration(
+                            hintText: "Kitchen Note(s)",
+                            prefixIcon: Icon(
+                              Icons.kitchen_outlined,
+                              color: Color.fromARGB(106, 113, 15, 131),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                     //kitchen Note end
                     //Invoice Note start
                      const SizedBox(
                       height: 30,
-                     ),                   
-                    const Text("Invoice Note(s)",
-                        style: TextStyle(
-                        fontFamily: Palette.layoutFont,
-                        color: Palette.textColorLightPurple,
-                        fontWeight: FontWeight.w500,
-                        fontSize: 23,
-                      ),
-                    ),
-                     const SizedBox(
-                      height: 15,
                      ),
-                    const TextField(
-                      decoration: InputDecoration(
-                        hintText: "Invoice Note(s)",
-                        prefixIcon: Icon(
-                          Icons.note_alt_outlined,
-                          color: Color.fromARGB(106, 113, 15, 131),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text("Invoice Note(s)",
+                            style: TextStyle(
+                            fontFamily: Palette.layoutFont,
+                            color: Palette.textColorLightPurple,
+                            fontWeight: FontWeight.w500,
+                            fontSize: 23,
+                          ),
                         ),
-                      ),
+                        const SizedBox(
+                         height: 15,
+                        ),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Wrap(
+                                alignment: WrapAlignment.start,
+                                direction: Axis.horizontal,
+                                spacing: 2,
+                                runSpacing: 8,
+                                children: List.generate(invoiceNotes.length, (index) {
+                                  return TextButton(
+                                      onPressed: (){
+                                        setState(() {
+                                          if(!isSelectedInvoiceNotes.contains(invoiceNotes[index])){
+                                            isSelectedInvoiceNotes.add(invoiceNotes[index]);
+                                          }
+                                          else{
+                                            isSelectedInvoiceNotes.remove(invoiceNotes[index]);
+                                          }
+                                        });
+                                      }, 
+                                      child: Container(
+                                        //margin: const EdgeInsets.only(right: 2, bottom: 2 ),
+                                        width: 100,
+                                        height: 100,
+                                        decoration: BoxDecoration(
+                                          gradient: isSelectedInvoiceNotes.contains(invoiceNotes[index])? Palette.btnGradientColor : Palette.bgGradient,
+                                          borderRadius: BorderRadius.all(Radius.circular(15)),
+                                          border: Border.all(
+                                            color: Palette.btnBoxShadowColor,
+                                            width: 2,
+                                          ),
+                                        ),
+                                        child: Center(
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: Text(invoiceNotes[index],
+                                                  textAlign: TextAlign.center,
+                                                  style: TextStyle(
+                                                    fontSize: 15,
+                                                    fontWeight: FontWeight.bold,
+                                                    color: isSelectedInvoiceNotes.contains(invoiceNotes[index])? Colors.white: Palette.textColorLightPurple,
+                                                  ),
+                                                  overflow: TextOverflow.ellipsis,
+                                                  maxLines: 3,
+                                                  softWrap: false,
+                                            ),
+                                          ),
+                                        ),
+                                    ),
+                                  );
+                                }),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(
+                         height: 15,
+                        ),
+                        TextField(
+                          controller: _txtInvoiceNotesController,
+                          decoration: const InputDecoration(
+                            hintText: "Invoice Note(s)",
+                            prefixIcon: Icon(
+                              Icons.note_alt_outlined,
+                              color: Color.fromARGB(106, 113, 15, 131),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                     //Invoice Note end
                     //Order buttorn Start
@@ -645,8 +662,7 @@ class _OrderScreenState extends State<OrderScreen> {
                     ),
                     TextButton(
                       onPressed: (){ 
-                      Navigator.push(context, 
-                      MaterialPageRoute(builder: (_) => const MenuScreen(),),);}, 
+                      Navigator.pop(context);}, 
                         child: const CurbButton(
                           buttonPadding: EdgeInsets.only(left: 0,right: 0),
                           child: Row(
