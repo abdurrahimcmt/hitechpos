@@ -5,8 +5,8 @@ import 'food.dart';
 class Order {
   final Restaurant restaurant;
   final Food food;
-  final String date;
-  final int quantity;
+  final String date; 
+  int quantity;
 
   Order({
     required this.date,

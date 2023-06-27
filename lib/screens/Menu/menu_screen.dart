@@ -3,7 +3,6 @@ import 'package:hitechpos/common/palette.dart';
 import 'package:hitechpos/data/data.dart';
 import 'package:hitechpos/models/food.dart';
 import 'package:hitechpos/screens/order/order_screen.dart';
-import 'package:hitechpos/screens/responsive/responsive_layout.dart';
 import 'package:hitechpos/screens/menu/component/category.dart';
 import 'package:hitechpos/screens/cart_screen.dart';
 import 'package:hitechpos/widgets/searchbox.dart';
@@ -27,12 +26,6 @@ class _MenuScreenState extends State<MenuScreen> {
   @override
   Widget build(BuildContext context) {
     Size size= MediaQuery.of(context).size;
-    int  menuItemGridcrossAxisCount = ResponsiveLayout.isDesktop(context) ? 7 : 
-    ResponsiveLayout.isTablet(context) ? 3 : 
-    ResponsiveLayout.isMTablet(context) ? 4 :
-    ResponsiveLayout.isLTablet(context) ? 5 :
-    ResponsiveLayout.ismobile(context) ? 2 :
-    ResponsiveLayout.isLMobile(context) ? 3 : 2;
     return Scaffold(
        appBar: AppBar(
         backgroundColor: Palette.bgColorPerple,
@@ -78,6 +71,7 @@ class _MenuScreenState extends State<MenuScreen> {
                       return TextButton(
                           onPressed: (){
                             setState(() {
+                              _buildModelBottomSheet();
                               selectedOrderType = index;
                             });
                           }, 
@@ -224,6 +218,21 @@ class _MenuScreenState extends State<MenuScreen> {
           ),
         ),
       ],
+    );
+  }
+  _buildModelBottomSheet(){
+    return showModalBottomSheet(
+      context: context, 
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(20),
+        )
+      ),
+      builder: (BuildContext context){
+        return Container(
+
+        );
+      }
     );
   }
 }
