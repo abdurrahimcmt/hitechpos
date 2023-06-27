@@ -2,11 +2,29 @@ import 'package:hitechpos/models/food.dart';
 import 'package:hitechpos/models/food_category.dart';
 import 'package:hitechpos/models/food_size.dart';
 import 'package:hitechpos/models/order.dart';
+import 'package:hitechpos/models/orderType.dart';
 import 'package:hitechpos/models/restaurant.dart';
 import 'package:hitechpos/models/user.dart';
 import '../models/modifier.dart';
 
-List<String> orderTypes = ["Dine In", "Take Away", "Delivery", "Drive Through"];
+List<Ordertype> orderTypes = [
+  Ordertype(
+    imageUrl: "assets/images/dining-table.png",
+    name: "Dine In"
+  ),
+  Ordertype(
+    imageUrl: "assets/images/take-away.png",
+    name: "Take Away"
+  ),
+  Ordertype(
+    imageUrl: "assets/images/fast-delivery.png",
+    name: "Delivery"
+  ),
+  Ordertype(
+    imageUrl: "assets/images/car.png",
+    name: "Drive Through"
+  ),
+  ];
 final List<FoodCategory> foodCategoryAll = [
   FoodCategory(
     catid: 1,

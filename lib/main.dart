@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hitechpos/screens/Menu/menu_screen.dart';
 import 'package:hitechpos/screens/onnboarding/onboarding_screen.dart';
 void main() {
   runApp(const MyApp());
@@ -15,8 +16,8 @@ class MyApp extends StatelessWidget {
       title: 'Hi-Tech Pos',
       debugShowCheckedModeBanner: false,
       home: SafeArea(
-        child: OnBoardingScreen(),
-       //child: MenuScreen(),
+      //child: OnBoardingScreen(),
+       child: MenuScreen(),
       ),
     );
   }

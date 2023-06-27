@@ -11,7 +11,7 @@ class SearchBox extends StatelessWidget {
         contentPadding: EdgeInsets.symmetric(vertical:15.0),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(30),
-          borderSide: BorderSide(width: 0.8),
+          borderSide: const BorderSide(width: 0.5),
         ),
         prefixIcon: const Icon(
           Icons.search,

@@ -6,14 +6,14 @@ class Cagetory extends StatelessWidget {
   const Cagetory({Key?key, required this.categoryList}) : super(key: key);
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 120,
+    return SizedBox(
+      height: 60,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         itemCount: categoryList.length,
         padding: const EdgeInsets.symmetric(
-          horizontal: 15.0,
-          vertical: 10.0,
+          horizontal: 5.0,
+          vertical: 5.0,
         ),
         itemBuilder: (BuildContext context, int index) {
         FoodCategory foodCategory = categoryList[index];

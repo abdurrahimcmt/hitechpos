@@ -3,6 +3,13 @@ import 'package:flutter/material.dart';
 class Palette{
   //Common for whole layout
   static const layoutFont = "Lato";
+  static const contentTitleFontSize = 12.0;
+  static const discriptionFontSize = 10.0;
+  static const containerButtonFontSize = 10.0;
+  static const menuFoodNameFontSize = 10.0;
+  static const sizeBoxVarticalSpace = SizedBox(
+    height: 15,
+  );
   static const fontBgGray = Color(0xff6d6d6d);
   static const btnBoxShadowColor = Color(0x7caa68d2);
   static const textColorLightPurple = Color.fromARGB(255, 89, 73, 95);
@@ -39,7 +46,9 @@ class Palette{
   static const textColorPurple = bgColorPerple;
   static const textBackGroundBlack = Color.fromARGB(255, 0, 0, 0);
 
-  
+
+/// text container decoration 
+  static const textContainerBorderRadius =  const BorderRadius.all(Radius.circular(5));
 ///Container curb style
   static const containerCurbBoxdecoration = 
   BoxDecoration(

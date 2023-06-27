@@ -9,9 +9,7 @@ import 'package:hitechpos/screens/cart_screen.dart';
 import 'package:hitechpos/widgets/searchbox.dart';
 
 class MenuScreen extends StatefulWidget {
- 
   const MenuScreen({Key ?key}) : super(key: key);
-
   @override
   State<MenuScreen> createState() => _MenuScreenState();
 }
@@ -22,7 +20,7 @@ class _MenuScreenState extends State<MenuScreen> {
   
   @override
   void initState(){
-    currentItem = orderTypes[0];
+    currentItem = orderTypes[0].name;
     super.initState();
   }
 
@@ -43,7 +41,7 @@ class _MenuScreenState extends State<MenuScreen> {
           "HIPOS",
           style: TextStyle(
             color: Colors.white,
-            fontSize: 20,
+            fontSize: Palette.contentTitleFontSize,
           ),
         ),
         actions: [
@@ -58,205 +56,174 @@ class _MenuScreenState extends State<MenuScreen> {
               'Cart  (${currentUser.cart.length})',
               style: const TextStyle(
                 color: Colors.white,
-                fontSize: 20,
+                fontSize: Palette.contentTitleFontSize,
               ),
             ),
           ),
         ],
       ),
-      body: Row(
-        children: [
-          Expanded(
-            child: Container(
-              decoration: const BoxDecoration(
-                gradient: Palette.bgGradient,
-              ),
-              child: CustomScrollView(
-                slivers: [
-                  //Order Type Work start
-                  SliverToBoxAdapter(
-                    child: SizedBox(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const SizedBox(
-                            height: 10,
-                          ),
-                           Row(
-                            children: [
-                              Expanded(
-                                child: Wrap(
-                                  alignment: WrapAlignment.start,
-                                  direction: Axis.horizontal,
-                                  spacing: 0,
-                                  runSpacing: 0,
-                                  children: List.generate(orderTypes.length, (index) {
-                                    return TextButton(
-                                        onPressed: (){
-                                          setState(() {
-                                            selectedOrderType = index;
-                                          });
-                                        }, 
-                                        child: Container(
-                                          //margin: const EdgeInsets.only(right: 2, bottom: 2 ),
-                                          width: size.width > 600 ? 120 : size.width > 500 ? 100 : size.width > 400 ? 80 : 70,
-                                          height: 50,
-                                          
-                                          decoration: BoxDecoration(
-                                            gradient: selectedOrderType == index? Palette.btnGradientColor : Palette.bgGradient,
-                                            borderRadius: const BorderRadius.all(Radius.circular(15)),
-                                            border: Border.all(
-                                              color: Palette.btnBoxShadowColor,
-                                              width: 2,
-                                            ),
-                                          ),
-                                          child: Center(
-                                            child: Text(orderTypes[index],
-                                                  style: TextStyle(
-                                                    fontSize: 15,
-                                                    fontWeight: FontWeight.bold,
-                                                    color: selectedOrderType == index? Colors.white: Palette.textColorLightPurple,
-                                                  ),
-                                                  textAlign: TextAlign.center,
-                                                  overflow: TextOverflow.ellipsis,
-                                                  maxLines: 2,
-                                                  softWrap: false,
-                                                ),
-                                          ),
-                                          ),
-                                        );
-                                  }),
-                                ),
+      body: SingleChildScrollView(
+        //Order Type Work start
+          child: SizedBox(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(
+                  height: 10,
+                ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: List.generate(orderTypes.length, (index) {
+                      return TextButton(
+                          onPressed: (){
+                            setState(() {
+                              selectedOrderType = index;
+                            });
+                          }, 
+                          child: Container(
+                            width: size.width < 800 ? size.width * 0.20 : size.width * 0.23,
+                            height: 80,
+                            decoration: BoxDecoration(
+                              gradient: selectedOrderType == index? Palette.btnGradientColor : Palette.bgGradient,
+                              borderRadius: Palette.textContainerBorderRadius,
+                              border: Border.all(
+                                color: Palette.btnBoxShadowColor,
+                                width: 2,
                               ),
-                            ],
-                          ),
-                          SizedBox(
-                            height: 10,
-                          ),
-                          SearchBox(),
-                        ],
-                      ),
-                    ),
-                  ),
-                  //Order Type Work End
-                  //Category Work start
-                  SliverPadding(
-                    padding: const EdgeInsets.all(8.0),
-                    sliver:SliverToBoxAdapter(
-                      child: Cagetory(
-                        categoryList : foodCategoryAll,
-                      ),
-                    ),
-                  ),
-                  //Category Work End
-                  //Menu Work Start 
-                  SliverGrid.count(
-                    crossAxisCount: menuItemGridcrossAxisCount,
-                    children: List.generate(foodlist.length, (index) {
-                        Food food = foodlist[index];
-                        return GestureDetector(
-                          onTap: () => Navigator.push(
-                            context, 
-                            MaterialPageRoute(builder: (_) => OrderScreen(food: food,),
                             ),
-                          ),
-                          child: _buildMenuItem(food),
-                      );
-                    }
-                   ),
+                            child: Column(
+                              children: [
+                                Image(image: AssetImage(orderTypes[index].imageUrl),
+                                height: 50,
+                                fit: BoxFit.cover,),
+                                Padding(
+                                  padding: const EdgeInsets.all(5.0),
+                                  child: FittedBox(
+                                    child: Text(orderTypes[index].name,
+                                          style: TextStyle(
+                                            fontFamily: Palette.layoutFont,
+                                            fontSize: Palette.containerButtonFontSize,
+                                            fontWeight: FontWeight.bold,
+                                            color: selectedOrderType == index? Colors.white: Palette.textColorLightPurple,
+                                          ),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            ),
+                          );
+                    }),
                   ),
-                  // Menu Work End
-                ],
-              ),
-            )
+                const SizedBox(
+                  height: 10,
+                ),
+                const Padding(
+                  padding: EdgeInsets.only(left: 20 , right: 20),
+                  child: SearchBox(),
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
+                //Category Work Start
+                Cagetory(categoryList : foodCategoryAll,),
+                const SizedBox(
+                  height: 10,
+                ),
+                //Menu work Start
+                  Center(
+                    child: Row(
+                    children: [
+                      Expanded(
+                        child: Wrap(
+                        alignment: WrapAlignment.center,
+                        direction: Axis.horizontal,
+                        spacing: 0,
+                        runSpacing: 2,
+                        children: List.generate(foodlist.length, (index) {
+                          return TextButton(
+                              onPressed: () => Navigator.push(
+                              context, 
+                              MaterialPageRoute(builder: (_) => OrderScreen(food: foodlist[index]),
+                              ),
+                            ), 
+                            child: _buildMenuItem(foodlist[index]),
+                          );
+                        }),
+                        ),
+                      ),
+                    ],
+                    ),
+                  ),
+              ],
+            ),
           ),
-          // Right        
-        ],
       ),
     );
   }
 
   _buildMenuItem(Food MenuItem) {
-    return Center(
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          Container(
-            height: 175.0,
-            width: 175.0,
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage(MenuItem.imageUrl),
-                fit: BoxFit.cover,
-              ),
-              borderRadius: BorderRadius.circular(15.0),
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        Container(
+          height: 100.0,
+          width: 100.0,
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage(MenuItem.imageUrl),
+              fit: BoxFit.cover,
             ),
+            borderRadius: BorderRadius.circular(10.0),
           ),
-          Container(
-            height: 175.0,
-            width: 175.0,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(15),
-              gradient: LinearGradient(
-                begin: Alignment.topRight,
-                end: Alignment.bottomLeft,
-                colors: [
-                  Colors.black.withOpacity(0.3),
-                  Colors.black87.withOpacity(0.3),
-                  Colors.black54.withOpacity(0.3),
-                  Colors.black38.withOpacity(0.3),
-                ],
-                stops: const [0.1, 0.4, 0.6, 0.9],
-              ),
-            ),
-          ),
-          Positioned(
-            bottom: 65.0,
-            child: Column(
-              children: [
-                Text(
-                  MenuItem.name,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 24.0,
-                    letterSpacing: 1.2,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                Text(
-                  '\$${MenuItem.price}',
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 18.0,
-                    letterSpacing: 1.2,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+        ),
+        Container(
+          height: 100.0,
+          width: 100.0,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+            gradient: LinearGradient(
+              begin: Alignment.topRight,
+              end: Alignment.bottomLeft,
+              colors: [
+                Colors.black.withOpacity(0.3),
+                Colors.black87.withOpacity(0.3),
+                Colors.black54.withOpacity(0.3),
+                Colors.black38.withOpacity(0.3),
               ],
+              stops: const [0.1, 0.4, 0.6, 0.9],
             ),
           ),
-          Positioned(
-            bottom: 10.0,
-            right: 10.0,
-            child: Container(
-              width: 48.0,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(30),
-                gradient: Palette.btnGradientColor,
-              ),
-              child: IconButton(
-                onPressed: () {},
-                icon: const Icon(
-                  Icons.add,
-                  size: 30.0,
+        ),
+        Positioned(
+          child: Column(
+            children: [
+              Text(
+                MenuItem.name,
+                style: const TextStyle(
                   color: Colors.white,
+                  fontFamily: Palette.layoutFont,
+                  fontWeight: FontWeight.bold,
+                  fontSize: Palette.menuFoodNameFontSize
                 ),
+                overflow: TextOverflow.ellipsis,
               ),
-            ),
+              Text(
+                '\$${MenuItem.price}',
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontFamily: Palette.layoutFont,
+                  fontWeight: FontWeight.bold,
+                  fontSize: Palette.menuFoodNameFontSize
+                ),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ],
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

@@ -13,27 +13,27 @@ class CreateCategory extends StatelessWidget {
     return GestureDetector(
       onTap:() {},
       child: Container(
-        height: 120,
-        width: 120,
+        width: 110,
         color: Colors.white54,
         child: Center(
           child: Container(
             width: 100,
-            height: 100,
+            height: 50,
             decoration:  const BoxDecoration(
               gradient: Palette.btnGradientColor,
-              borderRadius: BorderRadius.all(Radius.circular(15)),
+              borderRadius: BorderRadius.all(Radius.circular(10)),
             ),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                Image.asset(categoryImage,height: 30,width: 30,),
                 Text(categoryName,
                     style: const TextStyle(
-                      fontSize: 20,
+                      fontFamily: Palette.layoutFont,
+                      fontSize: 12,
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
                     ),
+                    overflow: TextOverflow.ellipsis,
                 )
               ],
             ),
