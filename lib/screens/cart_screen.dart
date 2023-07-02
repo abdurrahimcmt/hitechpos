@@ -14,6 +14,8 @@ class _CartScreenState extends State<CartScreen> {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
+    var contentTitleFontSize = (size.width < 600)? Palette.contentTitleFontSize : Palette.contentTitleFontSizeL;
+    var discriptionFontSize = (size.width < 600)? Palette.discriptionFontSize : Palette.discriptionFontSizeL;
     double totalPrice = 0;
     for (var order in currentUser.cart) {
       totalPrice += order.quantity * order.food.price;
@@ -30,18 +32,18 @@ class _CartScreenState extends State<CartScreen> {
           if (index < currentUser.cart.length) {
             int orderQuentity = currentUser.cart[index].quantity;
             Order order = currentUser.cart[index];
-            return Container(
-              width: size.width,
-              padding: const EdgeInsets.all(5),
+            return Padding(
+              padding: const EdgeInsets.all(15.0),
               child: Column(
                 children: [
+                  //First Row
                   SizedBox(
                     height: 80,
                     child: Row(
                       children: [
                         //First Part
                         Expanded(
-                          flex: 4,
+                          flex: 6,
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -57,17 +59,17 @@ class _CartScreenState extends State<CartScreen> {
                                 overflow: TextOverflow.ellipsis,
                               ),
                               //Kitchen Note
-                              const Text("KN : Extra Sauce, No Oil",
+                              Text("KN : Extra Sauce, No Oil",
                                 style: TextStyle(
-                                  fontSize: Palette.containerButtonFontSize,
+                                  fontSize: discriptionFontSize,
                                   fontWeight: FontWeight.bold,
                                   fontFamily: Palette.layoutFont
                                 ),
                               ),
                               //Invoice Note
-                              const Text("IN : After 1 Houre",
+                              Text("IN : After 1 Houre",
                                 style: TextStyle(
-                                  fontSize: Palette.containerButtonFontSize,
+                                  fontSize: discriptionFontSize,
                                   fontWeight: FontWeight.bold,
                                   fontFamily: Palette.layoutFont
                                 ),
@@ -91,47 +93,19 @@ class _CartScreenState extends State<CartScreen> {
                             children: [
                               
                               // + button
-                              TextButton(
-                                onPressed: () {
-                                  setState(() {
-                                    currentUser.cart[index].quantity = currentUser.cart[index].quantity + 1;
-                                  });
-                                },
-                                child: const Text(
-                                  '+',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: Palette.contentTitleFontSize,
-                                    fontWeight: FontWeight.w600,
-                                    fontFamily: Palette.layoutFont
-                                  ),
-                                ),
-                              ),
-                              
-                              // Counter Box
-                              Container(
-                                height: 20,
-                                decoration: const BoxDecoration(
-                                  gradient: LinearGradient(colors: [
-                                        Color(0xffFFF7F9),
-                                        Color(0xffFFFBFC),
-                                  ]),
-                                  boxShadow: [
-                                    BoxShadow(
-                                    color: Color.fromRGBO(241, 96, 138, 0.35),
-                                    spreadRadius: 5,
-                                    blurRadius: 2,
-                                    offset: Offset(0, 2),
-                                    )
-                                  ],
-                                  borderRadius: BorderRadius.all(
-                                    Radius.circular(10),
-                                  ),
-                                ),
-                                child: Center(
-                                  child: Text( "$orderQuentity",
-                                    style: const TextStyle(
-                                      fontSize:Palette.contentTitleFontSize,
+                              Expanded(
+                                flex: 4,
+                                child: TextButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      currentUser.cart[index].quantity = currentUser.cart[index].quantity + 1;
+                                    });
+                                  },
+                                  child: const Text(
+                                    '+',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: Palette.contentTitleFontSize,
                                       fontWeight: FontWeight.w600,
                                       fontFamily: Palette.layoutFont
                                     ),
@@ -139,22 +113,59 @@ class _CartScreenState extends State<CartScreen> {
                                 ),
                               ),
                               
+                              // Counter Box
+                              Expanded(
+                                flex: 4,
+                                child: Container(
+                                  height: 20,
+                                  decoration: const BoxDecoration(
+                                    gradient: LinearGradient(colors: [
+                                          Color(0xffFFF7F9),
+                                          Color(0xffFFFBFC),
+                                    ]),
+                                    boxShadow: [
+                                      BoxShadow(
+                                      color: Color.fromRGBO(241, 96, 138, 0.35),
+                                      spreadRadius: 5,
+                                      blurRadius: 2,
+                                      offset: Offset(0, 2),
+                                      )
+                                    ],
+                                    borderRadius: BorderRadius.all(
+                                      Radius.circular(10),
+                                    ),
+                                  ),
+                                  child: Center(
+                                    child: Text( "$orderQuentity",
+                                      style: TextStyle(
+                                        fontSize: contentTitleFontSize,
+                                        fontWeight: FontWeight.w600,
+                                        fontFamily: Palette.layoutFont
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              
                               // - button
-                              TextButton(
-                                onPressed: () {
-                                  setState(() {
-                                    if(currentUser.cart[index].quantity > 1){
-                                      currentUser.cart[index].quantity = currentUser.cart[index].quantity - 1;
-                                    }
-                                  });
-                                },
-                                child: const Text(
-                                  '-',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: Palette.contentTitleFontSize,
-                                    fontWeight: FontWeight.w600,
-                                    fontFamily: Palette.layoutFont
+                              Expanded(
+                                flex: 4,
+                                child: TextButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      if(currentUser.cart[index].quantity > 1){
+                                        currentUser.cart[index].quantity = currentUser.cart[index].quantity - 1;
+                                      }
+                                    });
+                                  },
+                                  child: const Text(
+                                    '-',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: Palette.contentTitleFontSize,
+                                      fontWeight: FontWeight.w600,
+                                      fontFamily: Palette.layoutFont
+                                    ),
                                   ),
                                 ),
                               ),
@@ -169,8 +180,8 @@ class _CartScreenState extends State<CartScreen> {
                             child: Center(
                               child: Text(
                                 '\$${order.food.price * order.quantity}',
-                                style: const TextStyle(
-                                fontSize: Palette.containerButtonFontSize,
+                                style: TextStyle(
+                                fontSize: discriptionFontSize,
                                 fontWeight: FontWeight.bold,
                                 fontFamily: Palette.layoutFont
                               ),
@@ -180,7 +191,7 @@ class _CartScreenState extends State<CartScreen> {
                         
                         // Delete Button
                         Expanded(
-                          flex: 2,
+                          flex: 1,
                           child: TextButton(
                           onPressed: () {
                             setState(() {
@@ -193,47 +204,38 @@ class _CartScreenState extends State<CartScreen> {
                       ],
                     ),
                   ),
-                  const Row(
+                  //Second Row
+                  Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                     Expanded(
-                      flex: 2,
-                      child: SizedBox(
-                      ),
-                    ),
-                    Expanded(
-                      flex: 4,
+                      flex: 7,
                       child: Text("Coca Cola",
                         style: TextStyle(
-                          fontSize: Palette.containerButtonFontSize,
+                          fontSize: discriptionFontSize,
                           fontWeight: FontWeight.bold,
                           fontFamily: Palette.layoutFont
                         ),
+                        textAlign: TextAlign.center,
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
                     Expanded(
-                      flex: 2,
-                      child: Center(
-                        child: Text("\$5.00",
-                          style: TextStyle(
-                            fontSize: Palette.containerButtonFontSize,
-                            fontWeight: FontWeight.bold,
-                            fontFamily: Palette.layoutFont
-                          ),
-                          overflow: TextOverflow.ellipsis,
+                      flex: 4,
+                      child: Text("\$5.00",
+                        style: TextStyle(
+                          fontSize: discriptionFontSize,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: Palette.layoutFont
                         ),
+                        overflow: TextOverflow.ellipsis,
+                        textAlign: TextAlign.center,
                       ),
-                    ),
-                     Expanded(
-                      flex: 2,
-                      child: SizedBox(),
                     ),
                     ],
                   )
                 ],
               ),
-              
             );
           }
           //Total cost 

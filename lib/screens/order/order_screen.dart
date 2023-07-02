@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:hitechpos/common/palette.dart';
 import 'package:hitechpos/data/data.dart';
+import 'package:hitechpos/models/categoryWithItemList.dart';
 import 'package:hitechpos/models/food.dart';
 import 'package:hitechpos/widgets/curb_button.dart';
 
 class OrderScreen extends StatefulWidget {
-  final Food food;
+  final OnlineItemList food;
   const OrderScreen({Key?key, required this.food}) : super(key: key);
 
   @override
@@ -23,6 +24,7 @@ class _OrderScreenState extends State<OrderScreen> {
   List<String> isSelectedInvoiceNotes = <String>[];
   String concatedInvoiceNotes= "";
   double modifierTotalPrice = 0;
+  
   @override
   void dispose(){
     _txtKitchenNotesController.dispose();
@@ -32,13 +34,15 @@ class _OrderScreenState extends State<OrderScreen> {
 
   @override
   Widget build(BuildContext context) {
-    concatedKitchenNotes = isSelectedKitchenNotes.join(",");
-    concatedInvoiceNotes = isSelectedInvoiceNotes.join(",");
+    concatedKitchenNotes = isSelectedKitchenNotes.join(", ");
+    concatedInvoiceNotes = isSelectedInvoiceNotes.join(", ");
     _txtKitchenNotesController.text = concatedKitchenNotes;
     _txtInvoiceNotesController.text = concatedInvoiceNotes;
-    Size size = MediaQuery.of(context).size;
     bool isPortrait = MediaQuery.of(context).orientation == Orientation.portrait;
     double price = foodSizeList[selectedFoodItemSizeIndex].price + modifierTotalPrice;
+    Size size = MediaQuery.of(context).size;
+    var contentTitleFontSize = (size.width < 600)? Palette.contentTitleFontSize : Palette.contentTitleFontSizeL;
+    var discriptionFontSize = (size.width < 600)? Palette.discriptionFontSize : Palette.discriptionFontSizeL;
     return Scaffold(
       // appBar: AppBar(
       //   backgroundColor: Palette.bgColorPerple,
@@ -84,13 +88,13 @@ class _OrderScreenState extends State<OrderScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          const Expanded(
+                          Expanded(
                             child: Text("Place Order",
                               style: TextStyle(
                                 fontFamily: Palette.layoutFont,
                                 fontWeight: FontWeight.w700,
                                 color: Palette.textColorLightPurple,
-                                fontSize: Palette.contentTitleFontSize,
+                                fontSize: contentTitleFontSize,
                               ),
                             ),
                           ),
@@ -112,36 +116,36 @@ class _OrderScreenState extends State<OrderScreen> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Expanded(
-                              child: Text(widget.food.name,
-                                style: const TextStyle(
+                              child: Text(widget.food.vItemName,
+                                style: TextStyle(
                                   fontFamily: Palette.layoutFont,
                                   color: Palette.textBackGroundBlack,
                                   fontWeight: FontWeight.w600,
-                                  fontSize: Palette.contentTitleFontSize,
+                                  fontSize: contentTitleFontSize,
                                 ),
                               ),
                             ),
                             Expanded(
                               child: Text("\$ ${price * orderQuentity}",
                                   textAlign: TextAlign.end,
-                                  style: const TextStyle( 
+                                  style: TextStyle( 
                                   fontFamily: Palette.layoutFont,
                                   color: Palette.textColorPurple,
                                   fontWeight: FontWeight.w800,
-                                  fontSize: Palette.contentTitleFontSize,
+                                  fontSize: contentTitleFontSize,
                                 ),
                               ),
                             ),
                           ],
                         ),
                       ),
-                      Text(widget.food.discription,
-                      style: const TextStyle(
+                      Text(widget.food.vDescription,
+                      style: TextStyle(
                         fontFamily: Palette.layoutFont,
                         color: Palette.textColorPurple,
                         overflow: TextOverflow.ellipsis,
                         fontWeight: FontWeight.w400,
-                        fontSize: Palette.discriptionFontSize,
+                        fontSize: discriptionFontSize,
                       ),
                       maxLines: 1,
                       softWrap: false,
@@ -152,14 +156,14 @@ class _OrderScreenState extends State<OrderScreen> {
                     Row(
                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Expanded(
+                        Expanded(
                          flex: 4,
                           child: Text("Quantity",
                           style: TextStyle(
                               fontFamily: Palette.layoutFont,
                               color: Palette.textColorLightPurple,
                               fontWeight: FontWeight.w500,
-                              fontSize: Palette.contentTitleFontSize,
+                              fontSize: contentTitleFontSize,
                             ),
                           ),
                         ),
@@ -184,11 +188,11 @@ class _OrderScreenState extends State<OrderScreen> {
                                        }
                                      });
                                    },
-                                   child: const Text(
+                                   child: Text(
                                      '-',
                                      style: TextStyle(
                                        color: Colors.white,
-                                       fontSize: Palette.contentTitleFontSize,
+                                       fontSize: contentTitleFontSize,
                                        fontWeight: FontWeight.w600,
                                        fontFamily: Palette.layoutFont
                                      ),
@@ -218,8 +222,8 @@ class _OrderScreenState extends State<OrderScreen> {
                                    ),
                                    child: Center(
                                      child: Text( "$orderQuentity",
-                                       style: const TextStyle(
-                                         fontSize:Palette.contentTitleFontSize,
+                                       style: TextStyle(
+                                         fontSize:contentTitleFontSize,
                                          fontWeight: FontWeight.w600,
                                          fontFamily: Palette.layoutFont
                                        ),
@@ -234,11 +238,11 @@ class _OrderScreenState extends State<OrderScreen> {
                                        orderQuentity = orderQuentity + 1;
                                      });
                                    },
-                                   child: const Text(
+                                   child: Text(
                                      '+',
                                      style: TextStyle(
                                        color: Colors.white,
-                                       fontSize: Palette.contentTitleFontSize,
+                                       fontSize: contentTitleFontSize,
                                        fontWeight: FontWeight.w600,
                                        fontFamily: Palette.layoutFont
                                      ),
@@ -254,12 +258,12 @@ class _OrderScreenState extends State<OrderScreen> {
                     //Quentity End
                     //Item Size Start
                     Palette.sizeBoxVarticalSpace,
-                    const Text("Item Size",
+                    Text("Item Size",
                        style: TextStyle(
                        fontFamily: Palette.layoutFont,
                        color: Palette.textColorLightPurple,
                        fontWeight: FontWeight.w500,
-                       fontSize: Palette.contentTitleFontSize,
+                       fontSize: contentTitleFontSize,
                      ),
                    ),
                     const SizedBox(
@@ -273,7 +277,7 @@ class _OrderScreenState extends State<OrderScreen> {
                            direction: Axis.horizontal,
                            spacing: 0,
                            runSpacing: 0,
-                           children: List.generate(foodSizeList.length, (index) {
+                           children: List.generate(VUnitName.values.length, (index) {
                              return TextButton(
                                  onPressed: (){
                                    setState(() {
@@ -297,7 +301,7 @@ class _OrderScreenState extends State<OrderScreen> {
                                        child: FittedBox(
                                          child: Text("${foodSizeList[index].sizeName}( \$${foodSizeList[index].price} )",
                                                style: TextStyle(
-                                                 fontSize: Palette.discriptionFontSize,
+                                                 fontSize: discriptionFontSize,
                                                  fontWeight: FontWeight.bold,
                                                  color: selectedFoodItemSizeIndex == index? Colors.white: Palette.textColorLightPurple,
                                                ),
@@ -317,13 +321,13 @@ class _OrderScreenState extends State<OrderScreen> {
                     Column(
                      crossAxisAlignment: CrossAxisAlignment.start,
                      children: [
-                       const Text(
+                       Text(
                          'Modifiers',
                          style: TextStyle(
                            fontFamily: Palette.layoutFont,
                            color: Palette.textColorLightPurple,
                            fontWeight: FontWeight.w500,
-                           fontSize: Palette.contentTitleFontSize,
+                           fontSize: contentTitleFontSize,
                          ),
                        ),
                        const SizedBox(
@@ -421,12 +425,12 @@ class _OrderScreenState extends State<OrderScreen> {
                    Column(
                      crossAxisAlignment: CrossAxisAlignment.start,
                      children: [
-                       const Text("Kitchen Note(s)",
+                       Text("Kitchen Note(s)",
                            style: TextStyle(
                            fontFamily: Palette.layoutFont,
                            color: Palette.textColorLightPurple,
                            fontWeight: FontWeight.w500,
-                           fontSize: Palette.contentTitleFontSize,
+                           fontSize: contentTitleFontSize,
                          ),
                        ),
                        const SizedBox(
@@ -491,9 +495,9 @@ class _OrderScreenState extends State<OrderScreen> {
                        ),
                        TextField(
                          controller: _txtKitchenNotesController,
-                         style: const TextStyle(
+                         style: TextStyle(
                            fontFamily: Palette.layoutFont,
-                           fontSize: Palette.discriptionFontSize,
+                           fontSize: discriptionFontSize,
                          ),
                          decoration: const InputDecoration(
                            hintText: "Kitchen Note(s)",
@@ -511,12 +515,12 @@ class _OrderScreenState extends State<OrderScreen> {
                    Column(
                      crossAxisAlignment: CrossAxisAlignment.start,
                      children: [
-                       const Text("Invoice Note(s)",
+                       Text("Invoice Note(s)",
                            style: TextStyle(
                            fontFamily: Palette.layoutFont,
                            color: Palette.textColorLightPurple,
                            fontWeight: FontWeight.w500,
-                           fontSize: Palette.contentTitleFontSize,
+                           fontSize: contentTitleFontSize,
                          ),
                        ),
                        const SizedBox(
@@ -561,7 +565,7 @@ class _OrderScreenState extends State<OrderScreen> {
                                                    textAlign: TextAlign.center,
                                                    style: TextStyle(
                                                     fontFamily: Palette.layoutFont,
-                                                     fontSize: Palette.discriptionFontSize,
+                                                     fontSize: discriptionFontSize,
                                                      fontWeight: FontWeight.bold,
                                                      color: isSelectedInvoiceNotes.contains(invoiceNotes[index])? Colors.white: Palette.textColorLightPurple,
                                                    ),
@@ -581,9 +585,9 @@ class _OrderScreenState extends State<OrderScreen> {
                        ),
                        TextField(
                          controller: _txtInvoiceNotesController,
-                         style: const TextStyle(
+                         style: TextStyle(
                            fontFamily: Palette.layoutFont,
-                           fontSize: Palette.discriptionFontSize,
+                           fontSize: discriptionFontSize,
                          ),
                          decoration: const InputDecoration(
                            hintText: "Invoice Note(s)",

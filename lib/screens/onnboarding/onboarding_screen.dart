@@ -4,7 +4,7 @@ import 'package:hitechpos/screens/Registration/login_screen.dart';
 import '../../data/onboarding.dart';
 
 class OnBoardingScreen extends StatefulWidget {
-  const OnBoardingScreen({super.key});
+  const OnBoardingScreen({Key?key}) : super(key: key);
 
   @override
   State<OnBoardingScreen> createState() => _OnBoardingScreenState();

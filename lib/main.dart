@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:hitechpos/common/app_routes.dart';
 import 'package:hitechpos/screens/Menu/menu_screen.dart';
+import 'package:get/get.dart';
+import 'package:hitechpos/screens/Registration/login_screen.dart';
+import 'package:hitechpos/screens/Registration/registration.dart';
 import 'package:hitechpos/screens/onnboarding/onboarding_screen.dart';
+import 'package:hitechpos/screens/order/order_screen.dart';
+
 void main() {
   runApp(const MyApp());
 }
@@ -12,12 +18,20 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return  GetMaterialApp(
       title: 'Hi-Tech Pos',
       debugShowCheckedModeBanner: false,
-      home: SafeArea(
+      initialRoute: AppRoutes.home,
+      getPages: [
+        GetPage(name: AppRoutes.home, page: () => const OnBoardingScreen()),
+        GetPage(name: AppRoutes.login, page: () => const LoginScreen()),
+        GetPage(name: AppRoutes.registration, page: () => const RegistrationScreen()),
+        GetPage(name: AppRoutes.menu, page: () => const MenuScreen()),
+        //GetPage(name: AppRoutes.order, page: () => const OrderScreen(food: nul,))
+      ],
+      home: const SafeArea(
       //child: OnBoardingScreen(),
-       child: MenuScreen(),
+       child: LoginScreen(),
       ),
     );
   }

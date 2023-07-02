@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:hitechpos/common/palette.dart';
+import 'package:hitechpos/screens/Registration/registration.dart';
+import 'package:hitechpos/screens/registration_page.dart';
 import 'package:hitechpos/screens/responsive/responsive_layout.dart';
 import 'package:hitechpos/screens/menu/menu_screen.dart';
 import 'package:hitechpos/screens/forgot_password_page.dart';
@@ -138,8 +142,16 @@ class _LoginScreenState extends State<LoginScreen> {
                                         ),
                                         TextButton(
                                           onPressed: (){ 
-                                          Navigator.push(context, 
-                                          MaterialPageRoute(builder: (_) => const MenuScreen(),),);}, 
+                                          Get.snackbar("Information", "Login Successfully",
+                                          snackPosition: SnackPosition.BOTTOM,
+                                          );
+                                          // Navigator.push(context,
+                                          // MaterialPageRoute(builder: (_) => const MenuScreen(),),);
+                                          Get.to(MenuScreen(),
+                                              transition: Transition.zoom,
+                                              duration: Duration(milliseconds: 1000),
+                                            );
+                                          }, 
                                             child: const CurbButton(
                                               buttonPadding: EdgeInsets.only(left: 0,right: 0),
                                               child: Row(
@@ -197,7 +209,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                         TextButton(
                                           onPressed: (){ 
                                           Navigator.push(context, 
-                                          MaterialPageRoute(builder: (_) => const MenuScreen(),),);}, 
+                                          MaterialPageRoute(builder: (_) => const RegistrationScreen(),),);}, 
                                           child: const CurbButtonLight(
                                             buttonPadding: EdgeInsets.only(left: 0,right: 0),
                                             child: Center(

@@ -64,7 +64,7 @@ class OnlineItemList {
     String vItemId;
     VItemType vItemType;
     String vItemName;
-    VDescription vDescription;
+    String vDescription;
     String vItemNameAr;
     String vImagePath;
     String vItemPrice;
@@ -89,7 +89,7 @@ class OnlineItemList {
         vItemId: json["vItemId"],
         vItemType: vItemTypeValues.map[json["vItemType"]]!,
         vItemName: json["vItemName"],
-        vDescription: vDescriptionValues.map[json["vDescription"]]!,
+        vDescription: json["vDescription"],
         vItemNameAr: json["vItemNameAr"],
         vImagePath: json["vImagePath"],
         vItemPrice: json["vItemPrice"],

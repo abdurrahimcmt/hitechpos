@@ -1,11 +1,14 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:hitechpos/common/palette.dart';
 import 'package:hitechpos/data/data.dart';
-import 'package:hitechpos/models/food.dart';
+import 'package:hitechpos/models/categoryWithItemList.dart';
+import 'package:hitechpos/screens/menu/component/create_category.dart';
 import 'package:hitechpos/screens/order/order_screen.dart';
-import 'package:hitechpos/screens/menu/component/category.dart';
-import 'package:hitechpos/screens/cart_screen.dart';
 import 'package:hitechpos/widgets/searchbox.dart';
+import 'package:http/http.dart' as http;
+
+import '../cart_screen.dart';
 
 class MenuScreen extends StatefulWidget {
   const MenuScreen({Key ?key}) : super(key: key);
@@ -16,10 +19,11 @@ class MenuScreen extends StatefulWidget {
 class _MenuScreenState extends State<MenuScreen> {
   String currentItem = "";
   int selectedOrderType = 0;
-  
+  late Future<CategoryWithItemList> categoryWithItemList;
   @override
   void initState(){
     currentItem = orderTypes[0].name;
+    categoryWithItemList = fatchCategoryWithItemList();
     super.initState();
   }
 
@@ -34,7 +38,7 @@ class _MenuScreenState extends State<MenuScreen> {
           "HIPOS",
           style: TextStyle(
             color: Colors.white,
-            fontSize: Palette.contentTitleFontSize,
+            fontSize: Palette.contentTitleFontSizeL,
           ),
         ),
         actions: [
@@ -49,7 +53,7 @@ class _MenuScreenState extends State<MenuScreen> {
               'Cart  (${currentUser.cart.length})',
               style: const TextStyle(
                 color: Colors.white,
-                fontSize: Palette.contentTitleFontSize,
+                fontSize: Palette.btnFontsize,
               ),
             ),
           ),
@@ -122,33 +126,72 @@ class _MenuScreenState extends State<MenuScreen> {
                   height: 10,
                 ),
                 //Category Work Start
-                Cagetory(categoryList : foodCategoryAll,),
+                FutureBuilder<CategoryWithItemList>(
+                  future: categoryWithItemList,
+                  builder: (context, snapshot){
+                  if(snapshot.hasData){
+                    return SizedBox(
+                      height: 60,
+                      child: ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: snapshot.data!.onlineCatWithItemLists.length,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 5.0,
+                          vertical: 5.0,
+                        ),
+                        itemBuilder: (BuildContext context, int index) {
+                        OnlineCatWithItemList foodCategory = snapshot.data!.onlineCatWithItemLists[index];
+                          return CreateCategory(
+                            categoryImage: "", 
+                            categoryName: foodCategory.vCategoryName,
+                            );
+                        },
+                      ),
+                    );
+                  }
+                  else{
+                    const CircularProgressIndicator();
+                    return Text('${snapshot.error}');
+                  }
+                }),
+                //Cagetory(categoryList : foodCategoryAll,),
                 const SizedBox(
                   height: 10,
                 ),
                 //Menu work Start
                   Center(
-                    child: Row(
-                    children: [
-                      Expanded(
-                        child: Wrap(
-                        alignment: WrapAlignment.center,
-                        direction: Axis.horizontal,
-                        spacing: 0,
-                        runSpacing: 2,
-                        children: List.generate(foodlist.length, (index) {
-                          return TextButton(
-                              onPressed: () => Navigator.push(
-                              context, 
-                              MaterialPageRoute(builder: (_) => OrderScreen(food: foodlist[index]),
+                    child: FutureBuilder<CategoryWithItemList>(
+                      future: fatchCategoryWithItemList(),
+                      builder: ((context, snapshot) {
+                        if(snapshot.hasData){
+                          return Row(
+                            children: [
+                              Expanded(
+                                child: Wrap(
+                                alignment: WrapAlignment.center,
+                                direction: Axis.horizontal,
+                                spacing: 0,
+                                runSpacing: 2,
+                                children: List.generate(snapshot.data!.onlineCatWithItemLists.first.onlineItemLists.length, (index) {
+                                  return TextButton(
+                                      onPressed: () => Navigator.push(
+                                      context, 
+                                      MaterialPageRoute(builder: (_) => OrderScreen(food: snapshot.data!.onlineCatWithItemLists.first.onlineItemLists[index]),
+                                      ),
+                                    ), 
+                                    child: _buildMenuItem(snapshot.data!.onlineCatWithItemLists.first.onlineItemLists[index]),
+                                  );
+                                }),
+                                ),
                               ),
-                            ), 
-                            child: _buildMenuItem(foodlist[index]),
+                            ],
                           );
-                        }),
-                        ),
-                      ),
-                    ],
+                        }
+                        else{
+                          return Text('${snapshot.error}');
+                        }
+                      }),
+                      
                     ),
                   ),
               ],
@@ -158,7 +201,7 @@ class _MenuScreenState extends State<MenuScreen> {
     );
   }
 
-  _buildMenuItem(Food MenuItem) {
+  _buildMenuItem(OnlineItemList MenuItem) {
     return Stack(
       alignment: Alignment.center,
       children: [
@@ -167,7 +210,7 @@ class _MenuScreenState extends State<MenuScreen> {
           width: 100.0,
           decoration: BoxDecoration(
             image: DecorationImage(
-              image: AssetImage(MenuItem.imageUrl),
+              image: NetworkImage(MenuItem.vImagePath,),
               fit: BoxFit.cover,
             ),
             borderRadius: BorderRadius.circular(10.0),
@@ -195,7 +238,7 @@ class _MenuScreenState extends State<MenuScreen> {
           child: Column(
             children: [
               Text(
-                MenuItem.name,
+                MenuItem.vItemName,
                 style: const TextStyle(
                   color: Colors.white,
                   fontFamily: Palette.layoutFont,
@@ -205,7 +248,7 @@ class _MenuScreenState extends State<MenuScreen> {
                 overflow: TextOverflow.ellipsis,
               ),
               Text(
-                '\$${MenuItem.price}',
+                '\$${MenuItem.vItemPrice}',
                 style: const TextStyle(
                   color: Colors.white,
                   fontFamily: Palette.layoutFont,
@@ -234,5 +277,15 @@ class _MenuScreenState extends State<MenuScreen> {
         );
       }
     );
+  }
+}
+
+Future<CategoryWithItemList> fatchCategoryWithItemList() async {
+  final response = await http.get(Uri.parse("http://hiposbh.com:84/api/AppsAPI/online/08f4f0d8-ddf4-4498-b878-2c69eec6452e/all/all/all"));
+  if(response.statusCode == 200){
+      return CategoryWithItemList.fromJson(jsonDecode(response.body));
+  }
+  else{
+    throw Exception('Failed to load Category');
   }
 }
