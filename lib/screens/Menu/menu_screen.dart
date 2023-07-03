@@ -272,8 +272,9 @@ class _MenuScreenState extends State<MenuScreen> {
         )
       ),
       builder: (BuildContext context){
+        Size size = MediaQuery.of(context).size;
         return Container(
-
+          height: size.height* 0.9,
         );
       }
     );
