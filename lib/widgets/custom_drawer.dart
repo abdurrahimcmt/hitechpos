@@ -46,7 +46,7 @@ class CustomDrawer extends StatelessWidget {
                   child: Container(
                     alignment: Alignment.bottomLeft,
                     child: const Text(
-                      "Hi-Tech",
+                      "HIPOS",
                       style: TextStyle(
                         fontSize: 25,
                         color: Colors.white,

@@ -53,7 +53,7 @@ Widget build(BuildContext context) {
                             const SizedBox(
                               height: 20,
                             ),
-                            const Text("Hi-Tech",
+                            const Text("HIPOS",
                               style: TextStyle(
                                 fontWeight: FontWeight.w900,
                                 fontSize: 40

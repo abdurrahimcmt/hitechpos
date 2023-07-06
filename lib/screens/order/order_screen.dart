@@ -23,7 +23,7 @@ class _OrderScreenState extends State<OrderScreen> {
   String concatedKitchenNotes= "";
   List<String> isSelectedInvoiceNotes = <String>[];
   String concatedInvoiceNotes= "";
-  double modifierTotalPrice = 0;
+  double modifierTotalPrice = 0.000;
   
   @override
   void dispose(){
@@ -126,7 +126,7 @@ class _OrderScreenState extends State<OrderScreen> {
                               ),
                             ),
                             Expanded(
-                              child: Text("\$ ${price * orderQuentity}",
+                              child: Text((price * orderQuentity).toStringAsFixed(3),
                                   textAlign: TextAlign.end,
                                   style: TextStyle( 
                                   fontFamily: Palette.layoutFont,
@@ -277,7 +277,7 @@ class _OrderScreenState extends State<OrderScreen> {
                            direction: Axis.horizontal,
                            spacing: 0,
                            runSpacing: 0,
-                           children: List.generate(VUnitName.values.length, (index) {
+                           children: List.generate(foodSizeList.length, (index) {
                              return TextButton(
                                  onPressed: (){
                                    setState(() {
@@ -299,7 +299,7 @@ class _OrderScreenState extends State<OrderScreen> {
                                      child: Padding(
                                        padding: const EdgeInsets.all(5.0),
                                        child: FittedBox(
-                                         child: Text("${foodSizeList[index].sizeName}( \$${foodSizeList[index].price} )",
+                                         child: Text("${foodSizeList[index].sizeName}( ${foodSizeList[index].price.toStringAsFixed(3)} )",
                                                style: TextStyle(
                                                  fontSize: discriptionFontSize,
                                                  fontWeight: FontWeight.bold,
@@ -396,7 +396,7 @@ class _OrderScreenState extends State<OrderScreen> {
                                                  ),
                                                ),
                                                FittedBox(
-                                                 child: Text("(\$${modifierList[index].price})",
+                                                 child: Text("(${modifierList[index].price.toStringAsFixed(3)})",
                                                        style: TextStyle(
                                                         fontFamily: Palette.layoutFont,
                                                          fontSize: Palette.containerButtonFontSize,

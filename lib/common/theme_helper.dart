@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:hitechpos/screens/login_page.dart';
 
 class ThemeHelper {
   InputDecoration textInputDecoration(
@@ -89,6 +91,36 @@ class ThemeHelper {
           },
           child: const Text(
             "OK",
+            style: TextStyle(color: Colors.white),
+          ),
+        ),
+      ],
+    );
+  }
+  AlertDialog alartDialogYesNoOption(String title, String content, BuildContext context) {
+    return AlertDialog(
+      title: Text(title),
+      content: Text(content),
+      actions: [
+        TextButton(
+          style: ButtonStyle(
+              backgroundColor: MaterialStateProperty.all(Colors.black38)),
+          onPressed: () {
+            Get.to(const LoginPage());
+          },
+          child: const Text(
+            "Yes",
+            style: TextStyle(color: Colors.white),
+          ),
+        ),
+        TextButton(
+          style: ButtonStyle(
+              backgroundColor: MaterialStateProperty.all(Colors.black38)),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          child: const Text(
+            "No",
             style: TextStyle(color: Colors.white),
           ),
         ),

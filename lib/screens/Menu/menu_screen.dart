@@ -4,10 +4,13 @@ import 'package:hitechpos/common/palette.dart';
 import 'package:hitechpos/data/data.dart';
 import 'package:hitechpos/models/categoryWithItemList.dart';
 import 'package:hitechpos/screens/menu/component/create_category.dart';
+import 'package:hitechpos/screens/menu/component/delivery_screen.dart';
+import 'package:hitechpos/screens/menu/component/dine_in.dart';
+import 'package:hitechpos/screens/menu/component/drive_through.dart';
+import 'package:hitechpos/screens/menu/component/take_away.dart';
 import 'package:hitechpos/screens/order/order_screen.dart';
 import 'package:hitechpos/widgets/searchbox.dart';
 import 'package:http/http.dart' as http;
-
 import '../cart_screen.dart';
 
 class MenuScreen extends StatefulWidget {
@@ -19,7 +22,9 @@ class MenuScreen extends StatefulWidget {
 class _MenuScreenState extends State<MenuScreen> {
   String currentItem = "";
   int selectedOrderType = 0;
+  late Size size;
   late Future<CategoryWithItemList> categoryWithItemList;
+  List<String> isSelectedTabels = <String>[];
   @override
   void initState(){
     currentItem = orderTypes[0].name;
@@ -29,7 +34,7 @@ class _MenuScreenState extends State<MenuScreen> {
 
   @override
   Widget build(BuildContext context) {
-    Size size= MediaQuery.of(context).size;
+    size= MediaQuery.of(context).size;
     return Scaffold(
        appBar: AppBar(
         backgroundColor: Palette.bgColorPerple,
@@ -38,7 +43,6 @@ class _MenuScreenState extends State<MenuScreen> {
           "HIPOS",
           style: TextStyle(
             color: Colors.white,
-            fontSize: Palette.contentTitleFontSizeL,
           ),
         ),
         actions: [
@@ -53,7 +57,6 @@ class _MenuScreenState extends State<MenuScreen> {
               'Cart  (${currentUser.cart.length})',
               style: const TextStyle(
                 color: Colors.white,
-                fontSize: Palette.btnFontsize,
               ),
             ),
           ),
@@ -75,7 +78,7 @@ class _MenuScreenState extends State<MenuScreen> {
                       return TextButton(
                           onPressed: (){
                             setState(() {
-                              _buildModelBottomSheet();
+                              _buildModelBottomSheet(orderTypes[index].name);
                               selectedOrderType = index;
                             });
                           }, 
@@ -150,8 +153,7 @@ class _MenuScreenState extends State<MenuScreen> {
                     );
                   }
                   else{
-                    const CircularProgressIndicator();
-                    return Text('${snapshot.error}');
+                    return const Center(child: CircularProgressIndicator());
                   }
                 }),
                 //Cagetory(categoryList : foodCategoryAll,),
@@ -159,45 +161,57 @@ class _MenuScreenState extends State<MenuScreen> {
                   height: 10,
                 ),
                 //Menu work Start
-                  Center(
-                    child: FutureBuilder<CategoryWithItemList>(
-                      future: fatchCategoryWithItemList(),
-                      builder: ((context, snapshot) {
-                        if(snapshot.hasData){
-                          return Row(
-                            children: [
-                              Expanded(
-                                child: Wrap(
-                                alignment: WrapAlignment.center,
-                                direction: Axis.horizontal,
-                                spacing: 0,
-                                runSpacing: 2,
-                                children: List.generate(snapshot.data!.onlineCatWithItemLists.first.onlineItemLists.length, (index) {
-                                  return TextButton(
-                                      onPressed: () => Navigator.push(
-                                      context, 
-                                      MaterialPageRoute(builder: (_) => OrderScreen(food: snapshot.data!.onlineCatWithItemLists.first.onlineItemLists[index]),
-                                      ),
-                                    ), 
-                                    child: _buildMenuItem(snapshot.data!.onlineCatWithItemLists.first.onlineItemLists[index]),
-                                  );
-                                }),
+                  SizedBox(
+                    child: Center(
+                      child: FutureBuilder<CategoryWithItemList>(
+                        future: categoryWithItemList,
+                        builder: ((context, snapshot) {
+                          if(snapshot.hasData){
+                            return Row(
+                              children: [
+                                Expanded(
+                                  child: Wrap(
+                                  alignment: WrapAlignment.center,
+                                  direction: Axis.horizontal,
+                                  spacing: 0,
+                                  runSpacing: 2,
+                                  children: List.generate(snapshot.data!.onlineCatWithItemLists.first.onlineItemLists.length, (index) {
+                                    return TextButton(
+                                        onPressed: () => Navigator.push(
+                                        context, 
+                                        MaterialPageRoute(builder: (_) => OrderScreen(food: snapshot.data!.onlineCatWithItemLists.first.onlineItemLists[index]),
+                                        ),
+                                      ), 
+                                      child: _buildMenuItem(snapshot.data!.onlineCatWithItemLists.first.onlineItemLists[index]),
+                                    );
+                                  }),
+                                  ),
                                 ),
+                              ],
+                            );
+                          }
+                          else{
+                            return const SizedBox(
+                              height: 500,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  CircularProgressIndicator(),
+                                ],
                               ),
-                            ],
-                          );
-                        }
-                        else{
-                          return Text('${snapshot.error}');
-                        }
-                      }),
-                      
+                            );
+                          }
+                        }),
+                        
+                      ),
                     ),
                   ),
               ],
             ),
           ),
       ),
+      //bottomNavigationBar: const BottomNavigationBarCustom(),
     );
   }
 
@@ -248,7 +262,7 @@ class _MenuScreenState extends State<MenuScreen> {
                 overflow: TextOverflow.ellipsis,
               ),
               Text(
-                '\$${MenuItem.vItemPrice}',
+                MenuItem.vItemPrice,
                 style: const TextStyle(
                   color: Colors.white,
                   fontFamily: Palette.layoutFont,
@@ -263,26 +277,38 @@ class _MenuScreenState extends State<MenuScreen> {
       ],
     );
   }
-  _buildModelBottomSheet(){
+  _buildModelBottomSheet(String name){
     return showModalBottomSheet(
+      
       context: context, 
+      isScrollControlled: true,
+      
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(
-          top: Radius.circular(20),
+          top: Radius.circular(40),
         )
       ),
       builder: (BuildContext context){
-        Size size = MediaQuery.of(context).size;
-        return Container(
-          height: size.height* 0.9,
-        );
+        if(name == "Dine In"){
+           
+           return const DineInScreen();
+        }
+        else if(name == "Take Away"){
+          return TakeAwayScreen();
+        }
+        else if(name == "Delivery"){
+          return DeliveryScreen();
+        }
+        else{
+          return DriveThroughScreen();
+        }
       }
     );
   }
 }
 
 Future<CategoryWithItemList> fatchCategoryWithItemList() async {
-  final response = await http.get(Uri.parse("http://hiposbh.com:84/api/AppsAPI/online/08f4f0d8-ddf4-4498-b878-2c69eec6452e/all/all/all"));
+  final response = await http.get(Uri.parse("https://hiposbh.com:84/api/AppsAPI/online/08f4f0d8-ddf4-4498-b878-2c69eec6452e/all/all/all"));
   if(response.statusCode == 200){
       return CategoryWithItemList.fromJson(jsonDecode(response.body));
   }

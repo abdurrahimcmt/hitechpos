@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 class Palette{
   //Common for whole layout
   static const layoutFont = "Lato";
+  static const bottomNavigationBarFontSize = 12.00;
+  static const sheetTitleFontsize = 16.00;
   static const btnFontsize = 16.00;
   static const contentTitleFontSize = 12.0;
   static const contentTitleFontSizeL = 15.0;

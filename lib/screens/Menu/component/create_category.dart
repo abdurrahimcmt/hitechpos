@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:hitechpos/common/palette.dart';
-import 'package:hitechpos/screens/menu/menu_screen.dart';
-
 
 class CreateCategory extends StatelessWidget {
   final String categoryImage;

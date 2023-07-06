@@ -113,6 +113,13 @@ List<String> kitchenNotes = ["Extra Sauce", "Medium Spicy", "No Oil",
                             "Medium","Medium Well","Well Done","Extra Chicken"];
 
 List<String> invoiceNotes = ["After 1 Hour","After Noon","Evening","Tomorrow Dinner","Today Lunch"];
+List<String> floors = ["Floor 1","Floor 2","Floor 3","Floor 4","Floor 5"];
+List<String> tables = ["Table 1","Table 2","Table 3","Table 4","Table 5",
+"Table 6","Table 7","Table 8","Table 9","Table 10","Table 11","Table 12",
+"Table 13","Table 14","Table 15","Table 16","Table 17","Table 18","Table 19",
+"Table 20","Table 21","Table 22","Table 23"];
+
+List<String> selectedTables = ["Table 5","Table 9","Table 16","Table 20","Table 23"];
 
 final List<Modifier> modifierList = [
   Modifier(imageUrl: 'assets/images/CocaCola.jpg', name: 'Coca Cola', price: 8.00, discription: 'variations'),
@@ -228,6 +235,30 @@ final currentUser = User(
       quantity: 2,
     ),
     Order(
+      date: 'Nov 11, 2019',
+      food: _pasta,
+      restaurant: _restaurant2,
+      quantity: 1,
+    ),
+        Order(
+      date: 'Nov 11, 2019',
+      food: _pasta,
+      restaurant: _restaurant2,
+      quantity: 1,
+    ),
+        Order(
+      date: 'Nov 11, 2019',
+      food: _pasta,
+      restaurant: _restaurant2,
+      quantity: 1,
+    ),
+        Order(
+      date: 'Nov 11, 2019',
+      food: _pasta,
+      restaurant: _restaurant2,
+      quantity: 1,
+    ),
+        Order(
       date: 'Nov 11, 2019',
       food: _pasta,
       restaurant: _restaurant2,
