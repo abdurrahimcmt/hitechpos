@@ -4,7 +4,7 @@ import 'package:hitechpos/data/data.dart';
 import 'package:hitechpos/screens/forgot_password_page.dart';
 import 'package:hitechpos/screens/forgot_password_verification_page.dart';
 import 'package:hitechpos/screens/login_page.dart';
-import 'package:hitechpos/screens/profile_page.dart';
+import 'package:hitechpos/screens/profile/profile_page.dart';
 
 import 'package:hitechpos/screens/registration_page.dart';
 import 'package:hitechpos/screens/restaurant_screen.dart';

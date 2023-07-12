@@ -1,13 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hitechpos/common/palette.dart';
-import 'package:hitechpos/screens/Registration/registration.dart';
 import 'package:hitechpos/screens/dashboard/dashboard_screen.dart';
 import 'package:hitechpos/screens/responsive/responsive_layout.dart';
-import 'package:hitechpos/screens/menu/menu_screen.dart';
-import 'package:hitechpos/screens/forgot_password_page.dart';
 import 'package:hitechpos/widgets/curb_button.dart';
-import 'package:hitechpos/widgets/curb_buttonLight.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -60,11 +56,14 @@ class _LoginScreenState extends State<LoginScreen> {
                             const SizedBox(
                               height: 20,
                             ),
-                            const Text("HIPOS",
-                              style: TextStyle(
-                                fontWeight: FontWeight.w900,
-                                fontSize: 40
-                              ),
+                            // const Text("HIPOS",
+                            //   style: TextStyle(
+                            //     fontWeight: FontWeight.w900,
+                            //     fontSize: 40
+                            //   ),
+                            // ),
+                            const Image(image: AssetImage('assets/images/img-01.png'),
+                            height: 50,
                             ),
                             const SizedBox(
                               height: 10,
@@ -87,8 +86,11 @@ class _LoginScreenState extends State<LoginScreen> {
                                     padding: const EdgeInsets.all(30.0),
                                     child: Column(
                                       crossAxisAlignment: CrossAxisAlignment.start,
-                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      mainAxisAlignment: MainAxisAlignment.start,
                                       children: [
+                                        const SizedBox(
+                                          height: 20,
+                                        ),
                                         const Text("Welcome back",
                                         style: TextStyle(
                                           fontWeight: FontWeight.w700,
@@ -105,7 +107,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                         ),
                                         ),
                                         const SizedBox(
-                                          height: 20,
+                                          height: 80,
                                         ),
                                         const TextField(
                                           decoration: InputDecoration(

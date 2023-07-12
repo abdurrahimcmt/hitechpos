@@ -3,7 +3,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hitechpos/common/theme_helper.dart';
 import 'package:hitechpos/widgets/header_widget.dart';
 
-import 'profile_page.dart';
+import 'profile/profile_page.dart';
 
 class RegistrationPage extends StatefulWidget {
   const RegistrationPage({Key? key}) : super(key: key);

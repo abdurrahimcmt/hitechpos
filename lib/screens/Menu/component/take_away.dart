@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:hitechpos/common/palette.dart';
+import 'package:hitechpos/widgets/common_submit_button.dart';
 
 class TakeAwayScreen extends StatefulWidget {
   const TakeAwayScreen({super.key});
@@ -73,37 +73,7 @@ class _TakeAwayScreenState extends State<TakeAwayScreen> {
                   },
                 ),
                 Palette.sizeBoxVarticalSpace,
-                TextButton(onPressed: (){
-                  Get.back();
-                },
-                child: Container(
-                  width: MediaQuery.of(context).size.width*0.4,
-                  height: 50,
-                  decoration:  const BoxDecoration(
-                    gradient: Palette.btnGradientColor,
-                    borderRadius: BorderRadius.all(Radius.circular(10)),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Palette.btnBoxShadowColor,
-                        spreadRadius: 5,
-                        blurRadius: 7,
-                        offset: Offset(0, 2),
-                      )
-                    ],
-                  ),
-                  child: const Center(
-                    child: Text("Submit",
-                          style: TextStyle(
-                          fontFamily: Palette.layoutFont,
-                          fontWeight: Palette.btnFontWeight,
-                          fontSize: Palette.btnFontsize,
-                          color: Palette.btnTextColor,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              
+                const CommonSubmitButton(title: "Submit"),
               ],
             ),
           ),

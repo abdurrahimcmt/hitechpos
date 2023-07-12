@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hitechpos/common/app_routes.dart';
+import 'package:hitechpos/common/palette.dart';
 import 'package:hitechpos/screens/Menu/menu_screen.dart';
 import 'package:get/get.dart';
 import 'package:hitechpos/screens/Registration/login_screen.dart';
@@ -21,6 +22,7 @@ class MyApp extends StatelessWidget {
       title: 'HIPOS',
       debugShowCheckedModeBanner: false,
       initialRoute: AppRoutes.home,
+      
       getPages: [
         GetPage(name: AppRoutes.home, page: () => const OnBoardingScreen()),
         GetPage(name: AppRoutes.login, page: () => const LoginScreen()),
@@ -29,9 +31,10 @@ class MyApp extends StatelessWidget {
         //GetPage(name: AppRoutes.order, page: () => const OrderScreen(food: nul,))
       ],
       home: const SafeArea(
-      //child: OnBoardingScreen(),
-       child: LoginScreen(),
+      child: OnBoardingScreen(),
+      // child: LoginScreen(),
       ),
+      theme: ThemeData(primarySwatch: Colors.deepPurple),
     );
   }
 }

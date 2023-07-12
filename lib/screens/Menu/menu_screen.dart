@@ -1,8 +1,10 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:hitechpos/common/palette.dart';
 import 'package:hitechpos/data/data.dart';
 import 'package:hitechpos/models/categoryWithItemList.dart';
+import 'package:hitechpos/screens/dashboard/dashboard_screen.dart';
 import 'package:hitechpos/screens/menu/component/create_category.dart';
 import 'package:hitechpos/screens/menu/component/delivery_screen.dart';
 import 'package:hitechpos/screens/menu/component/dine_in.dart';
@@ -35,183 +37,196 @@ class _MenuScreenState extends State<MenuScreen> {
   @override
   Widget build(BuildContext context) {
     size= MediaQuery.of(context).size;
-    return Scaffold(
-       appBar: AppBar(
-        backgroundColor: Palette.bgColorPerple,
-        centerTitle: true,
-        title: const Text(
-          "HIPOS",
-          style: TextStyle(
-            color: Colors.white,
+    return WillPopScope(
+      onWillPop: () async {
+        Get.offAll(const DashboardScreen());
+        return true;
+      },
+      child: Scaffold(
+         appBar: AppBar(
+          backgroundColor: Palette.bgColorPerple,
+          centerTitle: true,
+          title: const Text(
+            "HIPOS",
+            style: TextStyle(
+              color: Colors.white,
+            ),
           ),
+          leading: GestureDetector(
+            onTap: () {
+              Get.offAll(const DashboardScreen());
+            },
+            child: const Icon(Icons.arrow_back),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const CartScreen(),
+                ),
+              ),
+              child: Text(
+                'Cart  (${currentUser.cart.length})',
+                style: const TextStyle(
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ],
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => const CartScreen(),
-              ),
-            ),
-            child: Text(
-              'Cart  (${currentUser.cart.length})',
-              style: const TextStyle(
-                color: Colors.white,
-              ),
-            ),
-          ),
-        ],
-      ),
-      body: SingleChildScrollView(
-        //Order Type Work start
-          child: SizedBox(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(
-                  height: 10,
-                ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: List.generate(orderTypes.length, (index) {
-                      return TextButton(
-                          onPressed: (){
-                            setState(() {
-                              _buildModelBottomSheet(orderTypes[index].name);
-                              selectedOrderType = index;
-                            });
-                          }, 
-                          child: Container(
-                            width: size.width < 800 ? size.width * 0.20 : size.width * 0.23,
-                            height: 80,
-                            decoration: BoxDecoration(
-                              gradient: selectedOrderType == index? Palette.btnGradientColor : Palette.bgGradient,
-                              borderRadius: Palette.textContainerBorderRadius,
-                              border: Border.all(
-                                color: Palette.btnBoxShadowColor,
-                                width: 2,
-                              ),
-                            ),
-                            child: Column(
-                              children: [
-                                Image(image: AssetImage(orderTypes[index].imageUrl),
-                                height: 50,
-                                fit: BoxFit.cover,),
-                                Padding(
-                                  padding: const EdgeInsets.all(5.0),
-                                  child: FittedBox(
-                                    child: Text(orderTypes[index].name,
-                                          style: TextStyle(
-                                            fontFamily: Palette.layoutFont,
-                                            fontSize: Palette.containerButtonFontSize,
-                                            fontWeight: FontWeight.bold,
-                                            color: selectedOrderType == index? Colors.white: Palette.textColorLightPurple,
-                                          ),
-                                          textAlign: TextAlign.center,
-                                        ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            ),
-                          );
-                    }),
+        body: SingleChildScrollView(
+          //Order Type Work start
+            child: SizedBox(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(
+                    height: 10,
                   ),
-                const SizedBox(
-                  height: 10,
-                ),
-                const Padding(
-                  padding: EdgeInsets.only(left: 20 , right: 20),
-                  child: SearchBox(),
-                ),
-                const SizedBox(
-                  height: 10,
-                ),
-                //Category Work Start
-                FutureBuilder<CategoryWithItemList>(
-                  future: categoryWithItemList,
-                  builder: (context, snapshot){
-                  if(snapshot.hasData){
-                    return SizedBox(
-                      height: 60,
-                      child: ListView.builder(
-                        scrollDirection: Axis.horizontal,
-                        itemCount: snapshot.data!.onlineCatWithItemLists.length,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 5.0,
-                          vertical: 5.0,
-                        ),
-                        itemBuilder: (BuildContext context, int index) {
-                        OnlineCatWithItemList foodCategory = snapshot.data!.onlineCatWithItemLists[index];
-                          return CreateCategory(
-                            categoryImage: "", 
-                            categoryName: foodCategory.vCategoryName,
-                            );
-                        },
-                      ),
-                    );
-                  }
-                  else{
-                    return const Center(child: CircularProgressIndicator());
-                  }
-                }),
-                //Cagetory(categoryList : foodCategoryAll,),
-                const SizedBox(
-                  height: 10,
-                ),
-                //Menu work Start
-                  SizedBox(
-                    child: Center(
-                      child: FutureBuilder<CategoryWithItemList>(
-                        future: categoryWithItemList,
-                        builder: ((context, snapshot) {
-                          if(snapshot.hasData){
-                            return Row(
-                              children: [
-                                Expanded(
-                                  child: Wrap(
-                                  alignment: WrapAlignment.center,
-                                  direction: Axis.horizontal,
-                                  spacing: 0,
-                                  runSpacing: 2,
-                                  children: List.generate(snapshot.data!.onlineCatWithItemLists.first.onlineItemLists.length, (index) {
-                                    return TextButton(
-                                        onPressed: () => Navigator.push(
-                                        context, 
-                                        MaterialPageRoute(builder: (_) => OrderScreen(food: snapshot.data!.onlineCatWithItemLists.first.onlineItemLists[index]),
-                                        ),
-                                      ), 
-                                      child: _buildMenuItem(snapshot.data!.onlineCatWithItemLists.first.onlineItemLists[index]),
-                                    );
-                                  }),
-                                  ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: List.generate(orderTypes.length, (index) {
+                        return TextButton(
+                            onPressed: (){
+                              setState(() {
+                                _buildModelBottomSheet(orderTypes[index].name);
+                                selectedOrderType = index;
+                              });
+                            }, 
+                            child: Container(
+                              width: size.width < 800 ? size.width * 0.20 : size.width * 0.23,
+                              height: 80,
+                              decoration: BoxDecoration(
+                                gradient: selectedOrderType == index? Palette.btnGradientColor : Palette.bgGradient,
+                                borderRadius: Palette.textContainerBorderRadius,
+                                border: Border.all(
+                                  color: Palette.btnBoxShadowColor,
+                                  width: 2,
                                 ),
-                              ],
-                            );
-                          }
-                          else{
-                            return const SizedBox(
-                              height: 500,
+                              ),
                               child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  CircularProgressIndicator(),
+                                  Image(image: AssetImage(orderTypes[index].imageUrl),
+                                  height: 50,
+                                  width: 50,
+                                  fit: BoxFit.fitWidth,),
+                                  Padding(
+                                    padding: const EdgeInsets.all(5.0),
+                                    child: FittedBox(
+                                      child: Text(orderTypes[index].name,
+                                            style: TextStyle(
+                                              fontFamily: Palette.layoutFont,
+                                              fontSize: Palette.containerButtonFontSize,
+                                              fontWeight: FontWeight.bold,
+                                              color: selectedOrderType == index? Colors.white: Palette.textColorLightPurple,
+                                            ),
+                                            textAlign: TextAlign.center,
+                                          ),
+                                    ),
+                                  ),
                                 ],
                               ),
+                              ),
                             );
-                          }
-                        }),
-                        
+                      }),
+                    ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  const Padding(
+                    padding: EdgeInsets.only(left: 20 , right: 20),
+                    child: SearchBox(),
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  //Category Work Start
+                  FutureBuilder<CategoryWithItemList>(
+                    future: categoryWithItemList,
+                    builder: (context, snapshot){
+                    if(snapshot.hasData){
+                      return SizedBox(
+                        height: 60,
+                        child: ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: snapshot.data!.onlineCatWithItemLists.length,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 5.0,
+                            vertical: 5.0,
+                          ),
+                          itemBuilder: (BuildContext context, int index) {
+                          OnlineCatWithItemList foodCategory = snapshot.data!.onlineCatWithItemLists[index];
+                            return CreateCategory(
+                              categoryImage: "", 
+                              categoryName: foodCategory.vCategoryName,
+                              );
+                          },
+                        ),
+                      );
+                    }
+                    else{
+                      return const Center(child: CircularProgressIndicator());
+                    }
+                  }),
+                  //Cagetory(categoryList : foodCategoryAll,),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  //Menu work Start
+                    SizedBox(
+                      child: Center(
+                        child: FutureBuilder<CategoryWithItemList>(
+                          future: categoryWithItemList,
+                          builder: ((context, snapshot) {
+                            if(snapshot.hasData){
+                              return Row(
+                                children: [
+                                  Expanded(
+                                    child: Wrap(
+                                    alignment: WrapAlignment.center,
+                                    direction: Axis.horizontal,
+                                    spacing: 0,
+                                    runSpacing: 2,
+                                    children: List.generate(snapshot.data!.onlineCatWithItemLists.first.onlineItemLists.length, (index) {
+                                      return TextButton(
+                                          onPressed: () => Navigator.push(
+                                          context, 
+                                          MaterialPageRoute(builder: (_) => OrderScreen(food: snapshot.data!.onlineCatWithItemLists.first.onlineItemLists[index]),
+                                          ),
+                                        ), 
+                                        child: _buildMenuItem(snapshot.data!.onlineCatWithItemLists.first.onlineItemLists[index]),
+                                      );
+                                    }),
+                                    ),
+                                  ),
+                                ],
+                              );
+                            }
+                            else{
+                              return const SizedBox(
+                                height: 500,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    CircularProgressIndicator(),
+                                  ],
+                                ),
+                              );
+                            }
+                          }),
+                          
+                        ),
                       ),
                     ),
-                  ),
-              ],
+                ],
+              ),
             ),
-          ),
+        ),
+        //bottomNavigationBar: const BottomNavigationBarCustom(),
       ),
-      //bottomNavigationBar: const BottomNavigationBarCustom(),
     );
   }
 

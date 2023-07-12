@@ -3,7 +3,12 @@ import 'package:get/get.dart';
 import 'package:hitechpos/common/commondialogbox.dart';
 import 'package:hitechpos/common/palette.dart';
 import 'package:hitechpos/screens/menu/menu_screen.dart';
+import 'package:hitechpos/screens/order/orderlist.dart';
+import 'package:hitechpos/screens/profile/profile_page.dart';
+import 'package:hitechpos/screens/settings/printersetting_screen.dart';
+import 'package:hitechpos/screens/settings/settings_screen.dart';
 import 'package:hitechpos/widgets/curb_button.dart';
+import 'package:hitechpos/widgets/dashboardbutton.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -16,141 +21,128 @@ class _DashboardScreenState extends State<DashboardScreen> {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        backgroundColor: Palette.bgColorPerple,
-        title: const Text('DashBoard'),
-        leading: InkWell(
-          onTap: () {
-            setState(() {
-              showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return CommonDialogBoxes().alartDialogYesNoOption(
-                      "Confirmation",
-                      "Do you want to logout? ",
-                      context);
-                },
-              );
-            });
+    return WillPopScope(
+      onWillPop: () async{
+          showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return CommonDialogBoxes().alartDialogYesNoOption(
+                "Confirmation",
+                "Do you want to logout? ",
+                context);
           },
-          child: Icon(Icons.logout),
+        );
+        return true;
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          centerTitle: true,
+          backgroundColor: Palette.bgColorPerple,
+          title: const Text('DashBoard'),
+          leading: InkWell(
+            onTap: () {
+              setState(() {
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return CommonDialogBoxes().alartDialogYesNoOption(
+                        "Confirmation",
+                        "Do you want to logout? ",
+                        context);
+                  },
+                );
+              });
+            },
+            child: Icon(Icons.logout),
+          ),
         ),
-      ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
+        body: SingleChildScrollView(
           child: Container(
+            height: size.height,
             decoration: const BoxDecoration(
               gradient: Palette.bgGradient,
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisSize: MainAxisSize.max,
-              children: [
-                SizedBox(
-                  height: size.height*0.2,
-                ),
-                SizedBox(
-                  height: 150,
-                  child: Row(
+            child: Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  const SizedBox(
+                    height: 10,
+                  ),
+                   Row(
                     children: [
                       Expanded(
                         flex: 6,
-                        child: Container(
-                          decoration: BoxDecoration(
-                            gradient: Palette.bgGradient,
-                            borderRadius: Palette.textContainerBorderRadius,
-                            border: Border.all(
-                              color: Palette.btnBoxShadowColor,
-                              width: 2,
-                            ),
-                          ),
-                          child: const Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(Icons.account_circle,size: 70,color: Palette.iconBackgroundColorPurple,),
-                              Padding(
-                                padding: EdgeInsets.all(5.0),
-                                child: FittedBox(
-                                  child: Text("Profile",
-                                        style: TextStyle(
-                                          fontFamily: Palette.layoutFont,
-                                          fontSize: 25,
-                                          fontWeight: FontWeight.bold,
-                                          color:Palette.textColorPurple,
-                                        ),
-                                        textAlign: TextAlign.center,
-                                      ),
-                                ),
-                              ),
-                            ],
-                          ),
+                        child: GestureDetector(
+                          onTap: () {
+                            Get.to(ProfilePage());
+                          },
+                          child: const DashBoardButton(title: "Profile", buttonIcon: Icons.account_circle),
                         ),
                       ),
-                      SizedBox(width: 10,),
+                      const SizedBox(width: 10,),
                       Expanded(
                         flex: 6,
-                        child: Container(
-                          decoration: BoxDecoration(
-                            gradient: Palette.bgGradient,
-                            borderRadius: Palette.textContainerBorderRadius,
-                            border: Border.all(
-                              color: Palette.btnBoxShadowColor,
-                              width: 2,
-                            ),
-                          ),
-                          child: const Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(Icons.list,size: 70,color: Palette.iconBackgroundColorPurple,),
-                              Padding(
-                                padding: EdgeInsets.all(5.0),
-                                child: FittedBox(
-                                  child: Text("Order List",
-                                        style: TextStyle(
-                                          fontFamily: Palette.layoutFont,
-                                          fontSize: 25,
-                                          fontWeight: FontWeight.bold,
-                                          color:Palette.textColorPurple,
-                                        ),
-                                        textAlign: TextAlign.center,
-                                      ),
-                                ),
-                              ),
-                            ],
-                          ),
+                        child: GestureDetector(
+                          onTap: () {
+                            Get.to(const OrderListScreen());
+                          },
+                          child: const DashBoardButton(title: "Order List", buttonIcon: Icons.list),
                         ),
+                        
                       ),
                     ],
                   ),
-                ),
-                SizedBox(
-                  height: 100,
-                ),
-                TextButton(
-                  onPressed: () {
-                    Get.to(const MenuScreen());
-                  },
-                  child: const CurbButton(
-                      buttonPadding: EdgeInsets.only(left: 0,right: 0),
-                      child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                          Text("NEW ORDER",style: TextStyle(
-                            fontFamily: Palette.layoutFont,
-                            fontWeight: Palette.btnFontWeight,
-                            fontSize: Palette.btnFontsize,
-                            color: Palette.btnTextColor,
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  Row(
+                    children: [
+                      Expanded(
+                        flex: 6,
+                        child: GestureDetector(
+                          onTap: () {
+                            Get.to(const SettingScreen());
+                          },
+                          child: const DashBoardButton(title: "Settings", buttonIcon: Icons.settings
                           ),
                         ),
-                        Icon(Icons.library_add,size: 20,color: Colors.white,),
-                      ],
+                      ),
+                      const SizedBox(width: 10,),
+                      const Expanded(
+                        flex: 6,
+                        child: SizedBox(),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      Get.to(const MenuScreen());
+                    },
+                    child: const CurbButton(
+                        buttonPadding: EdgeInsets.only(left: 0,right: 0),
+                        child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                            Text("NEW ORDER",style: TextStyle(
+                              fontFamily: Palette.layoutFont,
+                              fontWeight: Palette.btnFontWeight,
+                              fontSize: Palette.btnFontsize,
+                              color: Palette.btnTextColor,
+                            ),
+                          ),
+                          Icon(Icons.library_add,size: 20,color: Colors.white,),
+                        ],
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),

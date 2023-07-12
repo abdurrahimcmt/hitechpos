@@ -4,6 +4,7 @@ import 'package:hitechpos/common/palette.dart';
 import 'package:hitechpos/data/data.dart';
 import 'package:hitechpos/screens/Menu/menu_screen.dart';
 import 'package:hitechpos/screens/menu/component/dine_in.dart';
+import 'package:hitechpos/screens/proceedorder/ordersuccessful.dart';
 import 'package:hitechpos/widgets/curb_button.dart';
 class ProceedScreen extends StatefulWidget {
   const ProceedScreen({super.key});
@@ -237,7 +238,7 @@ class _ProceedScreenState extends State<ProceedScreen> {
           onPressed: (){
           // Navigator.push(context,
           // MaterialPageRoute(builder: (_) => const MenuScreen(),),);
-          Get.to(const MenuScreen());}, 
+          Get.to(const OrderSuccessfulScreen());}, 
             child: const CurbButton(
               buttonPadding: EdgeInsets.only(left: 0,right: 0),
               child: Row(

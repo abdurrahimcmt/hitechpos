@@ -1,7 +1,7 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:hitechpos/common/theme_helper.dart';
-import 'package:hitechpos/screens/profile_page.dart';
+import 'package:hitechpos/screens/profile/profile_page.dart';
 import 'package:hitechpos/widgets/header_widget.dart';
 import 'package:otp_text_field/otp_field.dart';
 import 'package:otp_text_field/style.dart';

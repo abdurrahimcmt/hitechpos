@@ -5,7 +5,7 @@ import 'package:hitechpos/data/data.dart';
 import 'package:hitechpos/models/order.dart';
 import 'package:hitechpos/widgets/curb_button.dart';
 
-import 'settlement/proceed_screen.dart';
+import 'proceedorder/proceed_screen.dart';
 
 class CartScreen extends StatefulWidget {
   const CartScreen({Key? key}) : super(key: key);
@@ -223,7 +223,7 @@ class _CartScreenState extends State<CartScreen> {
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text("Addons: ",
+                            Text("    Add: ",
                                 style: TextStyle(
                                     fontSize: discriptionFontSize,
                                     fontWeight: FontWeight.bold,
