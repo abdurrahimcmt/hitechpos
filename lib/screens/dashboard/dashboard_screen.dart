@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hitechpos/common/commondialogbox.dart';
 import 'package:hitechpos/common/palette.dart';
+import 'package:hitechpos/controllers/login_controller.dart';
 import 'package:hitechpos/screens/menu/menu_screen.dart';
 import 'package:hitechpos/screens/order/orderlist.dart';
 import 'package:hitechpos/screens/profile/profile_page.dart';
-import 'package:hitechpos/screens/settings/printersetting_screen.dart';
 import 'package:hitechpos/screens/settings/settings_screen.dart';
 import 'package:hitechpos/widgets/curb_button.dart';
 import 'package:hitechpos/widgets/dashboardbutton.dart';
@@ -21,8 +21,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
+    final loginController = Get.find<LoginController>();
     return WillPopScope(
       onWillPop: () async{
+          //Clear Text data
+          if(!loginController.isRememberMe.value){
+            loginController.refreshTextField();
+          }
+
           showDialog(
           context: context,
           builder: (BuildContext context) {
@@ -47,7 +53,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   builder: (BuildContext context) {
                     return CommonDialogBoxes().alartDialogYesNoOption(
                         "Confirmation",
-                        "Do you want to logout? ",
+                        "Do you want to log out?",
                         context);
                   },
                 );

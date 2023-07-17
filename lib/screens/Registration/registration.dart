@@ -183,7 +183,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                                         TextButton(
                                           onPressed: (){ 
                                           Navigator.push(context, 
-                                          MaterialPageRoute(builder: (_) => const LoginScreen(),),);}, 
+                                          MaterialPageRoute(builder: (_) => LoginScreen(),),);}, 
                                           child: const CurbButtonLight(
                                             buttonPadding: EdgeInsets.only(left: 0,right: 0),
                                             child: Text(

@@ -26,7 +26,7 @@ class SearchBox extends StatelessWidget {
         filled: true,
         fillColor: Color.fromARGB(255, 237, 227, 238),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(30),
           borderSide: BorderSide(
             width: 1.0,
             color: Palette.iconBackgroundColorPurple,

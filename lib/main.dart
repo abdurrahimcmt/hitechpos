@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hitechpos/common/app_routes.dart';
-import 'package:hitechpos/common/palette.dart';
+import 'package:hitechpos/dependency/hiposbindings.dart';
 import 'package:hitechpos/screens/Menu/menu_screen.dart';
 import 'package:get/get.dart';
 import 'package:hitechpos/screens/Registration/login_screen.dart';
@@ -22,10 +22,10 @@ class MyApp extends StatelessWidget {
       title: 'HIPOS',
       debugShowCheckedModeBanner: false,
       initialRoute: AppRoutes.home,
-      
+      initialBinding: HiposBinding(),
       getPages: [
         GetPage(name: AppRoutes.home, page: () => const OnBoardingScreen()),
-        GetPage(name: AppRoutes.login, page: () => const LoginScreen()),
+        GetPage(name: AppRoutes.login, page: () => LoginScreen()),
         GetPage(name: AppRoutes.registration, page: () => const RegistrationScreen()),
         GetPage(name: AppRoutes.menu, page: () => const MenuScreen()),
         //GetPage(name: AppRoutes.order, page: () => const OrderScreen(food: nul,))

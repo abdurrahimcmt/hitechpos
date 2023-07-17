@@ -15,7 +15,7 @@ class CommonSubmitButton extends StatelessWidget {
       height: 50,
       decoration:  const BoxDecoration(
         gradient: Palette.btnGradientColor,
-        borderRadius: BorderRadius.all(Radius.circular(10)),
+        borderRadius: BorderRadius.all(Radius.circular(20)),
         boxShadow: [
           BoxShadow(
             color: Palette.btnBoxShadowColor,

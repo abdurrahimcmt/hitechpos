@@ -14,6 +14,7 @@ import 'package:hitechpos/screens/order/order_screen.dart';
 import 'package:hitechpos/widgets/searchbox.dart';
 import 'package:http/http.dart' as http;
 import '../cart_screen.dart';
+import 'package:badges/badges.dart' as badges;
 
 class MenuScreen extends StatefulWidget {
   const MenuScreen({Key ?key}) : super(key: key);
@@ -66,11 +67,20 @@ class _MenuScreenState extends State<MenuScreen> {
                   builder: (_) => const CartScreen(),
                 ),
               ),
-              child: Text(
-                'Cart  (${currentUser.cart.length})',
-                style: const TextStyle(
+              // child: Text(
+              //   'Cart  (${currentUser.cart.length})',
+              //   style: const TextStyle(
+              //     color: Colors.white,
+              //   ),
+              // ),
+              child: badges.Badge(
+                badgeContent: Text(
+                  currentUser.cart.length.toString(),
+                  style: const TextStyle(
                   color: Colors.white,
-                ),
+                  ),
+                ), 
+                child: Icon(Icons.shopping_cart,color: Colors.white,),
               ),
             ),
           ],

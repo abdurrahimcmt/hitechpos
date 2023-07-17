@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'dart:math';
-import 'package:hitechpos/screens/menu/component/dine_in.dart';
+import 'package:flutter/foundation.dart';
 import 'package:hitechpos/screens/order/orderfilter.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
@@ -15,76 +15,76 @@ class OrderListScreen extends StatefulWidget {
 }
 
 class _OrderListScreenState extends State<OrderListScreen> {
-  // late Future<Postdemo> postDemoList;
-  // final _baseUrl = 'https://jsonplaceholder.typicode.com/posts';
-  // int _page = 0;
-  // final int _limit = 20;
-  // bool _isFirstLoadRunning = false;
-  // bool _hasNextPage = true;
-  // bool _isloadMoreRunning = false;
-  // List _posts = []; 
-  //  late ScrollController _controller;
-  // void _loadMore() async{
-  //   if(_hasNextPage == true && 
-  //      _isFirstLoadRunning == false && 
-  //      _isloadMoreRunning == false &&
-  //      _controller.position.extentAfter < 300
-  //       ){
-  //     setState(() {
-  //       _isloadMoreRunning = true; // Display a progress indicator at the bottom
-  //     });
-
-  //     _page += 1;
+  late Future<Postdemo> postDemoList;
+  final _baseUrl = 'https://jsonplaceholder.typicode.com/posts';
+  int _page = 1;
+  final int _limit = 20;
+  bool _isFirstLoadRunning = false;
+  bool _hasNextPage = true;
+  bool _isloadMoreRunning = false;
+  List _posts = []; 
+   late ScrollController _controller;
+  void _loadMore() async{
+    if(_hasNextPage == true && 
+       _isFirstLoadRunning == false && 
+       _isloadMoreRunning == false &&
+       _controller.position.extentAfter < 300
+        ){
+      setState(() {
+        _isloadMoreRunning = true; // Display a progress indicator at the bottom
+      });
+      _page = _page + 1;
       
-  //     try {
-  //       final res = 
-  //       await http.get(Uri.parse("$_baseUrl?_page=$_page&_limit=$_limit"));
-  //       final List fetchedPosts = json.decode(res.body);
-  //       if(fetchedPosts.isNotEmpty){
-  //         setState(() {
-  //           _posts.addAll(fetchedPosts);
-  //         });
-  //       }
-  //       else{
-  //         setState(() {
-  //           _hasNextPage = false;
-  //         });
-  //       }
-  //     } catch (e) {
-  //       if(kDebugMode){
-  //         print("Something went wrong");
-  //       }
-  //     }
+      try {
+        final res = 
+        await http.get(Uri.parse("$_baseUrl?_page=$_page&_limit=$_limit"));
+        final List fetchedPosts = json.decode(res.body);
+        if(fetchedPosts.isNotEmpty){
+          setState(() {
+            _posts.addAll(fetchedPosts);
+          });
+        }
+        else{
+          setState(() {
+            _hasNextPage = false;
+          });
+        }
+      } catch (e) {
+        if(kDebugMode){
+          print("Something went wrong");
+        }
+      }
 
-  //     setState(() {
-  //       _isloadMoreRunning = false;
-  //     });
-  //   }
-  // }
+      setState(() {
+        _isloadMoreRunning = false;
+      });
+    }
+  }
 
-  // void _firstLoad() async{
-  //   setState(() {
-  //     _isFirstLoadRunning = true;
-  //   });
-  //   try {
-  //     final res = await http.get(Uri.parse("$_baseUrl?_page=$_page&_limit=$_limit"));
-  //     setState(() {
-  //       _posts = json.decode(res.body);
-  //     });
-  //   } catch (e) {
-  //     if(kDebugMode){
-  //       print("Something went wrong");
-  //     }
-  //   }
-  //   setState(() {
-  //     _isFirstLoadRunning = false;
-  //   });
-  // }
+  void _firstLoad() async{
+    setState(() {
+      _isFirstLoadRunning = true;
+    });
+    try {
+      final res = await http.get(Uri.parse("$_baseUrl?_page=$_page&_limit=$_limit"));
+      setState(() {
+        _posts = json.decode(res.body);
+      });
+    } catch (e) {
+      if(kDebugMode){
+        print("Something went wrong");
+      }
+    }
+    setState(() {
+      _isFirstLoadRunning = false;
+    });
+  }
 
+  @override
   void initState(){
+    _firstLoad();
+    _controller = ScrollController()..addListener(_loadMore);
     super.initState();
-    // _firstLoad();
-    // _controller = ScrollController()..addListener(_loadMore);
   }
   final DataTableSource _data = OrderDataTable();
   @override
@@ -104,9 +104,10 @@ class _OrderListScreenState extends State<OrderListScreen> {
             ),
         ],
       ),
-      //body: _isFirstLoadRunning? const Center(child: CircularProgressIndicator(),) : SingleChildScrollView(
-      body: SingleChildScrollView(
+      body: _isFirstLoadRunning? const Center(child: CircularProgressIndicator(),) : SingleChildScrollView(
+      //body: SingleChildScrollView(
         child: Container(
+          height: size.height-80,
           decoration: const BoxDecoration(
             gradient: Palette.bgGradient,
           ),
@@ -117,6 +118,7 @@ class _OrderListScreenState extends State<OrderListScreen> {
                 const SizedBox(
                   height: 2,
                 ),
+                //search bar
                 TextField(
                   decoration: InputDecoration(
                     contentPadding: EdgeInsets.symmetric(vertical:1.0, horizontal: 10),
@@ -137,7 +139,7 @@ class _OrderListScreenState extends State<OrderListScreen> {
                     ),
                     hintText: "Search here",
                     filled: true,
-                    fillColor: Color.fromARGB(255, 237, 227, 238),
+                    fillColor: const Color.fromARGB(255, 237, 227, 238),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(30),
                       borderSide: const BorderSide(
@@ -147,19 +149,145 @@ class _OrderListScreenState extends State<OrderListScreen> {
                     ),
                   ),
                 ),
+                
                 const SizedBox(
                   height: 5,
                 ),
-                PaginatedDataTable(
-                  columns: const [
-                    DataColumn(label: Text("Invoice No")),
-                    DataColumn(label: Text("Customer")),
-                    DataColumn(label: Text("Amount")),
-                    DataColumn(label: Text("Invoice Time")),
-                    DataColumn(label: Text("Status"))
-                  ], 
-                  source: _data,
+                // PaginatedDataTable(
+                //   columns: const [
+                //     DataColumn(label: Text("Invoice No")),
+                //     DataColumn(label: Text("Customer")),
+                //     DataColumn(label: Text("Amount")),
+                //     DataColumn(label: Text("Invoice Time")),
+                //     DataColumn(label: Text("Status"))
+                //   ], 
+                //   source: _data,
+                // ),
+
+                Expanded(
+                  child: ListView(
+                    controller: _controller,
+                    children: [
+                      DataTable(
+                        //border: TableBorder.all(width: 1,color: Palette.fontBgGray),
+                        columnSpacing: 10,
+                        dataTextStyle: TextStyle(
+                              fontFamily: Palette.layoutFont,
+                              fontSize: Palette.contentTitleFontSize,
+                              color: Colors.black
+                            ),
+                        dividerThickness: 0,
+                        headingTextStyle: TextStyle(
+                              fontFamily: Palette.layoutFont,
+                              fontSize: Palette.contentTitleFontSize,
+                              color: Colors.black
+                            ),
+                          
+                        columns: <DataColumn>[
+                          DataColumn(
+                            label: SizedBox(
+                              width: 45,
+                              child: Text("Invoice No",
+                              textAlign: TextAlign.center,
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 2,
+                              ),
+                            )),
+                          DataColumn(label: ConstrainedBox(
+                            constraints: BoxConstraints(minWidth: 60),
+                            child: Text("Customer",
+                              textAlign: TextAlign.center,
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 2,
+                              ),
+                          )              
+                          ),
+                          DataColumn(label: ConstrainedBox(
+                            constraints: BoxConstraints(minWidth: 50),
+                            child: Text("Amount",
+                              textAlign: TextAlign.center,
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 2,
+                            ),
+                          )),
+                          DataColumn(label: ConstrainedBox(
+                            constraints: BoxConstraints(minWidth: 80),
+                            child: Text("Invoice Time",
+                              textAlign: TextAlign.center,
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 2,
+                            ),
+                          )),
+                          DataColumn(label: ConstrainedBox(
+                            constraints: BoxConstraints(minWidth: 50),
+                            child: Text("Status",
+                              textAlign: TextAlign.center,
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 2,
+                            ),
+                          ))
+                        ],
+                        rows: List<DataRow>.generate(
+                          _posts.length,
+                          (index) => DataRow(
+                            cells: <DataCell>[
+                              DataCell(
+                                ConstrainedBox(
+                                constraints: BoxConstraints(minWidth: 45),
+                                child: Text(_posts[index]["id"].toString(),
+                                  textAlign: TextAlign.center,
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 2,
+                                )),
+                              ),
+                              DataCell(
+                                ConstrainedBox(
+                                  constraints: BoxConstraints(minWidth: 60),
+                                  child: Text(_posts[index]["title"].toString().substring(1,5),
+                                    textAlign: TextAlign.center,
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 2,
+                                  ),
+                                ),
+                              ),
+                              DataCell(
+                                ConstrainedBox(
+                                  constraints: BoxConstraints(minWidth: 50),
+                                  child: Text(_posts[index]["id"].toString()+"524",
+                                    textAlign: TextAlign.center,
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 2,
+                                  ),
+                                ),
+                              ),
+                              DataCell(
+                                ConstrainedBox(
+                                  constraints: BoxConstraints(minWidth: 80),
+                                  child: Text(DateTime.now().toString(),
+                                    textAlign: TextAlign.center,
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 2,
+                                  ),
+                                ),
+                              ),
+                              DataCell(
+                                ConstrainedBox(
+                                  constraints: BoxConstraints(minWidth: 50),
+                                  child: Text("Pending",
+                                    textAlign: TextAlign.center,
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 2,
+                                  ),
+                                ),
+                              ),
+                            ]
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
+                
                 // Expanded(
                 //   child: ListView.builder(
                 //     itemCount: _posts.length,
@@ -173,20 +301,20 @@ class _OrderListScreenState extends State<OrderListScreen> {
                 //     ),
                 //   ),
                 // ),
-                // if(_isloadMoreRunning == true)
-                // const Padding(
-                //   padding: EdgeInsets.only(top: 10,bottom: 40),
-                //   child: Center(
-                //     child: CircularProgressIndicator(),
-                //   ),
-                // ),
-                // if(_hasNextPage == false)
-                // const Padding(
-                //   padding: EdgeInsets.only(top: 10,bottom: 40),
-                //   child: Center(
-                //     child: Text("That's All"),
-                //   ),
-                // ),
+                if(_isloadMoreRunning == true)
+                const Padding(
+                  padding: EdgeInsets.only(top: 10,bottom: 10),
+                  child: Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                ),
+                if(_hasNextPage == false)
+                const Padding(
+                  padding: EdgeInsets.only(top: 10,bottom: 10),
+                  child: Center(
+                    child: Text("That's All"),
+                  ),
+                ),
               ],
             ),
           ),

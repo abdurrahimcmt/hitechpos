@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:hitechpos/common/palette.dart';
 import 'package:hitechpos/data/data.dart';
 import 'package:hitechpos/models/categoryWithItemList.dart';
@@ -16,6 +17,7 @@ class OrderScreen extends StatefulWidget {
 class _OrderScreenState extends State<OrderScreen> {
   final TextEditingController _txtKitchenNotesController = TextEditingController();
   final TextEditingController _txtInvoiceNotesController = TextEditingController();
+  TextEditingController _txtQuntityController = TextEditingController();
   int selectedFoodItemSizeIndex = 0;
   int orderQuentity = 1;
   List<String> isSelectedModifier = <String>[];
@@ -33,7 +35,13 @@ class _OrderScreenState extends State<OrderScreen> {
   }
 
   @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    _txtQuntityController.text = orderQuentity.toString();
     concatedKitchenNotes = isSelectedKitchenNotes.join(", ");
     concatedInvoiceNotes = isSelectedInvoiceNotes.join(", ");
     _txtKitchenNotesController.text = concatedKitchenNotes;
@@ -221,13 +229,38 @@ class _OrderScreenState extends State<OrderScreen> {
                                      ),
                                    ),
                                    child: Center(
-                                     child: Text( "$orderQuentity",
-                                       style: TextStyle(
-                                         fontSize:contentTitleFontSize,
-                                         fontWeight: FontWeight.w600,
-                                         fontFamily: Palette.layoutFont
-                                       ),
-                                     ),
+                                    child: TextField(
+                                      textAlign: TextAlign.center,
+                                      controller: _txtQuntityController,
+                                      keyboardType: TextInputType.number,
+                                      // onChanged: (value) {
+                                      //     if(_txtQuntityController.text.isEmpty){
+                                      //       _txtQuntityController.text = _txtQuntityController.text;
+                                      //       Get.snackbar("Worning", "Quentity must be getter then 0");
+                                      //     }
+                                      // },
+                                      onEditingComplete: () {
+                                        setState(() {
+                                          if(_txtQuntityController.text.isEmpty ||  int.parse( _txtQuntityController.text) < 1 ){
+                                            _txtQuntityController.text = "1";
+                                            Get.snackbar("Worning", "Quentity must be getter then 0");
+                                          }
+                                          orderQuentity = int.parse(_txtQuntityController.text);
+                                        }); 
+                                      },
+                                      // onChanged: (value) {
+                                      //   setState(() {
+                                      //     orderQuentity = int.parse(_txtQuntityController.text);
+                                      //   });
+                                      // },
+                                    ),
+                                    //  child: Text( "$orderQuentity",
+                                    //    style: TextStyle(
+                                    //      fontSize:contentTitleFontSize,
+                                    //      fontWeight: FontWeight.w600,
+                                    //      fontFamily: Palette.layoutFont
+                                    //    ),
+                                    //  ),
                                    ),
                                  ),
                                ),

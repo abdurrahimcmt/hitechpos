@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hitechpos/common/palette.dart';
 import 'package:hitechpos/data/data.dart';
-import 'package:hitechpos/screens/Menu/menu_screen.dart';
 import 'package:hitechpos/screens/menu/component/dine_in.dart';
 import 'package:hitechpos/screens/proceedorder/ordersuccessful.dart';
 import 'package:hitechpos/widgets/curb_button.dart';

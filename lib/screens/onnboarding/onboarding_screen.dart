@@ -172,7 +172,7 @@ Widget build(BuildContext context) {
                                             Navigator.pushReplacement(
                                               context,
                                               MaterialPageRoute(
-                                                builder: (_) => const LoginScreen(),
+                                                builder: (_) => LoginScreen(),
                                               ),
                                             );
                                           }

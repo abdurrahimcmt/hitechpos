@@ -115,33 +115,91 @@ class _PrinterManagemntScreenState extends State<PrinterManagemntScreen> {
                                     context: context,
                                     builder: (BuildContext context) {
                                       return AlertDialog(
-                                          title: const Text("Confirmation"),
-                                          content: const Text("Are you want to delete printer?"),
-                                          actions: [
-                                            TextButton(
-                                              style: ButtonStyle(
-                                              backgroundColor: MaterialStateProperty.all(Colors.black38)),
-                                              onPressed: () {
-                                                setState(() {
-                                                  printerList.remove(printerList[index]);
-                                                  Navigator.of(context).pop();
-                                                });
-                                              },
-                                              child: const Text(
-                                                "Yes",
-                                                style: TextStyle(color: Colors.white),
-                                              ),
+                                          title: const Icon(
+                                            Icons.info,
+                                            size: 40,
+                                            color: Palette.iconBackgroundColorPurple,
+                                          ),
+                                          content: const Text("Are you want to delete printer?",
+                                            style: TextStyle(
+                                              color: Palette.textColorPurple,
+                                              fontFamily: Palette.layoutFont,
+                                              fontWeight: FontWeight.w700
                                             ),
-                                            TextButton(
-                                              style: ButtonStyle(
-                                              backgroundColor: MaterialStateProperty.all(Colors.black38)),
-                                              onPressed: () {
-                                                Navigator.of(context).pop();
-                                              },
-                                              child: const Text(
-                                                "No",
-                                                style: TextStyle(color: Colors.white),
-                                              ),
+                                            textAlign: TextAlign.center,
+
+                                          ),
+                                          actions: [
+                                            Row(
+                                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                              children: [
+                                                TextButton(
+                                                  onPressed: () {
+                                                    setState(() {
+                                                      printerList.remove(printerList[index]);
+                                                      Navigator.of(context).pop();
+                                                    }
+                                                  );
+                                                },
+                                                child: Container(
+                                                  height: 35,
+                                                  width: 70,
+                                                  decoration:  const BoxDecoration(
+                                                    gradient: Palette.btnGradientColor,
+                                                    borderRadius: BorderRadius.all(Radius.circular(25)),
+                                                    boxShadow: [
+                                                      BoxShadow(
+                                                        color: Palette.btnBoxShadowColor,
+                                                        spreadRadius: 2,
+                                                        blurRadius: 2,
+                                                        offset: Offset(0, 2),
+                                                      )
+                                                    ],
+                                                  ),
+                                                  child: const Center(
+                                                    child: Text("Yes",
+                                                          style: TextStyle(
+                                                          fontFamily: Palette.layoutFont,
+                                                          fontWeight: FontWeight.w600,
+                                                          fontSize: Palette.containerButtonFontSize,
+                                                          color: Palette.btnTextColor,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                                TextButton(
+                                                  onPressed: () {
+                                                    Navigator.of(context).pop();
+                                                  },
+                                                  child: Container(
+                                                  height: 35,
+                                                  width: 70,
+                                                  decoration:  const BoxDecoration(
+                                                    gradient: Palette.btnGradientColor,
+                                                    borderRadius: BorderRadius.all(Radius.circular(25)),
+                                                    boxShadow: [
+                                                      BoxShadow(
+                                                        color: Palette.btnBoxShadowColor,
+                                                        spreadRadius: 2,
+                                                        blurRadius: 2,
+                                                        offset: Offset(0, 2),
+                                                      )
+                                                    ],
+                                                  ),
+                                                  child: const Center(
+                                                    child: Text("No",
+                                                          style: TextStyle(
+                                                          fontFamily: Palette.layoutFont,
+                                                          fontWeight: FontWeight.w600,
+                                                          fontSize: Palette.containerButtonFontSize,
+                                                          color: Palette.btnTextColor,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
                                             ),
                                           ],
                                         );
