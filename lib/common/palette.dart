@@ -54,7 +54,7 @@ class Palette{
 
 
 /// text container decoration 
-  static const textContainerBorderRadius =  const BorderRadius.all(Radius.circular(5));
+  static const textContainerBorderRadius =  BorderRadius.all(Radius.circular(5));
 ///Container curb style
   static const containerCurbBoxdecoration = 
   BoxDecoration(

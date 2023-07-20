@@ -24,7 +24,7 @@ class _BottomNavigationBarCustomState extends State<BottomNavigationBarCustom> {
         ),
       ),
       child: NavigationBar(
-        destinations: [
+        destinations: const [
           NavigationDestination(
             icon: Icon(Icons.home_outlined), 
             label: "Dashboard"

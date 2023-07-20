@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hitechpos/common/palette.dart';
 import 'package:hitechpos/controllers/login_controller.dart';
-import 'package:hitechpos/screens/Registration/login_screen.dart';
+import 'package:hitechpos/views/Registration/login_screen.dart';
 
 class CommonDialogBoxes {
 
@@ -19,7 +19,7 @@ AlertDialog alartDialogYesNoOption(String title, String content, BuildContext co
         color: Palette.iconBackgroundColorPurple,
       ),
     content: Text(content,
-      style: TextStyle(
+      style: const TextStyle(
         color: Palette.textColorPurple,
         fontFamily: Palette.layoutFont,
         fontWeight: FontWeight.w700
@@ -37,7 +37,7 @@ AlertDialog alartDialogYesNoOption(String title, String content, BuildContext co
           if(!loginController.isRememberMe.value){
             loginController.refreshTextField();
           }
-              Get.offAll(LoginScreen());
+              Get.offAll(const LoginScreen());
             },
             child: Container(
               height: 35,

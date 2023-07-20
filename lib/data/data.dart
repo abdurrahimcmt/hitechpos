@@ -2,7 +2,7 @@ import 'package:hitechpos/models/food.dart';
 import 'package:hitechpos/models/food_category.dart';
 import 'package:hitechpos/models/food_size.dart';
 import 'package:hitechpos/models/order.dart';
-import 'package:hitechpos/models/orderType.dart';
+import 'package:hitechpos/models/ordertype.dart';
 import 'package:hitechpos/models/restaurant.dart';
 import 'package:hitechpos/models/user.dart';
 import '../models/modifier.dart';

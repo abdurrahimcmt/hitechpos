@@ -131,8 +131,8 @@ class _HeaderWidgetState extends State<HeaderWidget> {
 }
 
 class ShapeClipper extends CustomClipper<Path> {
-  List<Offset> _offsets = [];
-  ShapeClipper(this._offsets);
+  final List<Offset> _offsets = [];
+  ShapeClipper(_offsets);
   @override
   Path getClip(Size size) {
     var path = Path();

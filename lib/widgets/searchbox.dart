@@ -8,7 +8,7 @@ class SearchBox extends StatelessWidget {
   Widget build(BuildContext context) {
     return TextField(
       decoration: InputDecoration(
-        contentPadding: EdgeInsets.symmetric(vertical:15.0),
+        contentPadding: const EdgeInsets.symmetric(vertical:15.0),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(30),
           borderSide: const BorderSide(width: 0.5),
@@ -24,10 +24,10 @@ class SearchBox extends StatelessWidget {
         ),
         hintText: "Search here",
         filled: true,
-        fillColor: Color.fromARGB(255, 237, 227, 238),
+        fillColor: const Color.fromARGB(255, 237, 227, 238),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(30),
-          borderSide: BorderSide(
+          borderSide: const BorderSide(
             width: 1.0,
             color: Palette.iconBackgroundColorPurple,
           ),

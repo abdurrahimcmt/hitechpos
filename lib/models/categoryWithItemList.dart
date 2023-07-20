@@ -1,7 +1,3 @@
-// To parse this JSON data, do
-//
-//     final categoryWithItemList = categoryWithItemListFromJson(jsonString);
-
 import 'dart:convert';
 
 CategoryWithItemList categoryWithItemListFromJson(String str) => CategoryWithItemList.fromJson(json.decode(str));
@@ -62,7 +58,7 @@ class OnlineCatWithItemList {
 
 class OnlineItemList {
     String vItemId;
-    VItemType vItemType;
+    String vItemType;
     String vItemName;
     String vDescription;
     String vItemNameAr;
@@ -87,7 +83,7 @@ class OnlineItemList {
 
     factory OnlineItemList.fromJson(Map<String, dynamic> json) => OnlineItemList(
         vItemId: json["vItemId"],
-        vItemType: vItemTypeValues.map[json["vItemType"]]!,
+        vItemType: json["vItemType"],
         vItemName: json["vItemName"],
         vDescription: json["vDescription"],
         vItemNameAr: json["vItemNameAr"],
@@ -100,9 +96,9 @@ class OnlineItemList {
 
     Map<String, dynamic> toJson() => {
         "vItemId": vItemId,
-        "vItemType": vItemTypeValues.reverse[vItemType],
+        "vItemType": vItemType,
         "vItemName": vItemName,
-        "vDescription": vDescriptionValues.reverse[vDescription],
+        "vDescription": vDescription,
         "vItemNameAr": vItemNameAr,
         "vImagePath": vImagePath,
         "vItemPrice": vItemPrice,
@@ -114,7 +110,7 @@ class OnlineItemList {
 
 class ItemPriceList {
     String vUnitId;
-    VUnitName vUnitName;
+    String vUnitName;
     String vPrice;
 
     ItemPriceList({
@@ -125,29 +121,21 @@ class ItemPriceList {
 
     factory ItemPriceList.fromJson(Map<String, dynamic> json) => ItemPriceList(
         vUnitId: json["vUnitId"],
-        vUnitName: vUnitNameValues.map[json["vUnitName"]]!,
+        vUnitName: json["vUnitName"],
         vPrice: json["vPrice"],
     );
 
     Map<String, dynamic> toJson() => {
         "vUnitId": vUnitId,
-        "vUnitName": vUnitNameValues.reverse[vUnitName],
+        "vUnitName": vUnitName,
         "vPrice": vPrice,
     };
 }
 
-enum VUnitName { SMALL, REGULAR, LARGE }
-
-final vUnitNameValues = EnumValues({
-    "Large": VUnitName.LARGE,
-    "Regular": VUnitName.REGULAR,
-    "Small": VUnitName.SMALL
-});
-
 class OnlineModifierList {
     int iSerial;
-    VItemIdModifier vItemIdModifier;
-    VItemName vItemName;
+    String vItemIdModifier;
+    String vItemName;
     String vQuantity;
     String vMainPrice;
 
@@ -161,57 +149,18 @@ class OnlineModifierList {
 
     factory OnlineModifierList.fromJson(Map<String, dynamic> json) => OnlineModifierList(
         iSerial: json["iSerial"],
-        vItemIdModifier: vItemIdModifierValues.map[json["vItemIdModifier"]]!,
-        vItemName: vItemNameValues.map[json["vItemName"]]!,
+        vItemIdModifier: json["vItemIdModifier"],
+        vItemName:  json["vItemName"],
         vQuantity: json["vQuantity"],
         vMainPrice: json["vMainPrice"],
     );
 
     Map<String, dynamic> toJson() => {
         "iSerial": iSerial,
-        "vItemIdModifier": vItemIdModifierValues.reverse[vItemIdModifier],
-        "vItemName": vItemNameValues.reverse[vItemName],
+        "vItemIdModifier": vItemIdModifier,
+        "vItemName": vItemName,
         "vQuantity": vQuantity,
         "vMainPrice": vMainPrice,
     };
 }
 
-enum VItemIdModifier { FI106, FI107, FI108 }
-
-final vItemIdModifierValues = EnumValues({
-    "FI106": VItemIdModifier.FI106,
-    "FI107": VItemIdModifier.FI107,
-    "FI108": VItemIdModifier.FI108
-});
-
-enum VItemName { CHEESE, SAUCE, CHILLI }
-
-final vItemNameValues = EnumValues({
-    "Cheese": VItemName.CHEESE,
-    "Chilli": VItemName.CHILLI,
-    "Sauce": VItemName.SAUCE
-});
-
-enum VDescription { DESCRIPTION }
-
-final vDescriptionValues = EnumValues({
-    "Description": VDescription.DESCRIPTION
-});
-
-enum VItemType { MENU }
-
-final vItemTypeValues = EnumValues({
-    "Menu": VItemType.MENU
-});
-
-class EnumValues<T> {
-    Map<String, T> map;
-    late Map<T, String> reverseMap;
-
-    EnumValues(this.map);
-
-    Map<T, String> get reverse {
-        reverseMap = map.map((k, v) => MapEntry(v, k));
-        return reverseMap;
-    }
-}

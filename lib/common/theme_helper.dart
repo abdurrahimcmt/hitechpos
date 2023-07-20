@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:hitechpos/screens/login_page.dart';
+import 'package:hitechpos/views/login_page.dart';
 
 class ThemeHelper {
   InputDecoration textInputDecoration(

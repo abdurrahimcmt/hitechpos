@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:hitechpos/screens/dashboard/dashboard_screen.dart';
+import 'package:hitechpos/views/dashboard/dashboard_screen.dart';
 import 'package:hitechpos/services/createbaseurl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
@@ -26,6 +26,8 @@ class LoginController extends GetxController {
 
   List<String> schemaValueList = ["Select schema","https","http"];
   final selectedSchema = "Select schema".obs;
+  String baseurlFromLocalStorage = "";
+  String registrationKeyFromLocalStorage = "";
   @override
 
   void onInit() async{
@@ -38,7 +40,8 @@ class LoginController extends GetxController {
     registrationPortFocus = FocusNode();
     registrationDomainFocus = FocusNode();
     _loadUserNameAndPassword();
-    checkRegistrationInformationInLocalstorage();
+    setRegistrationInformationFromLocalstorage();
+    setBaseUrl();
     super.onInit();
   }
   
@@ -72,21 +75,22 @@ class LoginController extends GetxController {
   ///Load from local storage Username and password
   void _loadUserNameAndPassword() async{
     try {
-      SharedPreferences _prefs = await SharedPreferences.getInstance();
-      var  username = _prefs.getString("username") ?? ""; 
-      var  password = _prefs.getString("password") ?? ""; 
-      var  rememberMe = _prefs.getBool("remember_me") ?? false;
-      print(username);
-      print(password);
-      print(rememberMe);
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      var  username = prefs.getString("username") ?? ""; 
+      var  password = prefs.getString("password") ?? ""; 
+      var  rememberMe = prefs.getBool("remember_me") ?? false;
+      debugPrint(username);
+      debugPrint(password);
+      debugPrint(rememberMe.toString());
       
       if(rememberMe){
         isRememberMe(rememberMe);
       }
-      userNameController.text = username ?? "";
-      passwordController.text = password ?? "";
+      userNameController.text = username;
+      passwordController.text = password;
     } 
     catch (e) {
+      debugPrint(e.toString());
     }
   }
   ///When check box clicked then load data into local storage  
@@ -100,18 +104,14 @@ class LoginController extends GetxController {
     );
   }
   
-  // check Registration information in localstorage
-  void checkRegistrationInformationInLocalstorage() async{
+  // set Registration information from localstorage
+  void setRegistrationInformationFromLocalstorage() async{
     try {
-      SharedPreferences _prefs = await SharedPreferences.getInstance();
-      var registrationSchema = _prefs.getString("schema");
-      print(registrationSchema);
-      var registrationDomain = _prefs.getString("domain");
-      print(registrationDomain);
-      var registrationPort = _prefs.getString("port");
-      print(registrationPort);
-      var registrationKey = _prefs.getString("registrationkey");
-      print(registrationKey);
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      var registrationSchema = prefs.getString("schema");
+      var registrationDomain = prefs.getString("domain");
+      var registrationPort = prefs.getString("port");
+      var registrationKey = prefs.getString("registrationkey");
       if(registrationKey!.isNotEmpty && 
         registrationPort!.isNotEmpty && 
         registrationDomain!.isNotEmpty && 
@@ -123,9 +123,32 @@ class LoginController extends GetxController {
       registrationPortController.text = registrationPort!;
       registrationKeyController.text = registrationKey;
     } catch (e) {
-      
+      debugPrint(e.toString());
     }
   }
+  //set Registration information from localstorage
+  void checkRegistrationInformationIntoLocalstorage() async{
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      var registrationSchema = prefs.getString("schema");
+      var registrationDomain = prefs.getString("domain");
+      var registrationPort = prefs.getString("port");
+      var registrationKey = prefs.getString("registrationkey");
+      if(registrationKey!.isNotEmpty && 
+        registrationPort!.isNotEmpty && 
+        registrationDomain!.isNotEmpty && 
+        registrationSchema!.isNotEmpty){
+        isRegistrationSuccessfull(true);
+        setBaseUrl();
+      }
+      else{
+        isRegistrationSuccessfull(false);
+      }
+    } catch (e) {
+      debugPrint(e.toString());
+    }
+  }
+
   // save Registration key
   void saveRegistrationInformationInLocal(String schema,String domain,String port,String key){
     if(isRegistrationSuccessfull.value){
@@ -136,15 +159,29 @@ class LoginController extends GetxController {
           prefs.setString("registrationkey", key);
         }
       );
-      Get.snackbar("Successfull", "Your registration key save successfully",snackPosition: SnackPosition.BOTTOM);
+      Get.snackbar("Successfull", "Your registration information save successfully",snackPosition: SnackPosition.BOTTOM);
     }
   }
   
+  void setBaseUrl () async{
+    try {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var registrationSchema = prefs.getString("schema");
+    var registrationDomain = prefs.getString("domain");
+    var registrationPort = prefs.getString("port");
+    var registrationKey = prefs.getString("registrationkey");
+    baseurlFromLocalStorage = CreateBaseUrl().createBaseUrl(registrationSchema!, registrationDomain!, registrationPort!);
+    registrationKeyFromLocalStorage = registrationKey!;
+    } 
+    catch (e) {
+      debugPrint(e.toString());
+    }
+  }
   // for Services class 
   // Registration data
   Future<void> registrationTest(String registrationkey) async {
     try {
-      String  baseurl = CreateBaseUrl().baseUrl(selectedSchema.value, registrationDomainController.text, registrationPortController.text);
+      String  baseurl = CreateBaseUrl().createBaseUrl(selectedSchema.value, registrationDomainController.text, registrationPortController.text);
       final url = Uri.parse('${baseurl}api/config?flag=getapikeystatus');
 
       final headers = {
@@ -153,7 +190,6 @@ class LoginController extends GetxController {
       };
 
       final response = await http.post(url, headers: headers);
-      print(response);
       if (response.statusCode  == 200) {
         var data = jsonDecode(response.body.toString());
         if(data['messageId'] == '200'){
@@ -166,19 +202,18 @@ class LoginController extends GetxController {
       }
     } 
     catch (e) {
-      print('Error: $e');
+      debugPrint('Error: $e');
     }
   }
   // login check
   Future<void> login(String username, String password) async {
     try {
-      SharedPreferences _prefs = await SharedPreferences.getInstance();
-      var registrationKey = _prefs.getString("registrationkey");
-      if(registrationKey!.isNotEmpty){
-        print(registrationKey);
-        final url = Uri.parse('https://hiposbh.com:84/api/login');
+      checkRegistrationInformationIntoLocalstorage();
+      if(isRegistrationSuccessfull.value){
+        String baseurl = baseurlFromLocalStorage;
+        final url = Uri.parse('${baseurl}api/login');
         final headers = {
-          'Key': '08f4f0d8-ddf4-4498-b878-2c69eec6452e',
+          'Key': registrationKeyFromLocalStorage,
           'Content-Type': 'application/json',
         };
         final body = jsonEncode({
@@ -194,19 +229,19 @@ class LoginController extends GetxController {
             Get.offAll(const DashboardScreen());
           }
           else{
-            Get.snackbar("Wrong", "Incorrect username or password",snackPosition: SnackPosition.BOTTOM);
+            Get.snackbar("Error", "Incorrect username or password",snackPosition: SnackPosition.BOTTOM);
           }
         } 
         else {
-          print('Login Failed - Status Code: ${response.statusCode}');
+          Get.snackbar("Error",'Login Failed - Status Code: ${response.statusCode}',snackPosition: SnackPosition.BOTTOM);
         }
       }
       else{
-        Get.snackbar("Information", "Please register your account");
+        Get.snackbar("Information", "Please register your account",snackPosition: SnackPosition.BOTTOM);
       }
     } 
     catch (e) {
-      print('Error: $e');
+      debugPrint('Error: $e');
     }
   }
 }
