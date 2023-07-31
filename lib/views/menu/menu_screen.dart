@@ -2,12 +2,12 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hitechpos/common/palette.dart';
-import 'package:hitechpos/controllers/login_controller.dart';
+import 'package:hitechpos/controllers/cart_controller.dart';
 import 'package:hitechpos/controllers/menu_controller.dart';
 import 'package:hitechpos/data/data.dart';
 import 'package:hitechpos/models/categoryInfo.dart';
-import 'package:hitechpos/models/iteminfo';
 import 'package:hitechpos/models/categoryWithItemList.dart';
+import 'package:hitechpos/models/iteminfo.dart';
 import 'package:hitechpos/views/dashboard/dashboard_screen.dart';
 import 'package:hitechpos/views/menu/component/create_category.dart';
 import 'package:hitechpos/views/menu/component/delivery_screen.dart';
@@ -20,15 +20,13 @@ import '../cart_screen.dart';
 import 'package:badges/badges.dart' as badges;
 
 class MenuScreen extends GetView<MenuScreenController> {
- const MenuScreen({Key ?key}) : super(key: key);
+ MenuScreen({Key ?key}) : super(key: key);
+  final cartController = Get.find<CartController>();
   //final loginController = Get.find<LoginController>();
-
- // final menuController = Get.find<MenuScreenController>();
-
+  // final menuController = Get.find<MenuScreenController>();
   //String currentItem = "";
-  
-
   //late Future<CategoryWithItemList> categoryWithItemList = fatchCategoryWithItemList("all","all","all");
+  
   @override
   Widget build(BuildContext context) {
     Size size= MediaQuery.of(context).size;
@@ -56,12 +54,13 @@ class MenuScreen extends GetView<MenuScreenController> {
           ),
           actions: [
             TextButton(
-              onPressed: () => Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => const CartScreen(),
-                ),
-              ),
+              onPressed: () => Get.to(const CartScreen()),
+              //  Navigator.push(
+              //   context,
+              //   MaterialPageRoute(
+              //     builder: (_) => const CartScreen(),
+              //   ),
+              // ),
               // child: Text(
               //   'Cart  (${currentUser.cart.length})',
               //   style: const TextStyle(
@@ -70,7 +69,7 @@ class MenuScreen extends GetView<MenuScreenController> {
               // ),
               child: badges.Badge(
                 badgeContent: Text(
-                  currentUser.cart.length.toString(),
+                  cartController.cartDetailsModelList.value.length.toString(),
                   style: const TextStyle(
                   color: Colors.white,
                   ),
@@ -145,17 +144,20 @@ class MenuScreen extends GetView<MenuScreenController> {
                   const SizedBox(
                     height: 10,
                   ),
+                  //Search Work start
                   Padding(
                     padding: const EdgeInsets.only(left: 20 , right: 20),
                     child: TextField(
                       controller: controller.searchTextEditingController,
                       onChanged: (value) {
                         if(value.isNotEmpty){
+                          controller.fatchItemInfo("all",value);
                           // setState(() {
                           //   categoryWithItemList =fatchCategoryWithItemList("all","all",value);
                           // });
                         }
                         else{
+                          controller.fatchItemInfo("all","all");
                           // setState(() {
                           //   categoryWithItemList =fatchCategoryWithItemList("all","all","all");
                           // });
@@ -172,6 +174,8 @@ class MenuScreen extends GetView<MenuScreenController> {
                         ),
                         suffixIcon: IconButton(
                             onPressed: () {
+                              controller.fatchItemInfo("all","all");
+                              controller. searchTextEditingController.text = "";
                               // setState(() {
                               //   menuController. searchTextEditingController.text = "";
                               //   categoryWithItemList =fatchCategoryWithItemList("all","all","all");
@@ -217,7 +221,7 @@ class MenuScreen extends GetView<MenuScreenController> {
                               onPressed: () {
                                 debugPrint(foodCategory.vCategoryId);
                                 controller.selectedCategoryName.value = foodCategory.vCategoryName;
-                                controller.fatchItemInfo(foodCategory.vCategoryId);
+                                controller.fatchItemInfo(foodCategory.vCategoryId,"all");
                                 // setState(() {
                                 //   debugPrint(foodCategory.vCategoryId);
                                 //   itemInfoList =fatchItemInfo(foodCategory.vCategoryId);
@@ -272,12 +276,14 @@ class MenuScreen extends GetView<MenuScreenController> {
                                     runSpacing: 2,
                                     children: List.generate(itemInfo.itemList.length, (index) {
                                       return TextButton(
-                                          onPressed: () =>
-                                          Navigator.push(
-                                          context, 
-                                          MaterialPageRoute(builder: (_) => OrderScreen(food: itemInfo.itemList[index]),
-                                          ),
-                                        ), 
+                                          onPressed: () {
+                                            Get.to(() => const OrderScreen() ,arguments: itemInfo.itemList[index].vItemId);
+                                          }, 
+                                          // Navigator.push(
+                                          //   context, 
+                                          //   MaterialPageRoute(builder: (_) => OrderScreen(food: itemInfo.itemList[index]),
+                                          //   ),
+                                          // ), 
                                         child: _buildMenuItem(itemInfo.itemList[index]),
                                       );
                                     }),
@@ -312,7 +318,6 @@ class MenuScreen extends GetView<MenuScreenController> {
                         
                       ),
                     ),
-                  
                 ],
               ),
             ),
@@ -406,13 +411,14 @@ class MenuScreen extends GetView<MenuScreenController> {
       ),
       builder: (BuildContext context){
         if(name == "Dine In"){
+           
            return const DineInScreen();
         }
         else if(name == "Take Away"){
-          return const TakeAwayScreen();
+          return TakeAwayScreen();
         }
         else if(name == "Delivery"){
-          return const DeliveryScreen();
+          return DeliveryScreen();
         }
         else{
           return const DriveThroughScreen();
@@ -423,7 +429,6 @@ class MenuScreen extends GetView<MenuScreenController> {
 }
 
 Future<CategoryWithItemList> fatchCategoryWithItemList(String catid,String item,String searchText) async {
-
   final response = await http.get(Uri.parse("https://hiposbh.com:84/api/AppsAPI/online/08f4f0d8-ddf4-4498-b878-2c69eec6452e/$catid/$item/$searchText"));
   if(response.statusCode == 200){
       return CategoryWithItemList.fromJson(jsonDecode(response.body));
@@ -433,41 +438,41 @@ Future<CategoryWithItemList> fatchCategoryWithItemList(String catid,String item,
   }
 }
 
-Future<CategoryInfo> fatchCategoryInfo() async {
-  final loginController = Get.find<LoginController>();
-  String baseurl = loginController.baseurlFromLocalStorage;
-  final url = Uri.parse("${baseurl}api/waiterapp/category");
-  final headers = {
-    'Key': loginController.registrationKeyFromLocalStorage.toString(),
-    'Content-Type': 'application/json'
-    //'mbserial': '94-E9-79-CB-E9-A3',
-  };
-  final response = await http.get(url,headers: headers);
-  //final response = await http.get(Uri.parse("https://hiposbh.com:84/api/AppsAPI/online/08f4f0d8-ddf4-4498-b878-2c69eec6452e/$catid/$item/$searchText"));
-  if(response.statusCode == 200){
-      return CategoryInfo.fromJson(jsonDecode(response.body));
-  }
-  else{
-    throw Exception('Failed to load Category');
-  }
-}
+// Future<CategoryInfo> fatchCategoryInfo() async {
+//   final loginController = Get.find<LoginController>();
+//   String baseurl = loginController.baseurlFromLocalStorage;
+//   final url = Uri.parse("${baseurl}api/waiterapp/category");
+//   final headers = {
+//     'Key': loginController.registrationKeyFromLocalStorage.toString(),
+//     'Content-Type': 'application/json'
+//     //'mbserial': '94-E9-79-CB-E9-A3',
+//   };
+//   final response = await http.get(url,headers: headers);
+//   //final response = await http.get(Uri.parse("https://hiposbh.com:84/api/AppsAPI/online/08f4f0d8-ddf4-4498-b878-2c69eec6452e/$catid/$item/$searchText"));
+//   if(response.statusCode == 200){
+//       return CategoryInfo.fromJson(jsonDecode(response.body));
+//   }
+//   else{
+//     throw Exception('Failed to load Category');
+//   }
+// }
 
-Future<ItemInfo> fatchItemInfo(String item) async {
-  final loginController = Get.find<LoginController>();
-  String baseurl = loginController.baseurlFromLocalStorage;
-  final url = Uri.parse("${baseurl}api/waiterapp/item/$item/");
-  final headers = {
-    'Key': loginController.registrationKeyFromLocalStorage.toString(),
-    'Content-Type': 'application/json'
-  };
-  final response = await http.get(url,headers: headers);
-  if(response.statusCode == 200){
-      return ItemInfo.fromJson(jsonDecode(response.body));
-  }
-  else{
-    throw Exception('Failed to load Item');
-  }
-}
+// Future<ItemInfo> fatchItemInfo(String item) async {
+//   final loginController = Get.find<LoginController>();
+//   String baseurl = loginController.baseurlFromLocalStorage;
+//   final url = Uri.parse("${baseurl}api/waiterapp/item/$item/");
+//   final headers = {
+//     'Key': loginController.registrationKeyFromLocalStorage.toString(),
+//     'Content-Type': 'application/json'
+//   };
+//   final response = await http.get(url,headers: headers);
+//   if(response.statusCode == 200){
+//       return ItemInfo.fromJson(jsonDecode(response.body));
+//   }
+//   else{
+//     throw Exception('Failed to load Item');
+//   }
+// }
 
 // Future<CategoryWithItemList> fatchCategoryWithItemList() async {
 //   final response = await http.get(Uri.parse("https://hiposbh.com:84/api/AppsAPI/online/08f4f0d8-ddf4-4498-b878-2c69eec6452e/all/all/all"));

@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:hitechpos/common/palette.dart';
+import 'package:hitechpos/models/branchinfo.dart';
 import 'package:hitechpos/views/dashboard/dashboard_screen.dart';
 import 'package:hitechpos/services/createbaseurl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -19,18 +21,26 @@ class LoginController extends GetxController {
 
   final secureText = true.obs ;
   final isRememberMe = false.obs;
-  final isRegistrationSuccessfull = false.obs; 
+  final isRegistrationSuccessfull = false.obs;
+  final isSaveRegistrationData = false.obs;
 
-  late FocusNode userNameFocus,passwordFocus,registrationKeyFocus,
+  late FocusNode userNameFocus,passwordFocus,registrationKeyFocus,loginBranchFocus,
   registrationSchemaFocus,registrationPortFocus,registrationDomainFocus;
 
   List<String> schemaValueList = ["Select schema","https","http"];
   final selectedSchema = "Select schema".obs;
   String baseurlFromLocalStorage = "";
   String registrationKeyFromLocalStorage = "";
+  String branchIdFromLocalStorage = "";
+  var isBranchLoding = true.obs;
+  Rx<List<BranchInfo>> branchModel= Rx<List<BranchInfo>>([]);
+  Rx<List<BranchList>> branchList= Rx<List<BranchList>>([]);
+  Rx<List<DropdownMenuItem<String>>> branchDropdownItemMenu = Rx<List<DropdownMenuItem<String>>>([]);
+  var selectedBranchId = "0".obs;
+  bool baseUrlLoading = false;
   @override
-
   void onInit() async{
+    super.onInit();
     userNameController = TextEditingController();
     passwordController = TextEditingController();
     userNameFocus = FocusNode();
@@ -39,10 +49,18 @@ class LoginController extends GetxController {
     registrationSchemaFocus = FocusNode();
     registrationPortFocus = FocusNode();
     registrationDomainFocus = FocusNode();
+    loginBranchFocus = FocusNode();
+    // if(isRememberMe.value){
+     
+    // }
     _loadUserNameAndPassword();
     setRegistrationInformationFromLocalstorage();
-    setBaseUrl();
-    super.onInit();
+  }
+
+  @override
+  void onReady(){
+    super.onReady();
+
   }
   
   @override
@@ -53,17 +71,61 @@ class LoginController extends GetxController {
     userNameFocus.dispose();
     passwordFocus.dispose();
     registrationKeyFocus.dispose();
-
+    
     super.onClose();
+  }
+  void getBranch(){
+    try {
+      fatchBranchInfo().then((value) {
+        if(value.branchList.isNotEmpty){
+          isBranchLoding.value = true;
+          branchList.value.clear();
+          branchList.value.addAll(value.branchList);
+          branchDropdownItemMenu.value = [];
+          branchDropdownItemMenu.value.add(
+            const DropdownMenuItem(
+              value: "0",
+              child: Text('Select Branch',
+                style: TextStyle(
+                  fontFamily: Palette.layoutFont,
+                ),
+              ),
+            ),
+          );
+          for(BranchList branch in branchList.value){
+              branchDropdownItemMenu.value.add(
+                DropdownMenuItem(
+                  value: branch.vBranchId,
+                  child: Text(branch.vBranchName,
+                  style: const TextStyle(
+                      fontFamily: Palette.layoutFont,
+                    ),
+                  ),
+                ),
+              );
+            }
+            isBranchLoding.value = false;
+            if(isRememberMe.value){
+              selectBranchfromLocalStorage();
+            }
+          }
+      }).onError((error, stackTrace) {
+          debugPrint("failed branch load");
+        }
+      );
+    } catch (e) {
+      debugPrint(e.toString());
+    }
   }
   void visibilityOfSecureText( bool visibility){
     secureText(visibility);
   }
-
   void setisRememberMe(bool remember){
     isRememberMe(remember);
   }
-
+  void setSelectedBranch(var branch){
+    selectedBranchId.value = branch;
+  }
   void setSelectedSchema(String schema){
     selectedSchema.value = schema;
   }
@@ -71,8 +133,35 @@ class LoginController extends GetxController {
   refreshTextField(){
     userNameController.text = "";
     passwordController.text = "";
+    selectedBranchId.value = "0";
   }
-  ///Load from local storage Username and password
+  //Load Baranch from api
+  Future<BranchInfo> fatchBranchInfo() async {
+    String baseurl = baseurlFromLocalStorage;
+    final url = Uri.parse("${baseurl}api/waiterapp/branch");
+    debugPrint(url.toString());
+    final headers = {
+      'Key': registrationKeyFromLocalStorage.toString(),
+      'Content-Type': 'application/json',
+    };
+    final response = await http.get(url,headers: headers);
+    if(response.statusCode == 200){
+      return BranchInfo.fromJson(jsonDecode(response.body));
+    }
+    else{
+      throw Exception('Failed to load branch');
+    }
+  }
+
+  //select branch if has local storage 
+  void selectBranchfromLocalStorage() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+      var  branchId = prefs.getString("branch_Id") ?? "0"; 
+      if(branchId != "0"){
+        selectedBranchId.value = branchId;
+      }
+  }
+  ///Load from local storage Username and password 
   void _loadUserNameAndPassword() async{
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -84,10 +173,15 @@ class LoginController extends GetxController {
       debugPrint(rememberMe.toString());
       
       if(rememberMe){
-        isRememberMe(rememberMe);
+        isRememberMe.value = rememberMe;
+        userNameController.text = username;
+        passwordController.text = password;
       }
-      userNameController.text = username;
-      passwordController.text = password;
+      else{
+        userNameController.text = "";
+        passwordController.text = "";
+      }
+
     } 
     catch (e) {
       debugPrint(e.toString());
@@ -95,15 +189,50 @@ class LoginController extends GetxController {
   }
   ///When check box clicked then load data into local storage  
   void handleRemember(bool value){
-    isRememberMe(value);
+    isRememberMe.value = value;
     SharedPreferences.getInstance().then((prefs) {
-        prefs.setBool("remember_me", value);
-        prefs.setString("username", userNameController.text);
-        prefs.setString("password", passwordController.text);
-      }
+          prefs.setBool("remember_me", value);
+          prefs.setString("username", userNameController.text);
+          prefs.setString("password", passwordController.text);
+          if(selectedBranchId.value.isNotEmpty){
+            prefs.setString("branch_Id", selectedBranchId.value);
+          }
+          if(isRememberMe.value){
+            prefs.setBool("autoLogin", true);
+          }
+          else{
+            prefs.setBool("autoLogin", false);
+          }
+        }
     );
+
+    // else{
+    //   SharedPreferences.getInstance().then((prefs) {
+    //       prefs.setBool("remember_me", value);
+    //       prefs.setString("username", "");
+    //       prefs.setString("password", "");
+    //       if(selectedBranchId.value.isNotEmpty){
+    //         prefs.setString("branch_Id", "0");
+    //       }
+    //       prefs.setBool("autoLogin", false);
+    //     }
+    //   );
+    // }
   }
-  
+  // bool checkUserInformationForGoToDashBoardAutomatically(){
+  //   checkRegistrationInformationIntoLocalstorage();
+  //   selectBranchfromLocalStorage();
+  //   _loadUserNameAndPassword();
+  //   if(isRegistrationSuccessfull.value && 
+  //     selectedBranchId.value != "0" &&
+  //     isRememberMe.value)
+  //   {
+  //     return true;
+  //   }
+  //   else{
+  //     return false;
+  //   }
+  // }
   // set Registration information from localstorage
   void setRegistrationInformationFromLocalstorage() async{
     try {
@@ -112,16 +241,22 @@ class LoginController extends GetxController {
       var registrationDomain = prefs.getString("domain");
       var registrationPort = prefs.getString("port");
       var registrationKey = prefs.getString("registrationkey");
+      isRegistrationSuccessfull.value = prefs.getBool("isregistration")! ;
+
       if(registrationKey!.isNotEmpty && 
         registrationPort!.isNotEmpty && 
         registrationDomain!.isNotEmpty && 
-        registrationSchema!.isNotEmpty){
+        registrationSchema!.isNotEmpty 
+        ){
         isRegistrationSuccessfull(true);
       }
       setSelectedSchema(registrationSchema!);
       registrationDomainController.text = registrationDomain!;
       registrationPortController.text = registrationPort!;
       registrationKeyController.text = registrationKey;
+      if(isRegistrationSuccessfull.value){
+        setBaseUrl();
+      }
     } catch (e) {
       debugPrint(e.toString());
     }
@@ -137,18 +272,22 @@ class LoginController extends GetxController {
       if(registrationKey!.isNotEmpty && 
         registrationPort!.isNotEmpty && 
         registrationDomain!.isNotEmpty && 
-        registrationSchema!.isNotEmpty){
+        registrationSchema!.isNotEmpty &&
+        isRegistrationSuccessfull.value
+        ){
         isRegistrationSuccessfull(true);
         setBaseUrl();
-      }
-      else{
-        isRegistrationSuccessfull(false);
       }
     } catch (e) {
       debugPrint(e.toString());
     }
   }
+  // check login information from Localstorage
+  void checkLoginInformationIntoLocalstorage(){
+      if(isRememberMe.value){
 
+      }
+  }
   // save Registration key
   void saveRegistrationInformationInLocal(String schema,String domain,String port,String key){
     if(isRegistrationSuccessfull.value){
@@ -157,25 +296,41 @@ class LoginController extends GetxController {
           prefs.setString("port", port);
           prefs.setString("domain", domain);
           prefs.setString("registrationkey", key);
+          prefs.setBool("isregistration", true);
         }
       );
+      //setBaseUrl();
+      isSaveRegistrationData.value = true;
+      setRegistrationInformationFromLocalstorage();
+      setBaseUrl();
       Get.snackbar("Successfull", "Your registration information save successfully",snackPosition: SnackPosition.BOTTOM);
+      
     }
   }
   
-  void setBaseUrl () async{
+  Future setBaseUrl() async{
+    //getBranch();
+
     try {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    var registrationSchema = prefs.getString("schema");
-    var registrationDomain = prefs.getString("domain");
-    var registrationPort = prefs.getString("port");
-    var registrationKey = prefs.getString("registrationkey");
-    baseurlFromLocalStorage = CreateBaseUrl().createBaseUrl(registrationSchema!, registrationDomain!, registrationPort!);
-    registrationKeyFromLocalStorage = registrationKey!;
+      baseUrlLoading = true;
+      debugPrint("base Url call");
+      //setRegistrationInformationFromLocalstorage();
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      var registrationSchema = prefs.getString("schema");
+      var registrationDomain = prefs.getString("domain");
+      var registrationPort = prefs.getString("port");
+      var registrationKey = prefs.getString("registrationkey");
+      var branchId = prefs.getString("branch_Id");
+      baseurlFromLocalStorage = CreateBaseUrl().createBaseUrl(registrationSchema!, registrationDomain!, registrationPort!);
+      registrationKeyFromLocalStorage = registrationKey!;
+      branchIdFromLocalStorage = branchId!;
+      debugPrint("${baseurlFromLocalStorage}Empty");
+      baseUrlLoading = false;
     } 
     catch (e) {
       debugPrint(e.toString());
     }
+    getBranch();
   }
   // for Services class 
   // Registration data
@@ -194,6 +349,7 @@ class LoginController extends GetxController {
         var data = jsonDecode(response.body.toString());
         if(data['messageId'] == '200'){
           isRegistrationSuccessfull(true);
+          //setBaseUrl();
           Get.snackbar("Information", "Registration Successfull",snackPosition: SnackPosition.BOTTOM);
         }
         else{
@@ -205,11 +361,17 @@ class LoginController extends GetxController {
       debugPrint('Error: $e');
     }
   }
+
   // login check
-  Future<void> login(String username, String password) async {
+  Future<void> login(String username, String password, String branchId) async {
     try {
       checkRegistrationInformationIntoLocalstorage();
       if(isRegistrationSuccessfull.value){
+        String branchId = "";
+        if(selectedBranchId.value.isNotEmpty){
+          branchId = selectedBranchId.value;
+        }
+        
         String baseurl = baseurlFromLocalStorage;
         final url = Uri.parse('${baseurl}api/login');
         final headers = {
@@ -217,6 +379,7 @@ class LoginController extends GetxController {
           'Content-Type': 'application/json',
         };
         final body = jsonEncode({
+          "BranchId": branchId,
           'Username': username,
           'Password': password,
         });
@@ -226,7 +389,8 @@ class LoginController extends GetxController {
         if (response.statusCode == 200) {
           var data = jsonDecode(response.body.toString());
           if(data['messageId'] == '200'){
-            Get.offAll(const DashboardScreen());
+            handleRemember(isRememberMe.value);
+            Get.to(const DashboardScreen());
           }
           else{
             Get.snackbar("Error", "Incorrect username or password",snackPosition: SnackPosition.BOTTOM);

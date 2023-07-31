@@ -1,36 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:hitechpos/common/palette.dart';
+import 'package:hitechpos/controllers/takeway_controller.dart';
+import 'package:hitechpos/models/customerinfo.dart';
 import 'package:hitechpos/widgets/common_submit_button.dart';
 
-class TakeAwayScreen extends StatefulWidget {
-  const TakeAwayScreen({super.key});
-
-  @override
-  State<TakeAwayScreen> createState() => _TakeAwayScreenState();
-}
-
-class _TakeAwayScreenState extends State<TakeAwayScreen> {
-  late TextEditingController customerTextController;
-  List<String> customerNames= <String>[
-    'Ali',
-    'Ahmed',
-    'Kumar',
-    'Hassan',
-    'Khan',
-    'Hussain',
-    'Mohamed',
-    'Abdulla',
-    'Yousif',
-    'Ebrahim',
-    'Janahi',
-    'Salman',
-    'Nair',
-    'Saleh',
-    'Mahmood',
-    'Mathew'
-  ];
+class TakeAwayScreen extends StatelessWidget {
+  TakeAwayScreen({Key?key}) : super(key:key);
+  final controller = Get.find<TakeAwayController>();
   @override
   Widget build(BuildContext context) {
+    controller.setCustomerList();
     return Container(
       decoration: Palette.containerCurbBoxdecoration,
         height: MediaQuery.of(context).size.height*0.80,
@@ -48,16 +28,25 @@ class _TakeAwayScreenState extends State<TakeAwayScreen> {
                 const SizedBox(
                   height: 100,
                 ),
-                Autocomplete <String>(
+                Autocomplete <CustomerList>(
+                  onSelected: (option) {
+                    debugPrint(option.vCustomerName.toString());
+                    controller.setSelectedCustomer(option);
+                    debugPrint("From Controller ${controller.getSelectedCustomer().vCustomerName}");
+                  },
                   optionsBuilder: (TextEditingValue textEditingValue){
                     if(textEditingValue.text == ''){
-                      return const Iterable<String>.empty();
+                      return const Iterable<CustomerList>.empty();
                     }
-                    return customerNames.where((String customer){
-                      return customer.contains(textEditingValue.text.toLowerCase());
+                    return controller.customerList.where((CustomerList customer){
+                      return customer.vCustomerName.toLowerCase().contains(textEditingValue.text.toLowerCase());
                     });
                   },
+                   displayStringForOption: (customer) {
+                    return customer.vCustomerName;
+                   },
                   fieldViewBuilder: (context, controller, focusNode, onFieldSubmitted) {
+                    
                     return TextField(
                       controller: controller,
                       focusNode: focusNode,

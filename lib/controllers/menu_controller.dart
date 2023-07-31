@@ -3,14 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hitechpos/controllers/login_controller.dart';
 import 'package:hitechpos/models/categoryInfo.dart';
-import 'package:hitechpos/models/iteminfo';
+import 'package:hitechpos/models/iteminfo.dart';
 import 'package:http/http.dart' as http;
 
 class MenuScreenController extends GetxController{
   final loginController = Get.find<LoginController>();
   TextEditingController searchTextEditingController = TextEditingController();
   final selectedOrderType = 0.obs;
-
   late Future<CategoryInfo> categoryInfoList;
   var itemInfo = ItemInfo(messageId: "", message: "", itemList: []).obs;
   var itemInfoIsloading = true.obs;
@@ -20,14 +19,19 @@ class MenuScreenController extends GetxController{
  @override
   void onInit() {
     super.onInit();
-    fatchItemInfo("all");
+    
+    fatchItemInfo("all","all");
     categoryInfoList = fatchCategoryInfo();
   }
+  
 
   Future<CategoryInfo> fatchCategoryInfo() async {
-    final loginController = Get.find<LoginController>();
+    //when Auto login is true then we need to create baseUrl 
+    await loginController.setBaseUrl();
     String baseurl = loginController.baseurlFromLocalStorage;
-    final url = Uri.parse("${baseurl}api/waiterapp/category");
+    String branch = loginController.branchIdFromLocalStorage;
+    final url = Uri.parse("${baseurl}api/waiterapp/category/$branch");
+    debugPrint(url.toString());
     final headers = {
       'Key': loginController.registrationKeyFromLocalStorage.toString(),
       'Content-Type': 'application/json',
@@ -40,11 +44,15 @@ class MenuScreenController extends GetxController{
       throw Exception('Failed to load Category');
     }
   }
-  Future<void> fatchItemInfo(String item) async {
+  Future<void> fatchItemInfo(String catId,String searchText) async {
+    await loginController.setBaseUrl();
     itemInfoIsloading.value = true;
-    final loginController = Get.find<LoginController>();
     String baseurl = loginController.baseurlFromLocalStorage;
-    final url = Uri.parse("${baseurl}api/waiterapp/item/$item/");
+    String branchId = loginController.branchIdFromLocalStorage;
+    debugPrint(branchId);
+    //https://hiposbh.com:84/api/waiterapp/itemlist/all/no/B0001
+    final url = Uri.parse("${baseurl}api/waiterapp/itemlist/$catId/$searchText/$branchId");
+    debugPrint(url.toString());
     final headers = {
       'Key': loginController.registrationKeyFromLocalStorage.toString(),
       'Content-Type': 'application/json'

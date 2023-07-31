@@ -1,36 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:hitechpos/common/palette.dart';
+import 'package:hitechpos/controllers/delivery_controller.dart';
+import 'package:hitechpos/models/customeraddress.dart';
+import 'package:hitechpos/models/customerinfo.dart';
 import 'package:hitechpos/widgets/common_submit_button.dart';
 
-class DeliveryScreen extends StatefulWidget {
-  const DeliveryScreen({super.key});
+class DeliveryScreen extends StatelessWidget {
+  DeliveryScreen({Key?key}) : super(key:key);
 
-  @override
-  State<DeliveryScreen> createState() => _DeliveryScreenState();
-}
+  final deliverycontroller = Get.find<DeliveryController>();
+  
 
-class _DeliveryScreenState extends State<DeliveryScreen> {
-  late TextEditingController customerTextController;
-  List<String> customerNames= <String>[
-    'Ali',
-    'Ahmed',
-    'Kumar',
-    'Hassan',
-    'Khan',
-    'Hussain',
-    'Mohamed',
-    'Abdulla',
-    'Yousif',
-    'Ebrahim',
-    'Janahi',
-    'Salman',
-    'Nair',
-    'Saleh',
-    'Mahmood',
-    'Mathew'
-  ];
   @override
   Widget build(BuildContext context) {
+    deliverycontroller.setCustomerList();
+    TextEditingController addressTextController = TextEditingController();
     return Container(
       decoration: Palette.containerCurbBoxdecoration,
         height: MediaQuery.of(context).size.height*0.80,
@@ -48,15 +33,25 @@ class _DeliveryScreenState extends State<DeliveryScreen> {
                 const SizedBox(
                   height: 100,
                 ),
-                Autocomplete <String>(
+                Autocomplete <CustomerList>(
+                  onSelected: (option) {
+                    debugPrint(option.vCustomerName.toString());
+                    deliverycontroller.setSelectedCustomer(option);
+                    debugPrint("From Controller ${deliverycontroller.getSelectedCustomer().vCustomerName}");
+                    deliverycontroller.setCustomerAddressList(option.vCustomerId);
+                    addressTextController.text = "";
+                  },
                   optionsBuilder: (TextEditingValue textEditingValue){
                     if(textEditingValue.text == ''){
-                      return const Iterable<String>.empty();
+                      return const Iterable<CustomerList>.empty();
                     }
-                    return customerNames.where((String customer){
-                      return customer.contains(textEditingValue.text.toLowerCase());
+                    return deliverycontroller.customerList.where((CustomerList customer){
+                      return customer.vCustomerName.toLowerCase().contains(textEditingValue.text.toLowerCase());
                     });
                   },
+                   displayStringForOption: (customer) {
+                    return customer.vCustomerName;
+                   },
                   fieldViewBuilder: (context, controller, focusNode, onFieldSubmitted) {
                     return TextField(
                       controller: controller,
@@ -73,18 +68,23 @@ class _DeliveryScreenState extends State<DeliveryScreen> {
                   },
                 ),
                 Palette.sizeBoxVarticalSpace,
-                Autocomplete <String>(
+
+                Autocomplete <CustomerAddressList>(
                   optionsBuilder: (TextEditingValue textEditingValue){
                     if(textEditingValue.text == ''){
-                      return const Iterable<String>.empty();
+                      return const Iterable<CustomerAddressList>.empty();
                     }
-                    return customerNames.where((String customer){
-                      return customer.contains(textEditingValue.text.toLowerCase());
+                    return deliverycontroller.customerAddressList.where((CustomerAddressList address){
+                      String combinedAddress = deliverycontroller.combinedCustomerAddressFields(address);
+                      return combinedAddress.toLowerCase().contains(textEditingValue.text.toLowerCase());
                     });
                   },
-                  fieldViewBuilder: (context, controller, focusNode, onFieldSubmitted) {
+                  displayStringForOption: (address) {
+                    return deliverycontroller.combinedCustomerAddressFields(address);
+                  },
+                  fieldViewBuilder: (context, addressTextController, focusNode, onFieldSubmitted) {              
                     return TextField(
-                      controller: controller,
+                      controller: addressTextController,
                       focusNode: focusNode,
                       onEditingComplete: onFieldSubmitted,
                       decoration: const InputDecoration(
@@ -97,6 +97,39 @@ class _DeliveryScreenState extends State<DeliveryScreen> {
                     );
                   },
                 ),
+                
+                // Obx(
+                //   () { 
+                //     if(deliverycontroller.isDataLoading.value){
+                //         return const CircularProgressIndicator();
+                //     }
+                //     else{
+                //       return DropdownButtonFormField(
+                //         decoration: const InputDecoration(
+                //           isDense: true,
+                //           hintText: "Select Address",
+                //           prefixIcon: Icon(
+                //             Icons.store_mall_directory,
+                //             color: Color.fromARGB(106, 113, 15, 131),
+                //           ),
+                //         ),
+                //         value: deliverycontroller.selectedCustomerAddress,
+                //         items: deliverycontroller.addressDropdownItemMenu.value,
+                //         autovalidateMode: AutovalidateMode.onUserInteraction,
+                //         // validator: (value) {
+                //         //   if(value! == "0"){
+                //         //     return "Please select Branch";
+                //         //   }
+                //         //   return null;
+                //         // },
+                //         onChanged: (val) {
+                //           deliverycontroller.setSelectedCustomerAddress(val!);
+                //           debugPrint(val);
+                //         }
+                //       );
+                //     }
+                //   }
+                // ),
                 Palette.sizeBoxVarticalSpace,
                 const CommonSubmitButton(title: "Submit"),
               ],

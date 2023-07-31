@@ -10,8 +10,6 @@ import 'registration_key.dart';
 
 class LoginScreen extends GetView<LoginController> {
   const LoginScreen({Key? key}) : super(key: key);
-  
-
  // final _formKey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
@@ -105,10 +103,45 @@ class LoginScreen extends GetView<LoginController> {
                                             ),
                                           ),
                                           const SizedBox(
-                                            height: 80,
+                                            height: 40,
                                           ),
-                                          
-                                            TextFormField(
+                                          Obx(
+                                            () { 
+                                              if(controller.isBranchLoding.value){
+                                                  return const CircularProgressIndicator();
+                                              }
+                                              else{
+                                                return DropdownButtonFormField(
+                                                  decoration: const InputDecoration(
+                                                    isDense: true,
+                                                    hintText: "Select Branch",
+                                                    prefixIcon: Icon(
+                                                      Icons.store_mall_directory,
+                                                      color: Color.fromARGB(106, 113, 15, 131),
+                                                    ),
+                                                  ),
+                                                  value: controller.selectedBranchId.value,
+                                                  items: controller.branchDropdownItemMenu.value,
+                                                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                                                  validator: (value) {
+                                                    if(value! == "0"){
+                                                      controller.loginBranchFocus.requestFocus();
+                                                      return "Please select Branch";
+                                                    }
+                                                    return null;
+                                                  },
+                                                  onChanged: (val) {
+                                                    controller.setSelectedBranch(val!);
+                                                    debugPrint(val);
+                                                  }
+                                                );
+                                              }
+                                            }
+                                          ),
+                                          const SizedBox(
+                                            height: 20,
+                                          ),
+                                          TextFormField(
                                               focusNode: controller.userNameFocus,
                                               controller: controller.userNameController,
                                               validator: (value) {
@@ -185,6 +218,7 @@ class LoginScreen extends GetView<LoginController> {
                                             ),
                                             child: Obx(
                                               () => CheckboxListTile(
+                                                controlAffinity: ListTileControlAffinity.leading,
                                                 value: controller.isRememberMe.value, 
                                                 title: const Text("Remember me",
                                                     style: TextStyle(
@@ -195,8 +229,9 @@ class LoginScreen extends GetView<LoginController> {
                                                   ),
                                                 ),
                                                 onChanged:(value) {
-                                                  controller.handleRemember(value!);
-                                                  controller.setisRememberMe (value);
+                                                  controller.setisRememberMe (value!);
+                                                  controller.handleRemember(value);
+                                                  
                                                   // setState(() {
                                                   //   _isRememberMe = value!;
                                                   //   _handleRemember(value);
@@ -212,8 +247,11 @@ class LoginScreen extends GetView<LoginController> {
                                             onPressed: (){
                                             // Navigator.push(context,
                                             // MaterialPageRoute(builder: (_) => const MenuScreen(),),);
+                                              if(!controller.isRegistrationSuccessfull.value){
+                                                Get.snackbar("Error", "Please register your account",snackPosition: SnackPosition.BOTTOM);
+                                              }
                                               if (controller.loginFormKey.currentState!.validate()) {
-                                                controller.login(controller.userNameController.text, controller.passwordController.text);
+                                                controller.login(controller.userNameController.text, controller.passwordController.text , controller.selectedBranchId.value);
 
                                                   // print("yes");
                                                   // Navigator.of(context).pushAndRemoveUntil(
@@ -283,7 +321,7 @@ class LoginScreen extends GetView<LoginController> {
                                           // ),
                                           TextButton(
                                             onPressed: (){
-                                                showModalBottomSheet(context: context,
+                                              showModalBottomSheet(context: context,
                                                 isScrollControlled: true,
                                                 shape: const RoundedRectangleBorder(
                                                   borderRadius: BorderRadius.vertical(

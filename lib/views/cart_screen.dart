@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hitechpos/common/palette.dart';
+import 'package:hitechpos/controllers/cart_controller.dart';
 import 'package:hitechpos/data/data.dart';
+import 'package:hitechpos/models/cartDetailsmodel.dart';
 import 'package:hitechpos/models/order.dart';
+import 'package:hitechpos/views/menu/menu_screen.dart';
 import 'package:hitechpos/widgets/curb_button.dart';
-
+import 'package:badges/badges.dart' as badges;
 import 'proceedorder/proceed_screen.dart';
 
 class CartScreen extends StatefulWidget {
@@ -14,27 +17,56 @@ class CartScreen extends StatefulWidget {
   _CartScreenState createState() => _CartScreenState();
 }
 class _CartScreenState extends State<CartScreen> {
+  final cartController = Get.find<CartController>();
+  late Rx<List<CartDetailsModel>> cartDetailsModelList;
+
+  @override
+  void initState() {
+    cartDetailsModelList = cartController.cartDetailsModelList;
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
+    final cartController = Get.find<CartController>();
     Size size = MediaQuery.of(context).size;
     var contentTitleFontSize = (size.width < 600)? Palette.contentTitleFontSize : Palette.contentTitleFontSizeL;
     var discriptionFontSize = (size.width < 600)? Palette.discriptionFontSize : Palette.discriptionFontSizeL;
     double totalPrice = 0;
-    for (var order in currentUser.cart) {
-      totalPrice += order.quantity * order.food.price;
+    for (var cartOrder in cartDetailsModelList.value) {
+      double modifierPrice = 0;
+      for(var modifier in cartOrder.onlineModifierLists){
+          modifierPrice += double.parse(modifier.vMainPrice);
+      }
+      totalPrice += modifierPrice + (cartOrder.itemPrice * cartOrder.orderedQty);
     }
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
         backgroundColor: Palette.bgColorPerple,
-        title: Text('Cart (${currentUser.cart.length})'),
+          leading: GestureDetector(
+          onTap: () {
+            Get.to(() => MenuScreen());
+          },
+          child: const Icon(Icons.arrow_back),
+        ),
+        title: badges.Badge(
+          badgeContent: Text(
+            cartDetailsModelList.value.length.toString(),
+            style: const TextStyle(
+            color: Colors.white,
+            ),
+          ),    
+          child: const Icon(Icons.shopping_cart,color: Colors.white,),
+        ),
+        //title: Text('Cart (${currentUser.cart.length})'),
       ),
       body: ListView.separated(
-        itemCount: currentUser.cart.length + 1,
+        //lenght +1 for show serial number of item
+        itemCount: cartDetailsModelList.value.length +1,
         itemBuilder: (BuildContext context, int index) {
-          if (index < currentUser.cart.length) {
-            int orderQuentity = currentUser.cart[index].quantity;
-            Order order = currentUser.cart[index];
+         if (index < cartDetailsModelList.value.length) {
+            int orderQuentity = cartDetailsModelList.value[index].orderedQty;
+            CartDetailsModel order = cartDetailsModelList.value[index];
             return Padding(
               padding: const EdgeInsets.only(left: 15.0,right: 15.0,bottom: 5,top: 5),
               child: Column(
@@ -50,7 +82,7 @@ class _CartScreenState extends State<CartScreen> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             //Name
-                              Text( "${index + 1}) ${order.food.name}",
+                              Text( "${index + 1}) ${order.itemName}",
                               style: const TextStyle(
                                 fontSize: Palette.btnFontsize,
                                 fontWeight: FontWeight.bold,
@@ -59,7 +91,7 @@ class _CartScreenState extends State<CartScreen> {
                               overflow: TextOverflow.ellipsis,
                             ),
                             //Kitchen Note
-                            Text("KN: Extra Sauce, No Oil",
+                            Text("KN: ${order.combinedKitchenNotesText}",
                               style: TextStyle(
                                 fontSize: discriptionFontSize,
                                 fontWeight: FontWeight.bold,
@@ -67,7 +99,7 @@ class _CartScreenState extends State<CartScreen> {
                               ),
                             ),
                             //Invoice Note
-                            Text("IN: After 1 Houre",
+                            Text("IN: ${order.combinedInvoiceNotesText}",
                               style: TextStyle(
                                 fontSize: discriptionFontSize,
                                 fontWeight: FontWeight.bold,
@@ -96,8 +128,8 @@ class _CartScreenState extends State<CartScreen> {
                             child: TextButton(
                               onPressed: () {
                                 setState(() {
-                                  if(currentUser.cart[index].quantity > 1){
-                                    currentUser.cart[index].quantity = currentUser.cart[index].quantity - 1;
+                                  if(order.orderedQty > 1){
+                                    order.orderedQty = order.orderedQty - 1;
                                   }
                                 });
                               },
@@ -161,7 +193,7 @@ class _CartScreenState extends State<CartScreen> {
                             child: TextButton(
                               onPressed: () {
                                 setState(() {
-                                  currentUser.cart[index].quantity = currentUser.cart[index].quantity + 1;
+                                  order.orderedQty = order.orderedQty + 1;
                                 });
                               },
                               child: LayoutBuilder(
@@ -190,7 +222,7 @@ class _CartScreenState extends State<CartScreen> {
                       SizedBox(
                         width: size.width > 700 ? 100 : 60,
                         child: Text(
-                          (order.food.price * order.quantity).toStringAsFixed(3),
+                          (order.itemPrice * order.orderedQty).toStringAsFixed(3),
                           style: TextStyle(
                           fontSize: discriptionFontSize,
                           fontWeight: FontWeight.bold,
@@ -206,6 +238,7 @@ class _CartScreenState extends State<CartScreen> {
                         child: TextButton(
                         onPressed: () {
                           setState(() {
+                            cartController.cartDetailsModelList.value.remove(order);
                           });
                         }, 
                         child: const Icon(Icons.delete,color: Palette.bgColorPerple,),
@@ -233,53 +266,41 @@ class _CartScreenState extends State<CartScreen> {
                               ),
                             Expanded(
                               child: Column(
+                                mainAxisSize: MainAxisSize.min,
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text("Coca Cola",
-                                          style: TextStyle(
-                                            fontSize: discriptionFontSize,
-                                            fontWeight: FontWeight.bold,
-                                            fontFamily: Palette.layoutFont
-                                          ),
-                                          overflow: TextOverflow.ellipsis,
+                                  SingleChildScrollView(
+                                    child: SizedBox(
+                                      height: 30,
+                                      child: ListView.builder(
+                                        itemCount: order.onlineModifierLists.length,
+                                        itemBuilder: ( (BuildContext context, index) {
+                                          return Row(
+                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Text(order.onlineModifierLists[index].vItemName,
+                                                  style: TextStyle(
+                                                    fontSize: discriptionFontSize,
+                                                    fontWeight: FontWeight.bold,
+                                                    fontFamily: Palette.layoutFont
+                                                  ),
+                                                  overflow: TextOverflow.ellipsis,
+                                              ),
+                                              Text(order.onlineModifierLists[index].vMainPrice,
+                                                style: TextStyle(
+                                                  fontSize: discriptionFontSize,
+                                                  fontWeight: FontWeight.bold,
+                                                  fontFamily: Palette.layoutFont
+                                                ),
+                                                overflow: TextOverflow.ellipsis,
+                                                textAlign: TextAlign.end,
+                                              ),
+                                            ],
+                                          );
+                                        } ),
                                       ),
-                                      Text(5.toStringAsFixed(3),
-                                        style: TextStyle(
-                                          fontSize: discriptionFontSize,
-                                          fontWeight: FontWeight.bold,
-                                          fontFamily: Palette.layoutFont
-                                        ),
-                                        overflow: TextOverflow.ellipsis,
-                                        textAlign: TextAlign.end,
-                                      ),
-                                    ],
-                                  ),
-                                  if(index == 1 || index == 5)
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text("Extra Cheess",
-                                          style: TextStyle(
-                                            fontSize: discriptionFontSize,
-                                            fontWeight: FontWeight.bold,
-                                            fontFamily: Palette.layoutFont
-                                          ),
-                                          overflow: TextOverflow.ellipsis,
-                                      ),
-                                      Text(2.toStringAsFixed(3),
-                                        style: TextStyle(
-                                          fontSize: discriptionFontSize,
-                                          fontWeight: FontWeight.bold,
-                                          fontFamily: Palette.layoutFont
-                                        ),
-                                        overflow: TextOverflow.ellipsis,
-                                        textAlign: TextAlign.end,
-                                      ),
-                                    ],
+                                    ),
                                   ),
                                 ],
                               ),

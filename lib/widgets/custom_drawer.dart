@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hitechpos/views/forgot_password_page.dart';
 import 'package:hitechpos/views/forgot_password_verification_page.dart';
-import 'package:hitechpos/views/Registration/registration.dart';
+import 'package:hitechpos/views/Registration/registrationold.dart';
 import 'package:hitechpos/views/profile/profile_page.dart';
 import 'package:hitechpos/views/registration_page.dart';
 

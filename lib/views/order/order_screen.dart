@@ -1,56 +1,94 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hitechpos/common/palette.dart';
-import 'package:hitechpos/data/data.dart';
-import 'package:hitechpos/models/iteminfo';
+import 'package:hitechpos/controllers/cart_controller.dart';
+import 'package:hitechpos/controllers/order_controller.dart';
+import 'package:hitechpos/models/invoicenotes.dart';
+import 'package:hitechpos/models/itemdetails.dart';
+import 'package:hitechpos/models/kitchennotes.dart';
+import 'package:hitechpos/views/menu/menu_screen.dart';
 import 'package:hitechpos/widgets/curb_button.dart';
 
 class OrderScreen extends StatefulWidget {
-  final ItemList food;
-  const OrderScreen({Key?key, required this.food}) : super(key: key);
+  const OrderScreen({Key?key}) : super(key: key);
 
   @override
   State<OrderScreen> createState() => _OrderScreenState();
 }
 
 class _OrderScreenState extends State<OrderScreen> {
+  final controller = Get.find<OrderController>();
+  final cartController = Get.find<CartController>();
+  String item = Get.arguments;
+
   final TextEditingController _txtKitchenNotesController = TextEditingController();
   final TextEditingController _txtInvoiceNotesController = TextEditingController();
   final TextEditingController _txtQuntityController = TextEditingController();
   
   int selectedFoodItemSizeIndex = 0;
   int orderQuentity = 1;
+
+  List<OnlineModifierList> selectedModifierList = []; 
   List<String> isSelectedModifier = <String>[];
+
   List<String> isSelectedKitchenNotes = <String>[];
   String concatedKitchenNotes= "";
+
   List<String> isSelectedInvoiceNotes = <String>[];
   String concatedInvoiceNotes= "";
+
   double modifierTotalPrice = 0.000;
+  double selectedItemUnitPrice = 0.000;
+
+  //when loading data user should not increase quentity value
+  bool isloading = true;
+
+  ItemDetails itemdetails = ItemDetails(messageId: "", message: "", itemViewList: [ItemViewList(vItemId: "", vItemType: "", vItemName: "", vDescription: "", vItemNameAr: "", vImagePath: "", vItemPrice: "0", vPriceDetails: "0", itemPriceList: [], onlineModifierLists: [])]) ;
+  ItemViewList itemViewList = ItemViewList(vItemId: "", vItemType: "", vItemName: "", vDescription: "", vItemNameAr: "", vImagePath: "", vItemPrice: "0", vPriceDetails: "0", itemPriceList: [], onlineModifierLists: []);
+  List<ItemPriceList> itemPriceList = [ItemPriceList(vUnitId: "", vUnitName: "", vPrice: "0")];
+  List<OnlineModifierList>  itemModifierList = [OnlineModifierList(iSerial: 0, vItemIdModifier: "", vItemName: "", vQuantity: "0", vMainPrice: "0")];
   
+
   @override
+  void initState() {
+    super.initState();
+
+    controller.fatchItemDetails(item).then((value) {
+      setState(() {
+        itemdetails = value;
+        itemViewList = value.itemViewList.first;
+        itemPriceList = value.itemViewList.first.itemPriceList;
+        itemModifierList = value.itemViewList.first.onlineModifierLists;
+        isloading = false;
+      });
+    }).catchError((error){
+      debugPrint("Error $error");
+    });
+    
+  }
+    @override
   void dispose(){
     _txtKitchenNotesController.dispose();
     _txtInvoiceNotesController.dispose();
     super.dispose();
   }
-
-  @override
-  void initState() {
-    super.initState();
-  }
-
+  //final ItemList food = Get.arguments as ItemList;
   @override
   Widget build(BuildContext context) {
+
     _txtQuntityController.text = orderQuentity.toString();
     concatedKitchenNotes = isSelectedKitchenNotes.join(", ");
     concatedInvoiceNotes = isSelectedInvoiceNotes.join(", ");
     _txtKitchenNotesController.text = concatedKitchenNotes;
     _txtInvoiceNotesController.text = concatedInvoiceNotes;
     // bool isPortrait = MediaQuery.of(context).orientation == Orientation.portrait;
-    double price = double.parse(widget.food.vItemPrice)  + modifierTotalPrice;
+    selectedItemUnitPrice = double.parse(itemPriceList[selectedFoodItemSizeIndex].vPrice);
+    double price = selectedItemUnitPrice  + modifierTotalPrice;
+    
     Size size = MediaQuery.of(context).size;
     var contentTitleFontSize = (size.width < 600)? Palette.contentTitleFontSize : Palette.contentTitleFontSizeL;
     var discriptionFontSize = (size.width < 600)? Palette.discriptionFontSize : Palette.discriptionFontSizeL;
+    
     return Scaffold(
       // appBar: AppBar(
       //   backgroundColor: Palette.bgColorPerple,
@@ -80,7 +118,7 @@ class _OrderScreenState extends State<OrderScreen> {
       //     ),
       //   ],
       // ),
-      body:SingleChildScrollView(
+      body: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.max,
           children: [
@@ -107,7 +145,7 @@ class _OrderScreenState extends State<OrderScreen> {
                             ),
                           ),
                           IconButton(
-                            onPressed: () => Navigator.pop(context), 
+                            onPressed: () => Get.to(() => MenuScreen()), 
                             icon: const Icon(Icons.close,
                               size: 40,
                               color: Palette.fontBgGray
@@ -124,7 +162,7 @@ class _OrderScreenState extends State<OrderScreen> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Expanded(
-                              child: Text(widget.food.vItemName,
+                              child: Text(itemViewList.vItemName,
                                 style: TextStyle(
                                   fontFamily: Palette.layoutFont,
                                   color: Palette.textBackGroundBlack,
@@ -134,7 +172,8 @@ class _OrderScreenState extends State<OrderScreen> {
                               ),
                             ),
                             Expanded(
-                              child: Text((price * orderQuentity).toStringAsFixed(3),
+                              child: Text(
+                                (price * orderQuentity).toStringAsFixed(3),
                                   textAlign: TextAlign.end,
                                   style: TextStyle( 
                                   fontFamily: Palette.layoutFont,
@@ -147,7 +186,7 @@ class _OrderScreenState extends State<OrderScreen> {
                           ],
                         ),
                       ),
-                      Text("Discription",
+                      Text(itemViewList.vDescription,
                       style: TextStyle(
                         fontFamily: Palette.layoutFont,
                         color: Palette.textColorPurple,
@@ -189,7 +228,7 @@ class _OrderScreenState extends State<OrderScreen> {
                              children: [
                                Expanded(
                                  child: TextButton(
-                                   onPressed: () {
+                                   onPressed: isloading ? null : () {
                                      setState(() {
                                        if(orderQuentity > 1){
                                          orderQuentity = orderQuentity - 1;
@@ -239,7 +278,8 @@ class _OrderScreenState extends State<OrderScreen> {
                                       //       Get.snackbar("Worning", "Quentity must be getter then 0");
                                       //     }
                                       // },
-                                      onEditingComplete: () {
+                                      onEditingComplete: isloading ? null : () {
+                                       // controller.quentityAction();
                                         setState(() {
                                           if(_txtQuntityController.text.isEmpty ||  int.parse( _txtQuntityController.text) < 1 ){
                                             _txtQuntityController.text = "1";
@@ -266,7 +306,9 @@ class _OrderScreenState extends State<OrderScreen> {
                                ),
                                Expanded(
                                  child: TextButton(
-                                   onPressed: () {
+                                   onPressed: isloading ? null : () {
+                                  //  controller.orderQuentity.value = controller.orderQuentity.value + 1;
+                                  //  controller.txtQuntityController.text = controller.orderQuentity.value.toString();
                                      setState(() {
                                        orderQuentity = orderQuentity + 1;
                                      });
@@ -310,40 +352,41 @@ class _OrderScreenState extends State<OrderScreen> {
                            direction: Axis.horizontal,
                            spacing: 0,
                            runSpacing: 0,
-                           children: List.generate(foodSizeList.length, (index) {
+                           children: List.generate(itemPriceList.length, (index) {
                              return TextButton(
-                                 onPressed: (){
-                                   setState(() {
-                                     selectedFoodItemSizeIndex = index;
-                                   });
-                                 }, 
-                                 child: Container(
-                                   width: 60,
-                                   height: 30,
-                                   decoration: BoxDecoration(
-                                     gradient: selectedFoodItemSizeIndex == index? Palette.btnGradientColor : Palette.bgGradient,
-                                     borderRadius: Palette.textContainerBorderRadius,
-                                     border: Border.all(
-                                       color: Palette.btnBoxShadowColor,
-                                       width: 1,
-                                     ),
-                                   ),
-                                   child: Center(
-                                     child: Padding(
-                                       padding: const EdgeInsets.all(5.0),
-                                       child: FittedBox(
-                                         child: Text("${foodSizeList[index].sizeName}( ${widget.food.vItemPrice} )",
-                                               style: TextStyle(
-                                                 fontSize: discriptionFontSize,
-                                                 fontWeight: FontWeight.bold,
-                                                 color: selectedFoodItemSizeIndex == index? Colors.white: Palette.textColorLightPurple,
-                                               ),
-                                             ),
+                                   onPressed: (){
+                                    //controller.selectedFoodItemSizeIndex.value = index;
+                                     setState(() {
+                                       selectedFoodItemSizeIndex = index;
+                                     });
+                                   }, 
+                                   child: Container(
+                                     width: 60,
+                                     height: 30,
+                                     decoration: BoxDecoration(
+                                       gradient: selectedFoodItemSizeIndex == index? Palette.btnGradientColor : Palette.bgGradient,
+                                       borderRadius: Palette.textContainerBorderRadius,
+                                       border: Border.all(
+                                         color: Palette.btnBoxShadowColor,
+                                         width: 1,
                                        ),
                                      ),
-                                   ),
-                                   ),
-                                 );
+                                     child: Center(
+                                       child: Padding(
+                                         padding: const EdgeInsets.all(5.0),
+                                         child: FittedBox(
+                                           child: Text("${itemPriceList[index].vUnitName}( ${itemPriceList[index].vPrice} )",
+                                                 style: TextStyle(
+                                                   fontSize: discriptionFontSize,
+                                                   fontWeight: FontWeight.bold,
+                                                   color: selectedFoodItemSizeIndex == index? Colors.white: Palette.textColorLightPurple,
+                                                 ),
+                                               ),
+                                         ),
+                                       ),
+                                     ),
+                                     ),
+                                   );
                            }),
                           ),
                         ),
@@ -375,76 +418,77 @@ class _OrderScreenState extends State<OrderScreen> {
                                direction: Axis.horizontal,
                                spacing: 0,
                                runSpacing: 0,
-                               children: List.generate(modifierList.length, (index) {
+                               children: List.generate(itemModifierList.length, (index) {
+                                String modifierName = itemModifierList[index].vItemName;
+                                double modifierPrice = double.parse(itemModifierList[index].vMainPrice);
                                  return TextButton(
-                                     onPressed: (){
-                                       setState(() {
-                                         if(!isSelectedModifier.contains(modifierList[index].name)){
-                                           isSelectedModifier.add(modifierList[index].name);
-                                           modifierTotalPrice = modifierTotalPrice + modifierList[index].price;
-                                         }
-                                         else{
-                                           isSelectedModifier.remove(modifierList[index].name);
-                                           modifierTotalPrice = modifierTotalPrice - modifierList[index].price;
-                                         }
-                                       });
-                                     }, 
-                                     child: Container(
-                                       width: 70,
-                                       height: 55,
-                                       decoration: BoxDecoration(
-                                         gradient: isSelectedModifier.contains(modifierList[index].name)? Palette.btnGradientColor : Palette.bgGradient,
-                                         borderRadius: Palette.textContainerBorderRadius,
-                                         border: Border.all(
-                                           color: Palette.btnBoxShadowColor,
-                                           width: 1,
-                                         ),
-                                       ),
-                                       child: Center(
-                                         child: Padding(
-                                           padding: const EdgeInsets.all(5.0),
-                                           child: Column(
-                                             crossAxisAlignment: CrossAxisAlignment.center,
-                                             mainAxisAlignment: MainAxisAlignment.center,
-                                             children: [
-                                               FittedBox(
-                                                 child: Text(modifierList[index].name,
-                                                       style: TextStyle(
-                                                        fontFamily: Palette.layoutFont,
-                                                         fontSize: Palette.containerButtonFontSize,
-                                                         fontWeight: FontWeight.bold,
-                                                         color: isSelectedModifier.contains(modifierList[index].name)? Colors.white: Palette.textColorLightPurple,
-                                                       ),
-                                                 ),
-                                               ),
-                                               FittedBox(
-                                                 child: Text(modifierList[index].discription,
-                                                       style: TextStyle(
-                                                        fontFamily: Palette.layoutFont,
-                                                         fontSize: Palette.containerButtonFontSize,
-                                                         fontWeight: FontWeight.bold,
-                                                         color: isSelectedModifier.contains(modifierList[index].name)? Colors.white: Palette.textColorLightPurple,
-                                                       ),
-                                                      overflow: TextOverflow.ellipsis,                                 
-                                                 ),
-                                               ),
-                                               FittedBox(
-                                                 child: Text("(${modifierList[index].price.toStringAsFixed(3)})",
-                                                       style: TextStyle(
-                                                        fontFamily: Palette.layoutFont,
-                                                         fontSize: Palette.containerButtonFontSize,
-                                                         fontWeight: FontWeight.bold,
-                                                         color: isSelectedModifier.contains(modifierList[index].name)? Colors.white: Palette.textColorLightPurple,
-                                                       ),
-                                                       overflow: TextOverflow.ellipsis,
-                                                 ),
-                                               ),
-                                             ],
+                                       onPressed: (){
+                                          //controller.modifierAction(modifierList[index].name, modifierList[index].price);
+                                         setState(() {
+                                          if(!isSelectedModifier.contains(modifierName)){
+                                             isSelectedModifier.add(modifierName);
+                                             selectedModifierList.add(itemModifierList[index]);
+                                             modifierTotalPrice = modifierTotalPrice + modifierPrice;
+                                           }
+                                           else{
+                                             isSelectedModifier.remove(modifierName);
+                                             selectedModifierList.remove(itemModifierList[index]);
+                                             modifierTotalPrice = modifierTotalPrice - modifierPrice;
+                                           }
+                                         });
+                                       }, 
+                                       child: Container(
+                                         width: 70,
+                                         height: 55,
+                                         decoration: BoxDecoration(
+                                           gradient: isSelectedModifier.contains(modifierName)? Palette.btnGradientColor : Palette.bgGradient,
+                                           borderRadius: Palette.textContainerBorderRadius,
+                                           border: Border.all(
+                                             color: Palette.btnBoxShadowColor,
+                                             width: 1,
                                            ),
                                          ),
-                                       ),
-                                   ),
-                                 );
+                                         child: Center(
+                                           child: Padding(
+                                             padding: const EdgeInsets.all(5.0),
+                                             child: FittedBox(
+                                               child: Column(
+                                                 crossAxisAlignment: CrossAxisAlignment.center,
+                                                 mainAxisAlignment: MainAxisAlignment.center,
+                                                 children: [
+                                                   Text(modifierName,
+                                                         style: TextStyle(
+                                                          fontFamily: Palette.layoutFont,
+                                                           fontSize: Palette.containerButtonFontSize,
+                                                           fontWeight: FontWeight.bold,
+                                                           color: isSelectedModifier.contains(modifierName)? Colors.white: Palette.textColorLightPurple,
+                                                         ),
+                                                   ),
+                                                   Text("-",
+                                                         style: TextStyle(
+                                                          fontFamily: Palette.layoutFont,
+                                                           fontSize: Palette.containerButtonFontSize,
+                                                           fontWeight: FontWeight.bold,
+                                                           color: isSelectedModifier.contains(modifierName)? Colors.white: Palette.textColorLightPurple,
+                                                         ),
+                                                        overflow: TextOverflow.ellipsis,                                 
+                                                   ),
+                                                   Text("(${modifierPrice.toStringAsFixed(3)})",
+                                                         style: TextStyle(
+                                                          fontFamily: Palette.layoutFont,
+                                                           fontSize: Palette.containerButtonFontSize,
+                                                           fontWeight: FontWeight.bold,
+                                                           color: isSelectedModifier.contains(modifierName)? Colors.white: Palette.textColorLightPurple,
+                                                         ),
+                                                         overflow: TextOverflow.ellipsis,
+                                                   ),
+                                                 ],
+                                               ),
+                                             ),
+                                           ),
+                                         ),
+                                     ),
+                                   );
                                }),
                              ),
                            ),
@@ -469,59 +513,82 @@ class _OrderScreenState extends State<OrderScreen> {
                        const SizedBox(
                          height: 5,
                        ),
-                       Row(
-                         children: [
-                           Expanded(
-                             child: Wrap(
-                               alignment: WrapAlignment.start,
-                               direction: Axis.horizontal,
-                               spacing: 0,
-                               runSpacing: 0,
-                               children: List.generate(kitchenNotes.length, (index) {
-                                 return TextButton(
-                                     onPressed: (){
-                                       setState(() {
-                                         if(!isSelectedKitchenNotes.contains(kitchenNotes[index])){
-                                           isSelectedKitchenNotes.add(kitchenNotes[index]);
-                                         }
-                                         else{
-                                           isSelectedKitchenNotes.remove(kitchenNotes[index]);
-                                         }
-                                       });
-                                     }, 
-                                     child: Container(
-                                       width: 60,
-                                       height: 30,
-                                       decoration: BoxDecoration(
-                                         gradient: isSelectedKitchenNotes.contains(kitchenNotes[index])? Palette.btnGradientColor : Palette.bgGradient,
-                                         borderRadius: Palette.textContainerBorderRadius,
-                                         border: Border.all(
-                                           color: Palette.btnBoxShadowColor,
-                                           width: 1,
-                                         ),
-                                       ),
-                                       child: Center(
-                                         child: Padding(
-                                           padding: const EdgeInsets.all(5.0),
-                                           child: FittedBox(
-                                             child: Text(kitchenNotes[index],
-                                                   textAlign: TextAlign.center,
-                                                   style: TextStyle(
-                                                    fontFamily: Palette.layoutFont,
-                                                     fontSize: Palette.containerButtonFontSize,
-                                                     fontWeight: FontWeight.bold,
-                                                     color: isSelectedKitchenNotes.contains(kitchenNotes[index])? Colors.white: Palette.textColorLightPurple,
-                                                 ),
-                                             ),
-                                           ),
-                                         ),
-                                       ),
-                                   ),
-                                 );
-                               }),
-                             ),
-                           ),
-                         ],
+                       FutureBuilder<KitchenNotes>(
+                        future: controller.kitchenNoteList,
+                        builder: (context, snapshot) {
+                          if(snapshot.hasData){
+                            return Row(
+                              children: [
+                                Expanded(
+                                  child: Wrap(
+                                    alignment: WrapAlignment.start,
+                                    direction: Axis.horizontal,
+                                    spacing: 0,
+                                    runSpacing: 0,
+                                    children: List.generate(snapshot.data!.noteList.length, (index) {
+                                     // String noteId = snapshot.data!.noteList[index].vNoteId;
+                                      String noteDetails = snapshot.data!.noteList[index].vNoteDetails;
+                                      return TextButton(
+                                            onPressed: (){
+                                              // if(!controller.isSelectedKitchenNotes.contains(kitchenNotes[index])){
+                                              //      controller.isSelectedKitchenNotes.add(kitchenNotes[index]);
+                                              //      controller.refreshChichenNotes();
+                                              //    }
+                                              //    else{
+                                              //      controller.isSelectedKitchenNotes.remove(kitchenNotes[index]);
+                                              //      controller.refreshChichenNotes();
+                                              // }
+                                              setState(() {
+                                                if(!isSelectedKitchenNotes.contains(noteDetails)){
+                                                  isSelectedKitchenNotes.add(noteDetails);
+                                                }
+                                                else{
+                                                  isSelectedKitchenNotes.remove(noteDetails);
+                                                }
+                                              });
+                                            }, 
+                                            child: Container(
+                                              width: 60,
+                                              height: 30,
+                                              decoration: BoxDecoration(
+                                                gradient:  isSelectedKitchenNotes.contains(noteDetails)? Palette.btnGradientColor : Palette.bgGradient,
+                                                borderRadius: Palette.textContainerBorderRadius,
+                                                border: Border.all(
+                                                  color: Palette.btnBoxShadowColor,
+                                                  width: 1,
+                                                ),
+                                              ),
+                                              child: Center(
+                                                child: Padding(
+                                                  padding: const EdgeInsets.all(5.0),
+                                                  child: FittedBox(
+                                                    child: Text(noteDetails,
+                                                          textAlign: TextAlign.center,
+                                                          style: TextStyle(
+                                                            fontFamily: Palette.layoutFont,
+                                                            fontSize: Palette.containerButtonFontSize,
+                                                            fontWeight: FontWeight.bold,
+                                                            color:  isSelectedKitchenNotes.contains(noteDetails)? Colors.white: Palette.textColorLightPurple,
+                                                        ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                          ),
+                                        );
+                                    }),
+                                  ),
+                                ),
+                              ],
+                            );
+                          }
+                          else if (snapshot.hasError){
+                            return SnackBar( content: Text("${snapshot.error}"),);
+                          }
+                          else{
+                            return const Center(child: CircularProgressIndicator());
+                          }
+                        },
                        ),
                        const SizedBox(
                          height: 5,
@@ -559,59 +626,81 @@ class _OrderScreenState extends State<OrderScreen> {
                        const SizedBox(
                         height: 5,
                        ),
-                       Row(
-                         children: [
-                           Expanded(
-                             child: Wrap(
-                               alignment: WrapAlignment.start,
-                               direction: Axis.horizontal,
-                               spacing: 0,
-                               runSpacing: 0,
-                               children: List.generate(invoiceNotes.length, (index) {
-                                 return TextButton(
-                                     onPressed: (){
-                                       setState(() {
-                                         if(!isSelectedInvoiceNotes.contains(invoiceNotes[index])){
-                                           isSelectedInvoiceNotes.add(invoiceNotes[index]);
-                                         }
-                                         else{
-                                           isSelectedInvoiceNotes.remove(invoiceNotes[index]);
-                                         }
-                                       });
-                                     }, 
-                                     child: Container(
-                                       width: 60,
-                                       height: 30,
-                                       decoration: BoxDecoration(
-                                         gradient: isSelectedInvoiceNotes.contains(invoiceNotes[index])? Palette.btnGradientColor : Palette.bgGradient,
-                                         borderRadius: Palette.textContainerBorderRadius,
-                                         border: Border.all(
-                                           color: Palette.btnBoxShadowColor,
-                                           width: 1,
-                                         ),
-                                       ),
-                                       child: Center(
-                                         child: Padding(
-                                           padding: const EdgeInsets.all(5.0),
-                                           child: FittedBox(
-                                             child: Text(invoiceNotes[index],
-                                                   textAlign: TextAlign.center,
-                                                   style: TextStyle(
-                                                    fontFamily: Palette.layoutFont,
-                                                     fontSize: discriptionFontSize,
-                                                     fontWeight: FontWeight.bold,
-                                                     color: isSelectedInvoiceNotes.contains(invoiceNotes[index])? Colors.white: Palette.textColorLightPurple,
-                                                   ),
-                                             ),
-                                           ),
-                                         ),
-                                       ),
-                                   ),
-                                 );
-                               }),
-                             ),
-                           ),
-                         ],
+                       FutureBuilder(
+                        future: controller.invoiceNoteList,
+                        builder: (context, snapshot) {
+                          if(snapshot.hasData){
+                            return Row(
+                              children: [
+                                Expanded(
+                                  child: Wrap(
+                                    alignment: WrapAlignment.start,
+                                    direction: Axis.horizontal,
+                                    spacing: 0,
+                                    runSpacing: 0,
+                                    children: List.generate(snapshot.data!.noteList.length, (index) {
+                                      String noteDetails = snapshot.data!.noteList[index].vNoteDetails;
+                                      return TextButton(
+                                            onPressed: (){
+                                                // if(!controller.isSelectedInvoiceNotes.contains(invoiceNotes[index])){
+                                                //    controller.isSelectedInvoiceNotes.add(invoiceNotes[index]);
+                                                //    controller.refreshInvoiceNotes();
+                                                //  }
+                                                // else{
+                                                //    controller.isSelectedInvoiceNotes.remove(invoiceNotes[index]);
+                                                //    controller.refreshInvoiceNotes();
+                                                // }
+                                              setState(() {
+                                                if(!isSelectedInvoiceNotes.contains(noteDetails)){
+                                                  isSelectedInvoiceNotes.add(noteDetails);
+                                                }
+                                                else{
+                                                  isSelectedInvoiceNotes.remove(noteDetails);
+                                                }
+                                              });
+                                            }, 
+                                            child: Container(
+                                              width: 60,
+                                              height: 30,
+                                              decoration: BoxDecoration(
+                                                gradient: isSelectedInvoiceNotes.contains(noteDetails)? Palette.btnGradientColor : Palette.bgGradient,
+                                                borderRadius: Palette.textContainerBorderRadius,
+                                                border: Border.all(
+                                                  color: Palette.btnBoxShadowColor,
+                                                  width: 1,
+                                                ),
+                                              ),
+                                              child: Center(
+                                                child: Padding(
+                                                  padding: const EdgeInsets.all(5.0),
+                                                  child: FittedBox(
+                                                    child: Text(noteDetails,
+                                                          textAlign: TextAlign.center,
+                                                          style: TextStyle(
+                                                            fontFamily: Palette.layoutFont,
+                                                            fontSize: discriptionFontSize,
+                                                            fontWeight: FontWeight.bold,
+                                                            color: isSelectedInvoiceNotes.contains(noteDetails)? Colors.white: Palette.textColorLightPurple,
+                                                          ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                          ),
+                                        );
+                                    }),
+                                  ),
+                                ),
+                              ],
+                            );
+                          }
+                          else if(snapshot.hasError){
+                            return SnackBar( content: Text("${snapshot.error}"),);
+                          }
+                          else{
+                            return const Center(child: CircularProgressIndicator());
+                          }
+                        }, 
                        ),
                        const SizedBox(
                         height: 5,
@@ -641,25 +730,29 @@ class _OrderScreenState extends State<OrderScreen> {
               ),
               ],
             ),
-            
           ],
         ),
       ),
       //Order buttorn Start
       bottomSheet: TextButton(
-        onPressed: (){ 
-        Navigator.pop(context);}, 
-          child: const CurbButton(
-            buttonPadding: EdgeInsets.only(left: 0,right: 0),
-            child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
+        onPressed: (){
+        cartController.addToCart(
+          item, itemViewList.vItemName, orderQuentity, double.parse(itemViewList.vItemPrice) , price, 
+          itemPriceList[selectedFoodItemSizeIndex], 
+          selectedModifierList, concatedKitchenNotes, concatedInvoiceNotes);
+        Get.to(MenuScreen());}, 
+        child: const CurbButton(
+          buttonPadding: EdgeInsets.only(left: 0,right: 0),
+          child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
               Text("ORDER",style: TextStyle(
-                fontFamily: Palette.layoutFont,
-                fontWeight: Palette.btnFontWeight,
-                fontSize: Palette.btnFontsize,
-                color: Palette.btnTextColor,
-              ),),
+                  fontFamily: Palette.layoutFont,
+                  fontWeight: Palette.btnFontWeight,
+                  fontSize: Palette.btnFontsize,
+                  color: Palette.btnTextColor,
+                ),
+              ),
               Icon(Icons.add_card,size: 20,color: Colors.white,),
             ],
           ),

@@ -32,22 +32,26 @@ class ItemList {
     String vItemId;
     String vItemName;
     String vItemPrice;
+    String vItemImage;
 
     ItemList({
         required this.vItemId,
         required this.vItemName,
         required this.vItemPrice,
+        required this.vItemImage,
     });
 
     factory ItemList.fromJson(Map<String, dynamic> json) => ItemList(
         vItemId: json["vItemId"],
         vItemName: json["vItemName"],
         vItemPrice: json["vItemPrice"],
+        vItemImage: json["vItemImage"],
     );
 
     Map<String, dynamic> toJson() => {
         "vItemId": vItemId,
         "vItemName": vItemName,
         "vItemPrice": vItemPrice,
+        "vItemImage": vItemImage,
     };
 }

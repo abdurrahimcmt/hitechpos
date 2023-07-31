@@ -1,7 +1,9 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
-import 'package:hitechpos/views/home_screen.dart';
+import 'package:hitechpos/common/palette.dart';
+import 'package:hitechpos/views/dashboard/dashboard_screen.dart';
+import 'package:hitechpos/views/onnboarding/onboarding_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key, required this.title}) : super(key: key);
@@ -16,10 +18,22 @@ class _SplashScreenState extends State<SplashScreen> {
   bool _isVisible = false;
 
   _SplashScreenState() {
+    var autoLogin = false;
+    void loadedScreen() async{
+      try {
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        autoLogin = prefs.getBool("autoLogin") ?? false;
+        debugPrint("auto login $autoLogin");
+      } catch (e) {
+        debugPrint(e.toString());
+      }
+    }
+    loadedScreen();
+    debugPrint("auto login $autoLogin");
     Timer(const Duration(milliseconds: 2000), () {
       setState(() {
         Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(builder: (context) => const HomeScreen()),
+            MaterialPageRoute(builder: (context) => autoLogin ? const DashboardScreen() : const OnBoardingScreen()),
             (route) => false);
       });
     });
@@ -35,25 +49,16 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            Theme.of(context).colorScheme.secondary,
-            Theme.of(context).primaryColor,
-          ],
-          begin: const FractionalOffset(0, 0),
-          end: const FractionalOffset(1.0, 0.0),
-          stops: const [0.0, 1.0],
-          tileMode: TileMode.clamp,
-        ),
+      decoration: const BoxDecoration(
+        gradient: Palette.onBoardingBoxGradient,
       ),
       child: AnimatedOpacity(
         opacity: _isVisible ? 1.0 : 0,
         duration: const Duration(milliseconds: 1200),
         child: Center(
           child: Container(
-            height: 140.0,
-            width: 140.0,
+            height: 160.0,
+            width: 160.0,
             decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 color: Colors.white,
@@ -72,7 +77,8 @@ class _SplashScreenState extends State<SplashScreen> {
                 //   size: 128,
                 // ), //put your logo here
                 child: Image(
-                  image: AssetImage('assets/images/HT-Color.png'),
+                  image: AssetImage('assets/images/img-01.png'),
+                  fit: BoxFit.cover,
                 ),
               ),
             ),

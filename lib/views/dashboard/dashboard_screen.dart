@@ -9,6 +9,7 @@ import 'package:hitechpos/views/profile/profile_page.dart';
 import 'package:hitechpos/views/settings/settings_screen.dart';
 import 'package:hitechpos/widgets/curb_button.dart';
 import 'package:hitechpos/widgets/dashboardbutton.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -21,14 +22,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    final loginController = Get.find<LoginController>();
+   // final loginController = Get.find<LoginController>();
+    
     return WillPopScope(
       onWillPop: () async{
           //Clear Text data
-          if(!loginController.isRememberMe.value){
-            loginController.refreshTextField();
-          }
-
           showDialog(
           context: context,
           builder: (BuildContext context) {
