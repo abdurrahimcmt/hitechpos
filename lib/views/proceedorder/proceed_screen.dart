@@ -115,56 +115,57 @@ class _ProceedScreenState extends State<ProceedScreen> {
                 const SizedBox(
                   height: 20,
                 ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: List.generate(orderTypes.length, (index) {
-                      return TextButton(
-                          onPressed: (){
-                            setState(() {
-                             // _buildModelBottomSheet(orderTypes[index].name);
-                              selectedOrderType = index;
-                            });
-                          }, 
-                          child: Container(
-                            width: size.width < 800 ? size.width * 0.18 : size.width * 0.22,
-                            height: 40,
-                            decoration: BoxDecoration(
-                              gradient: selectedOrderType == index? Palette.btnGradientColor : Palette.bgGradient,
-                              borderRadius: Palette.textContainerBorderRadius,
-                              border: Border.all(
-                                color: Palette.btnBoxShadowColor,
-                                width: 2,
-                              ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: List.generate(orderTypes.length, (index) {
+                    return TextButton(
+                        onPressed: (){
+                          setState(() {
+                            // _buildModelBottomSheet(orderTypes[index].name);
+                            selectedOrderType = index;
+                          });
+                        }, 
+                        child: Container(
+                          width: size.width < 800 ? size.width * 0.18 : size.width * 0.22,
+                          height: 40,
+                          decoration: BoxDecoration(
+                            gradient: selectedOrderType == index? Palette.btnGradientColor : Palette.bgGradient,
+                            borderRadius: Palette.textContainerBorderRadius,
+                            border: Border.all(
+                              color: Palette.btnBoxShadowColor,
+                              width: 2,
                             ),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                // Image(image: AssetImage(orderTypes[index].imageUrl),
-                                // height: 50,
-                                // fit: BoxFit.cover,),
-                                Padding(
-                                  padding: const EdgeInsets.all(5.0),
-                                  child: FittedBox(
-                                    child: Text(orderTypes[index].name,
-                                          style: TextStyle(
-                                            fontFamily: Palette.layoutFont,
-                                            fontSize: Palette.containerButtonFontSize,
-                                            fontWeight: FontWeight.bold,
-                                            color: selectedOrderType == index? Colors.white: Palette.textColorLightPurple,
-                                          ),
-                                          textAlign: TextAlign.center,
+                          ),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              // Image(image: AssetImage(orderTypes[index].imageUrl),
+                              // height: 50,
+                              // fit: BoxFit.cover,),
+                              Padding(
+                                padding: const EdgeInsets.all(5.0),
+                                child: FittedBox(
+                                  child: Text(orderTypes[index].name,
+                                        style: TextStyle(
+                                          fontFamily: Palette.layoutFont,
+                                          fontSize: Palette.containerButtonFontSize,
+                                          fontWeight: FontWeight.bold,
+                                          color: selectedOrderType == index? Colors.white: Palette.textColorLightPurple,
                                         ),
-                                  ),
+                                        textAlign: TextAlign.center,
+                                      ),
                                 ),
-                              ],
-                            ),
-                            ),
-                          );
-                    }),
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
+                              ),
+                            ],
+                          ),
+                          ),
+                        );
+                  }),
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                if(selectedOrderType == 1 || selectedOrderType == 2 || selectedOrderType == 3) 
                 Autocomplete <CustomerList>(
                   initialValue: selectedCustomer,
                   onSelected: (option) {
@@ -204,6 +205,7 @@ class _ProceedScreenState extends State<ProceedScreen> {
                   },
                 ),
                 Palette.sizeBoxVarticalSpace,
+                if(selectedOrderType == 2 || selectedOrderType == 3) 
                 Autocomplete <CustomerAddressList>(
                   initialValue: selectedAddress,
                   onSelected: (option) {
@@ -237,6 +239,7 @@ class _ProceedScreenState extends State<ProceedScreen> {
                   },
                 ),
                 Palette.sizeBoxVarticalSpace,
+                if(selectedOrderType == 3) 
                 TextField(
                     controller: controller.carNumberController,
                     decoration: const InputDecoration(
