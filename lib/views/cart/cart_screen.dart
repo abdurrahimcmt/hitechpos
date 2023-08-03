@@ -2,13 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hitechpos/common/palette.dart';
 import 'package:hitechpos/controllers/cart_controller.dart';
+import 'package:hitechpos/controllers/menu_controller.dart';
 import 'package:hitechpos/data/data.dart';
 import 'package:hitechpos/models/cartDetailsmodel.dart';
 import 'package:hitechpos/models/order.dart';
 import 'package:hitechpos/views/menu/menu_screen.dart';
 import 'package:hitechpos/widgets/curb_button.dart';
 import 'package:badges/badges.dart' as badges;
-import 'proceedorder/proceed_screen.dart';
+import '../proceedorder/proceed_screen.dart';
 
 class CartScreen extends StatefulWidget {
   const CartScreen({Key? key}) : super(key: key);
@@ -20,6 +21,9 @@ class _CartScreenState extends State<CartScreen> {
   final cartController = Get.find<CartController>();
   late Rx<List<CartDetailsModel>> cartDetailsModelList;
 
+ // double grandTotal = 0.000;
+ // double grandTotalVat = 0.000;
+
   @override
   void initState() {
     cartDetailsModelList = cartController.cartDetailsModelList;
@@ -27,17 +31,41 @@ class _CartScreenState extends State<CartScreen> {
   }
   @override
   Widget build(BuildContext context) {
+    double totalPrice = 0.000;
+    double totalVatAmount = 0.000;
+    double totalPriceWithoutVate = 0.000;
+    double discountAmount = 0.000;
+
+    double totalModifierAmount= 0.000;
+    double totalModifierVatAmount= 0.000;
+    double totalModifierWithOutVatAmount = 0.000;
     final cartController = Get.find<CartController>();
     Size size = MediaQuery.of(context).size;
     var contentTitleFontSize = (size.width < 600)? Palette.contentTitleFontSize : Palette.contentTitleFontSizeL;
     var discriptionFontSize = (size.width < 600)? Palette.discriptionFontSize : Palette.discriptionFontSizeL;
-    double totalPrice = 0;
+
+
     for (var cartOrder in cartDetailsModelList.value) {
-      double modifierPrice = 0;
+
+      double modifierPrice = 0.000;
+      double modifiervat = 0.000;
+      double modifierWithoutvatAmount = 0.000;
+
       for(var modifier in cartOrder.onlineModifierLists){
-          modifierPrice += double.parse(modifier.vMainPrice);
+          modifierPrice += modifier.mFinalPrice;
+          modifiervat += modifier.mVatAmount;
+          modifierWithoutvatAmount += modifier.mWoVatAmount;
       }
-      totalPrice += modifierPrice + (cartOrder.itemPrice * cartOrder.orderedQty);
+
+      totalPrice += (modifierPrice * cartOrder.orderedQty) + (cartOrder.itemPriceList.mFinalPrice * cartOrder.orderedQty);
+      cartController.totalBillAmount = totalPrice;
+      totalModifierAmount += (modifierPrice * cartOrder.orderedQty);
+      totalModifierVatAmount += (modifiervat * cartOrder.orderedQty);
+      totalModifierWithOutVatAmount += (modifierWithoutvatAmount * cartOrder.orderedQty);
+
+      totalPriceWithoutVate += (modifierWithoutvatAmount * cartOrder.orderedQty) + (cartOrder.itemPriceList.mWoVatAmount * cartOrder.orderedQty);
+      totalVatAmount += (modifiervat * cartOrder.orderedQty) + (cartOrder.itemPriceList.mVatAmount * cartOrder.orderedQty);
+
     }
     return Scaffold(
       appBar: AppBar(
@@ -222,7 +250,7 @@ class _CartScreenState extends State<CartScreen> {
                       SizedBox(
                         width: size.width > 700 ? 100 : 60,
                         child: Text(
-                          (order.itemPrice * order.orderedQty).toStringAsFixed(3),
+                          (order.itemPriceList.mFinalPrice * order.orderedQty).toStringAsFixed(3),
                           style: TextStyle(
                           fontSize: discriptionFontSize,
                           fontWeight: FontWeight.bold,
@@ -287,7 +315,7 @@ class _CartScreenState extends State<CartScreen> {
                                                   ),
                                                   overflow: TextOverflow.ellipsis,
                                               ),
-                                              Text(order.onlineModifierLists[index].vMainPrice,
+                                              Text(order.onlineModifierLists[index].mFinalPrice.toStringAsFixed(3),
                                                 style: TextStyle(
                                                   fontSize: discriptionFontSize,
                                                   fontWeight: FontWeight.bold,
@@ -404,7 +432,7 @@ class _CartScreenState extends State<CartScreen> {
                             Expanded(
                               flex: 3,
                               child: Text(
-                                totalPrice.toStringAsFixed(3),
+                                totalPriceWithoutVate.toStringAsFixed(3),
                                 textAlign: TextAlign.end,
                                 style: const TextStyle(
                                   fontSize: Palette.discriptionFontSizeL,
@@ -485,7 +513,7 @@ class _CartScreenState extends State<CartScreen> {
                             Expanded(
                               flex: 3,
                               child: Text(
-                                1.toStringAsFixed(3),
+                                totalVatAmount.toStringAsFixed(3),
                                 textAlign: TextAlign.end,
                                 style: const TextStyle(
                                   fontSize: Palette.discriptionFontSizeL,
@@ -532,7 +560,8 @@ class _CartScreenState extends State<CartScreen> {
                 // ),
               TextButton(
                 onPressed: () {
-                  Get.to(const ProceedScreen(),);
+                  
+                  Get.to(() => const ProceedScreen(),);
                 },
                 child: CurbButton(
                   buttonPadding: const EdgeInsets.only(left: 0,right: 0),
@@ -547,7 +576,7 @@ class _CartScreenState extends State<CartScreen> {
                           color: Palette.btnTextColor,
                         ),
                       ),
-                      Text("BHD ${(1+totalPrice).toStringAsFixed(3)} ",
+                      Text("BHD ${totalPrice.toStringAsFixed(3)} ",
                         style: const TextStyle(
                           fontFamily: Palette.layoutFont,
                           fontSize: Palette.btnFontsize,

@@ -53,7 +53,7 @@ AlertDialog alartDialogYesNoOption(String title, String content, BuildContext co
               
             // }
             // checkIsRememberbe();
-            Get.to(() => const LoginScreen());
+            Get.to(() => LoginScreen());
             },
             child: Container(
               height: 35,

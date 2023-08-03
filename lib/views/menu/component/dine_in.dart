@@ -42,6 +42,7 @@ class DineInScreen extends GetView<DiniInController> {
                           itemBuilder: (BuildContext context, int index) {
                             return TextButton(
                               onPressed:() {
+                                 controller.selectedFloor.value = snapshot.data!.onlineFloorTableList[index];
                                  controller.fatchTableInfo(snapshot.data!.onlineFloorTableList[index].iFloorId);
                               },
                               child: Center(
@@ -113,7 +114,7 @@ class DineInScreen extends GetView<DiniInController> {
                                   children: List.generate(tableinfo.onlineFloorTableList.first.onlineTableList.length, (index) {
                                     String tableName= tableinfo.onlineFloorTableList.first.onlineTableList[index].vTableName;
                                     String invoiceNo = tableinfo.onlineFloorTableList.first.onlineTableList[index].vInvoiceNo; 
-                                      if(invoiceNo.isNotEmpty){
+                                      if(invoiceNo.trim().isNotEmpty){
                                          controller.isSelectedTabels.add(tableName);
                                       }
                                       return TextButton(
@@ -121,6 +122,8 @@ class DineInScreen extends GetView<DiniInController> {
                                         
                                         (){
                                           controller.newSelectedTable.value = tableName;
+                                          controller.selectedTable.value = tableinfo.onlineFloorTableList.first.onlineTableList[index];
+                                          debugPrint(controller.selectedTable.value.vTableName);
                                             // if(!controller.isSelectedTabels.contains(tableName)){
                                             //    controller.isSelectedTabels.add(tableName);
                                             //   controller.selectcount ++;

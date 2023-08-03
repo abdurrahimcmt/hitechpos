@@ -16,7 +16,7 @@ import 'package:hitechpos/views/menu/component/drive_through.dart';
 import 'package:hitechpos/views/menu/component/take_away.dart';
 import 'package:hitechpos/views/order/order_screen.dart';
 import 'package:http/http.dart' as http;
-import '../cart_screen.dart';
+import '../cart/cart_screen.dart';
 import 'package:badges/badges.dart' as badges;
 
 class MenuScreen extends GetView<MenuScreenController> {
@@ -48,13 +48,13 @@ class MenuScreen extends GetView<MenuScreenController> {
           ),
           leading: GestureDetector(
             onTap: () {
-              Get.to(const DashboardScreen());
+              Get.to(() => const DashboardScreen());
             },
             child: const Icon(Icons.arrow_back),
           ),
           actions: [
             TextButton(
-              onPressed: () => Get.to(const CartScreen()),
+              onPressed: () => Get.to( () => const CartScreen()),
               //  Navigator.push(
               //   context,
               //   MaterialPageRoute(
@@ -411,16 +411,19 @@ class MenuScreen extends GetView<MenuScreenController> {
       ),
       builder: (BuildContext context){
         if(name == "Dine In"){
-           
+          controller.setSelectedOrderTypeName("Dine In");
            return const DineInScreen();
         }
         else if(name == "Take Away"){
+          controller.setSelectedOrderTypeName("Take Away");
           return TakeAwayScreen();
         }
         else if(name == "Delivery"){
+          controller.setSelectedOrderTypeName("Delivery");
           return DeliveryScreen();
         }
         else{
+          controller.setSelectedOrderTypeName("Drive Through");
           return const DriveThroughScreen();
         }
       }

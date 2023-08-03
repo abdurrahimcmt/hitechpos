@@ -9,8 +9,10 @@ import 'package:hitechpos/widgets/curb_buttonlight.dart';
 import 'registration_key.dart';
 
 class LoginScreen extends GetView<LoginController> {
-  const LoginScreen({Key? key}) : super(key: key);
+  LoginScreen({Key? key}) : super(key: key);
  // final _formKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> loginFormKey = GlobalKey<FormState>();
+  
   @override
   Widget build(BuildContext context) {
     //final loginController = Get.find<LoginController>();
@@ -79,7 +81,7 @@ class LoginScreen extends GetView<LoginController> {
                                   child: Padding(
                                     padding: const EdgeInsets.all(30.0),
                                     child: Form(
-                                      key: controller. loginFormKey,
+                                      key: loginFormKey,
                                       child: Column(
                                         crossAxisAlignment: CrossAxisAlignment.start,
                                         mainAxisAlignment: MainAxisAlignment.start,
@@ -250,7 +252,7 @@ class LoginScreen extends GetView<LoginController> {
                                               if(!controller.isRegistrationSuccessfull.value){
                                                 Get.snackbar("Error", "Please register your account",snackPosition: SnackPosition.BOTTOM);
                                               }
-                                              if (controller.loginFormKey.currentState!.validate()) {
+                                              if (loginFormKey.currentState!.validate()) {
                                                 controller.login(controller.userNameController.text, controller.passwordController.text , controller.selectedBranchId.value);
 
                                                   // print("yes");
@@ -329,7 +331,7 @@ class LoginScreen extends GetView<LoginController> {
                                                   )
                                                 ), 
                                                 builder: (BuildContext context){
-                                                  return const RegistrationKeyScreen();
+                                                  return RegistrationKeyScreen();
                                                 }
                                               );
                                             },

@@ -7,6 +7,41 @@ import 'package:hitechpos/models/restaurant.dart';
 import 'package:hitechpos/models/user.dart';
 import '../models/modifier.dart';
 
+enum SharedPreferencesKeys {
+  vUserId,
+  vFullName,
+  dExpiryDate,
+  vMobileNo,
+  vEmailId,
+  vEmployeeId,
+  dLastLogin
+}
+
+extension KeyValue on SharedPreferencesKeys {
+  String get name {
+    switch (this) {
+      case SharedPreferencesKeys.vUserId:
+        return 'vUserId';
+      case SharedPreferencesKeys.vFullName:
+        return 'vFullName';
+      case SharedPreferencesKeys.dExpiryDate:
+        return 'dExpiryDate';
+      case SharedPreferencesKeys.vMobileNo:
+        return 'vMobileNo';
+      case SharedPreferencesKeys.vEmailId:
+        return 'vEmailId';
+      case SharedPreferencesKeys.vEmployeeId:
+        return 'vEmployeeId';
+      case SharedPreferencesKeys.dLastLogin:
+        return 'dLastLogin';
+      default:
+        return '';
+    }
+  }
+}
+
+
+
 List<Ordertype> orderTypes = [
   Ordertype(
     imageUrl: "assets/images/dining-table.png",
@@ -119,7 +154,7 @@ List<String> tables = ["Table 1","Table 2","Table 3","Table 4","Table 5",
 "Table 13","Table 14","Table 15","Table 16","Table 17","Table 18","Table 19",
 "Table 20","Table 21","Table 22","Table 23"];
 
-List<String> selectedTables = ["Table 5","Table 9","Table 16","Table 20","Table 23"];
+//List<String> selectedTables = ["Table 5","Table 9","Table 16","Table 20","Table 23"];
 
 final List<Modifier> modifierList = [
   Modifier(imageUrl: 'assets/images/CocaCola.jpg', name: 'Coca Cola', price: 8.00, discription: 'variations'),

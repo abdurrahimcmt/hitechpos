@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hitechpos/common/palette.dart';
 import 'package:hitechpos/controllers/cart_controller.dart';
+import 'package:hitechpos/controllers/login_controller.dart';
 import 'package:hitechpos/controllers/order_controller.dart';
 import 'package:hitechpos/models/invoicenotes.dart';
 import 'package:hitechpos/models/itemdetails.dart';
@@ -17,8 +18,10 @@ class OrderScreen extends StatefulWidget {
 }
 
 class _OrderScreenState extends State<OrderScreen> {
+
   final controller = Get.find<OrderController>();
   final cartController = Get.find<CartController>();
+  final loginController = Get.find<LoginController>();
   String item = Get.arguments;
 
   final TextEditingController _txtKitchenNotesController = TextEditingController();
@@ -38,21 +41,24 @@ class _OrderScreenState extends State<OrderScreen> {
   String concatedInvoiceNotes= "";
 
   double modifierTotalPrice = 0.000;
+  // double modifierTotalVat = 0.000;
+  // double modifierTotalWithoutVatPrice = 0.000;
+  // double selectedItemUnitVat = 0.000;
+  // double selectedItemUnitWithoutVatPrice = 0.000;
   double selectedItemUnitPrice = 0.000;
-
   //when loading data user should not increase quentity value
   bool isloading = true;
 
-  ItemDetails itemdetails = ItemDetails(messageId: "", message: "", itemViewList: [ItemViewList(vItemId: "", vItemType: "", vItemName: "", vDescription: "", vItemNameAr: "", vImagePath: "", vItemPrice: "0", vPriceDetails: "0", itemPriceList: [], onlineModifierLists: [])]) ;
-  ItemViewList itemViewList = ItemViewList(vItemId: "", vItemType: "", vItemName: "", vDescription: "", vItemNameAr: "", vImagePath: "", vItemPrice: "0", vPriceDetails: "0", itemPriceList: [], onlineModifierLists: []);
-  List<ItemPriceList> itemPriceList = [ItemPriceList(vUnitId: "", vUnitName: "", vPrice: "0")];
-  List<OnlineModifierList>  itemModifierList = [OnlineModifierList(iSerial: 0, vItemIdModifier: "", vItemName: "", vQuantity: "0", vMainPrice: "0")];
+  ItemDetails itemdetails = ItemDetails(messageId: "", message: "", itemViewList: []) ;
+  ItemViewList itemViewList = ItemViewList(vItemId: "", vItemType: "", vItemName: "", vDescription: "", vItemNameAr: "", vImagePath: "", vItemPrice: "", vPriceDetails: "", vVatCatId: "", vVatOption: "", mPercentage: 0.000, itemPriceList: [], onlineModifierLists: []);
+  List<ItemPriceList> itemPriceList = [ItemPriceList(vUnitId: "", vUnitName: "", vVatCatId: "", vVatOption: "", mPercentage: 0.000, mMainPrice: 0.000, mVatAmount: 0.000, mWoVatAmount: 0.000, mFinalPrice: 0.000)];
+  List<OnlineModifierList>  itemModifierList = [OnlineModifierList(vItemIdModifier: "", vItemName: "", iUnitId: "0", vUnitName: "", vQuantity: "0", vMainPrice: "0", mQuantity: 0.000, mMainPrice: 0.000, mVatAmount: 0.000, mWoVatAmount: 0.000, mFinalPrice: 0.000, vVatCatId: "", vVatOption: "", mPercentage: 0.000)];
   
-
   @override
   void initState() {
     super.initState();
 
+    debugPrint("User: ${loginController.userIdFromLocalStorage}");
     controller.fatchItemDetails(item).then((value) {
       setState(() {
         itemdetails = value;
@@ -82,9 +88,13 @@ class _OrderScreenState extends State<OrderScreen> {
     _txtKitchenNotesController.text = concatedKitchenNotes;
     _txtInvoiceNotesController.text = concatedInvoiceNotes;
     // bool isPortrait = MediaQuery.of(context).orientation == Orientation.portrait;
-    selectedItemUnitPrice = double.parse(itemPriceList[selectedFoodItemSizeIndex].vPrice);
+     
+    selectedItemUnitPrice = itemPriceList[selectedFoodItemSizeIndex].mFinalPrice;
+    //selectedItemUnitVat = itemPriceList[selectedFoodItemSizeIndex].mVatAmount;
+    //selectedItemUnitWithoutVatPrice = itemPriceList[selectedFoodItemSizeIndex].mWoVatAmount;
+
     double price = selectedItemUnitPrice  + modifierTotalPrice;
-    
+
     Size size = MediaQuery.of(context).size;
     var contentTitleFontSize = (size.width < 600)? Palette.contentTitleFontSize : Palette.contentTitleFontSizeL;
     var discriptionFontSize = (size.width < 600)? Palette.discriptionFontSize : Palette.discriptionFontSizeL;
@@ -375,7 +385,7 @@ class _OrderScreenState extends State<OrderScreen> {
                                        child: Padding(
                                          padding: const EdgeInsets.all(5.0),
                                          child: FittedBox(
-                                           child: Text("${itemPriceList[index].vUnitName}( ${itemPriceList[index].vPrice} )",
+                                           child: Text("${itemPriceList[index].vUnitName}(${itemPriceList[index].mFinalPrice.toStringAsFixed(3)})",
                                                  style: TextStyle(
                                                    fontSize: discriptionFontSize,
                                                    fontWeight: FontWeight.bold,
@@ -420,7 +430,9 @@ class _OrderScreenState extends State<OrderScreen> {
                                runSpacing: 0,
                                children: List.generate(itemModifierList.length, (index) {
                                 String modifierName = itemModifierList[index].vItemName;
-                                double modifierPrice = double.parse(itemModifierList[index].vMainPrice);
+                                double modifierPrice = itemModifierList[index].mFinalPrice;
+                               //double modifierVat = itemModifierList[index].mVatAmount;
+                               //double modifierWithoutVat = itemModifierList[index].mWoVatAmount;
                                  return TextButton(
                                        onPressed: (){
                                           //controller.modifierAction(modifierList[index].name, modifierList[index].price);
@@ -429,11 +441,15 @@ class _OrderScreenState extends State<OrderScreen> {
                                              isSelectedModifier.add(modifierName);
                                              selectedModifierList.add(itemModifierList[index]);
                                              modifierTotalPrice = modifierTotalPrice + modifierPrice;
+                                             // modifierTotalVat = modifierTotalVat + modifierVat;
+                                             // modifierTotalWithoutVatPrice = modifierTotalWithoutVatPrice + modifierWithoutVat;
                                            }
                                            else{
                                              isSelectedModifier.remove(modifierName);
                                              selectedModifierList.remove(itemModifierList[index]);
                                              modifierTotalPrice = modifierTotalPrice - modifierPrice;
+                                             // modifierTotalVat = modifierTotalVat - modifierVat;
+                                             // modifierTotalWithoutVatPrice = modifierTotalWithoutVatPrice - modifierWithoutVat;
                                            }
                                          });
                                        }, 
@@ -737,10 +753,12 @@ class _OrderScreenState extends State<OrderScreen> {
       bottomSheet: TextButton(
         onPressed: (){
         cartController.addToCart(
-          item, itemViewList.vItemName, orderQuentity, double.parse(itemViewList.vItemPrice) , price, 
+          item, itemViewList.vItemName,orderQuentity, itemViewList.itemPriceList[selectedFoodItemSizeIndex].mFinalPrice , price,
+          0.000, itemViewList.vVatCatId,itemViewList.vVatOption,itemViewList.mPercentage,
           itemPriceList[selectedFoodItemSizeIndex], 
-          selectedModifierList, concatedKitchenNotes, concatedInvoiceNotes);
-        Get.to(MenuScreen());}, 
+          selectedModifierList, concatedKitchenNotes, concatedInvoiceNotes
+        );
+        Get.to(() => MenuScreen());}, 
         child: const CurbButton(
           buttonPadding: EdgeInsets.only(left: 0,right: 0),
           child: Row(
@@ -757,7 +775,8 @@ class _OrderScreenState extends State<OrderScreen> {
             ],
           ),
         ),
-      ),             //Order button End,
+      ),
+      //Order button End,
     );
   }
 }

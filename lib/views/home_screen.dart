@@ -11,7 +11,7 @@ import 'package:hitechpos/views/restaurant_screen.dart';
 import 'package:hitechpos/widgets/recent_orders.dart';
 import 'package:hitechpos/widgets/reting_starts.dart';
 
-import 'cart_screen.dart';
+import 'cart/cart_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);

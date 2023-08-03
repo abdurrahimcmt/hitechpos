@@ -8,10 +8,9 @@ import 'package:hitechpos/services/createbaseurl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
-class LoginController extends GetxController {
+import '../data/data.dart';
 
-  final GlobalKey<FormState> loginFormKey = GlobalKey<FormState>();
-  final GlobalKey<FormState> registrationFormKey = GlobalKey<FormState>();
+class LoginController extends GetxController {
 
   late TextEditingController userNameController;
   late TextEditingController passwordController;
@@ -32,12 +31,14 @@ class LoginController extends GetxController {
   String baseurlFromLocalStorage = "";
   String registrationKeyFromLocalStorage = "";
   String branchIdFromLocalStorage = "";
+  String userIdFromLocalStorage = "";
   var isBranchLoding = true.obs;
   Rx<List<BranchInfo>> branchModel= Rx<List<BranchInfo>>([]);
   Rx<List<BranchList>> branchList= Rx<List<BranchList>>([]);
   Rx<List<DropdownMenuItem<String>>> branchDropdownItemMenu = Rx<List<DropdownMenuItem<String>>>([]);
   var selectedBranchId = "0".obs;
   bool baseUrlLoading = false;
+  
   @override
   void onInit() async{
     super.onInit();
@@ -57,20 +58,20 @@ class LoginController extends GetxController {
     setRegistrationInformationFromLocalstorage();
   }
 
-  @override
-  void onReady(){
-    super.onReady();
+  // @override
+  // void onReady(){
+  //   super.onReady();
 
-  }
+  // }
   
   @override
   void onClose() {
-    userNameController.dispose();
-    passwordController.dispose();
-    registrationKeyController.dispose();
-    userNameFocus.dispose();
-    passwordFocus.dispose();
-    registrationKeyFocus.dispose();
+    //userNameController.dispose();
+    //passwordController.dispose();
+    //registrationKeyController.dispose();
+    //userNameFocus.dispose();
+   // passwordFocus.dispose();
+   // registrationKeyFocus.dispose();
     
     super.onClose();
   }
@@ -117,6 +118,7 @@ class LoginController extends GetxController {
       debugPrint(e.toString());
     }
   }
+
   void visibilityOfSecureText( bool visibility){
     secureText(visibility);
   }
@@ -310,7 +312,6 @@ class LoginController extends GetxController {
   
   Future setBaseUrl() async{
     //getBranch();
-
     try {
       baseUrlLoading = true;
       debugPrint("base Url call");
@@ -321,9 +322,11 @@ class LoginController extends GetxController {
       var registrationPort = prefs.getString("port");
       var registrationKey = prefs.getString("registrationkey");
       var branchId = prefs.getString("branch_Id");
+      var userId = prefs.getString(SharedPreferencesKeys.vUserId.name);
       baseurlFromLocalStorage = CreateBaseUrl().createBaseUrl(registrationSchema!, registrationDomain!, registrationPort!);
       registrationKeyFromLocalStorage = registrationKey!;
       branchIdFromLocalStorage = branchId!;
+      userIdFromLocalStorage = userId!;
       debugPrint("${baseurlFromLocalStorage}Empty");
       baseUrlLoading = false;
     } 
@@ -332,6 +335,7 @@ class LoginController extends GetxController {
     }
     getBranch();
   }
+  
   // for Services class 
   // Registration data
   Future<void> registrationTest(String registrationkey) async {
@@ -387,10 +391,21 @@ class LoginController extends GetxController {
         final response = await http.post(url, headers: headers, body: body);
 
         if (response.statusCode == 200) {
-          var data = jsonDecode(response.body.toString());
+          var data = jsonDecode(response.body);
+          debugPrint(data.toString());
           if(data['messageId'] == '200'){
+            SharedPreferences.getInstance().then((prefs) {
+                prefs.setString(SharedPreferencesKeys.vUserId.name, data[SharedPreferencesKeys.vUserId.name]);
+                prefs.setString(SharedPreferencesKeys.vFullName.name, data[SharedPreferencesKeys.vFullName.name]);
+                prefs.setString(SharedPreferencesKeys.dExpiryDate.name, data[SharedPreferencesKeys.dExpiryDate.name]);
+                prefs.setString(SharedPreferencesKeys.vMobileNo.name, data[SharedPreferencesKeys.vMobileNo.name]);
+                prefs.setString(SharedPreferencesKeys.vEmailId.name, data[SharedPreferencesKeys.vEmailId.name]);
+                prefs.setString(SharedPreferencesKeys.vEmployeeId.name, data[SharedPreferencesKeys.vEmployeeId.name]);
+                prefs.setString(SharedPreferencesKeys.dLastLogin.name, data[SharedPreferencesKeys.dLastLogin.name]);
+              }
+            );
             handleRemember(isRememberMe.value);
-            Get.to(const DashboardScreen());
+            Get.to(() => const DashboardScreen());
           }
           else{
             Get.snackbar("Error", "Incorrect username or password",snackPosition: SnackPosition.BOTTOM);

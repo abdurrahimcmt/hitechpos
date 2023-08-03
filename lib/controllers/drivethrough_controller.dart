@@ -6,24 +6,20 @@ import 'package:hitechpos/models/customeraddress.dart';
 import 'package:hitechpos/models/customerinfo.dart';
 import 'package:http/http.dart' as http;
 
-
-class DeliveryController extends GetxController {
+class DriveThroughController extends GetxController {
 
   final loginController = Get.find<LoginController>();
   final isDataLoading = true.obs;
-  //late Future<CustomerInfo> customerInfo;
   late List<CustomerList> customerList;
   late TextEditingController customerTextController = TextEditingController();
-  //late Rx<TextEditingController> addressTextController = TextEditingController().obs;
 
-  //var selectedAddressId = "0".obs;
   late CustomerList selectedCustomer = CustomerList(vBranchId: "", vCustomerId: "", vCustomerCode: "", vCustomerName: "", vVatRegNo: "", vMobileNo: "", vEmailId: "", iCreditLimit: 0, iActive: 0, vCreatedBy: "", dCreatedDate: DateTime.now(), vModifiedBy: "", dModifiedDate: DateTime.now());
   CustomerAddressList selectedCustomerAddress = CustomerAddressList(vCustomerId: "", vAddId: "", vArea: "", vBuildingNo: "", vFlatNo: "", vBlockNo: "", vRoadNo: "");
 
   late RxList<CustomerAddressList> customerAddressList = <CustomerAddressList>[].obs;
-  //Rx<List<CustomerAddressList>> customerAddressList= Rx<List<CustomerAddressList>>([]);
- // Rx<List<DropdownMenuItem<String>>> addressDropdownItemMenu = Rx<List<DropdownMenuItem<String>>>([]);
 
+  TextEditingController carNumberController = TextEditingController();
+ 
   @override
   void onInit(){
     super.onInit();
@@ -35,47 +31,6 @@ class DeliveryController extends GetxController {
     super.onReady();
     setCustomerList();
   }
-
-  //   void getCustomerAddress(String customerId){
-  //   try {
-  //     fatchAddressInfo(customerId).then((value) {
-  //       if(value.customerAddressList.isNotEmpty){
-  //         isDataLoading.value = false;
-  //         customerAddressList.value.clear();
-  //         customerAddressList.value.addAll(value.customerAddressList);
-  //         addressDropdownItemMenu.value = [];
-  //         addressDropdownItemMenu.value.add(
-  //           const DropdownMenuItem(
-  //             value: "0",
-  //             child: Text('Select Address',
-  //               style: TextStyle(
-  //                 fontFamily: Palette.layoutFont,
-  //               ),
-  //             ),
-  //           ),
-  //         );
-  //         for(CustomerAddressList address in customerAddressList.value){
-  //             addressDropdownItemMenu.value.add(
-  //               DropdownMenuItem(
-  //                 value: address.vAddId,
-  //                 child: Text(combinedCustomerAddressFields(address),
-  //                 style: const TextStyle(
-  //                     fontFamily: Palette.layoutFont,
-  //                   ),
-  //                 ),
-  //               ),
-  //             );
-  //           }
-  //           isDataLoading.value = false;
-  //         }
-  //     }).onError((error, stackTrace) {
-  //         debugPrint("failed to load address");
-  //       }
-  //     );
-  //   } catch (e) {
-  //     debugPrint(e.toString());
-  //   }
-  // }
 
   void setCustomerAddressList(String customer){
     fatchAddressInfo(customer).then((value) => {

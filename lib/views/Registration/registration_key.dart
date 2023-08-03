@@ -8,8 +8,8 @@ import 'package:hitechpos/widgets/curb_button.dart';
 import '../../controllers/login_controller.dart';
 
 class RegistrationKeyScreen extends GetView<LoginController> {
- const RegistrationKeyScreen({Key? key}) : super(key: key);
- 
+ RegistrationKeyScreen({Key? key}) : super(key: key);
+ final GlobalKey<FormState> registrationFormKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +21,7 @@ class RegistrationKeyScreen extends GetView<LoginController> {
        child: Padding(
          padding: const EdgeInsets.all(20.0),
          child: Form(
-          key: controller.registrationFormKey,
+          key: registrationFormKey,
            child: Column(
              children: [
               const Text("Registration",
@@ -149,7 +149,7 @@ class RegistrationKeyScreen extends GetView<LoginController> {
                     flex: 6,
                     child: TextButton(
                       onPressed: (){ 
-                        if(controller.registrationFormKey.currentState!.validate()){
+                        if(registrationFormKey.currentState!.validate()){
                           controller.registrationTest(controller.registrationKeyController.text);
                           // if(controller.isRegistrationSuccessfull.value == false){
                           //    Get.snackbar("Invalid", "Please provide valid information",snackPosition: SnackPosition.BOTTOM);
@@ -227,7 +227,7 @@ class RegistrationKeyScreen extends GetView<LoginController> {
               //const CommonSubmitButton(title: "Continue"),
               Obx(
                 () => TextButton(onPressed: controller.isSaveRegistrationData.value == false ? null :   (){
-                  Get.to(const LoginScreen());
+                  Get.to(LoginScreen());
                 },
                 child: Container(
                   width: MediaQuery.of(context).size.width*0.4,

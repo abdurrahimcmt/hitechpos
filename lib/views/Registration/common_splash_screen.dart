@@ -33,7 +33,7 @@ class _CommonSplashScreenState extends State<CommonSplashScreen> {
     Timer(const Duration(milliseconds: 2000), () {
       setState(() {
         Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(builder: (context) => isRegistrationSuccessfull ? const LoginScreen() : const RegistrationBeforeLogin()),
+            MaterialPageRoute(builder: (context) => isRegistrationSuccessfull ? LoginScreen() : const RegistrationBeforeLogin()),
             (route) => false);
       });
     });

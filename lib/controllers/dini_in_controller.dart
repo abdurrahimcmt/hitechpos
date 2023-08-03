@@ -1,25 +1,38 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hitechpos/controllers/login_controller.dart';
-import 'package:hitechpos/data/data.dart';
 import 'package:hitechpos/models/floorandtableinfo.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class DiniInController extends GetxController{
   //selected table should comes from database
-  List<String> isSelectedTabels = selectedTables;
+  List<String> isSelectedTabels = [];
+
   final newSelectedTable = "".obs;
   final isTableInfoLoding = true.obs;
   int selectcount = 0;
+  Rx<OnlineFloorTableList> selectedFloor = OnlineFloorTableList(vBranchId: "", iFloorId: "", vFloorName: "", onlineTableList: []).obs;
+  Rx<OnlineTableList> selectedTable = OnlineTableList(vBranchId: "", vTableId: "", vTableName: "", vInvoiceId: "", vInvoiceNo: "").obs;
   late Future<FloorAndTableInfo> floorInfoList;
   var tableList = FloorAndTableInfo(message: '', messageId: '', onlineFloorTableList: []).obs;
   @override
   void onInit() {
     super.onInit();
-    
-    fatchTableInfo("all");
-    floorInfoList = fatchFloorAndTableInfo();
+    floorInfoList =  fatchFloorAndTableInfo();
+    floorInfoList.then((value) {
+      selectedFloor.value = value.onlineFloorTableList.first;
+    });
+  }
+
+  @override
+  void onReady(){
+    Timer(const Duration(seconds: 2), () {
+      fatchTableInfo(selectedFloor.value.iFloorId);
+    });
+    super.onReady();
   }
 
   Future<void> fatchTableInfo(String floor) async {
@@ -42,13 +55,15 @@ class DiniInController extends GetxController{
       throw Exception('Failed to load Table');
     }
     isTableInfoLoding.value= false;
+    selectedTable.value = OnlineTableList(vBranchId: "", vTableId: "", vTableName: "", vInvoiceId: "", vInvoiceNo: "");
+    newSelectedTable.value = "";
+    selectcount = 0;
   }
 
 Future<FloorAndTableInfo> fatchFloorAndTableInfo() async {
     final loginController = Get.find<LoginController>();
     String baseurl = loginController.baseurlFromLocalStorage;
     String branchId = loginController.branchIdFromLocalStorage;
-    // https://hiposbh.com:84/api/waiterapp/table/all/B0001
     final url = Uri.parse("${baseurl}api/waiterapp/table/all/$branchId");
     debugPrint(url.toString());
     final headers = {

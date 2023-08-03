@@ -6,14 +6,30 @@ import 'package:hitechpos/models/customeraddress.dart';
 import 'package:hitechpos/models/customerinfo.dart';
 import 'package:hitechpos/widgets/common_submit_button.dart';
 
-class DeliveryScreen extends StatelessWidget {
-  DeliveryScreen({Key?key}) : super(key:key);
-
-  final deliverycontroller = Get.find<DeliveryController>();
-  
+class DeliveryScreen extends StatefulWidget {
+  const DeliveryScreen({Key?key}) : super(key:key);
 
   @override
+  State<DeliveryScreen> createState() => _DeliveryScreenState();
+}
+
+class _DeliveryScreenState extends State<DeliveryScreen> {
+  final deliverycontroller = Get.find<DeliveryController>();
+  late String combinedAddress = "";
+  @override
+  void initState() {
+    if(deliverycontroller.getSelectedCustomerAddress().vAddId.isNotEmpty){
+      combinedAddress = deliverycontroller.combinedCustomerAddressFields(deliverycontroller.getSelectedCustomerAddress());
+    }
+    
+    super.initState();
+  }
+  @override
   Widget build(BuildContext context) {
+    
+    TextEditingValue selectedCustomer = TextEditingValue(text: deliverycontroller.getSelectedCustomer().vCustomerName);
+    TextEditingValue selectedAddress = TextEditingValue(text: combinedAddress);
+    //selectedCustomer.text = deliverycontroller.getSelectedCustomer().vCustomerName;
     deliverycontroller.setCustomerList();
     TextEditingController addressTextController = TextEditingController();
     return Container(
@@ -34,12 +50,16 @@ class DeliveryScreen extends StatelessWidget {
                   height: 100,
                 ),
                 Autocomplete <CustomerList>(
+                  initialValue: selectedCustomer,
                   onSelected: (option) {
                     debugPrint(option.vCustomerName.toString());
                     deliverycontroller.setSelectedCustomer(option);
                     debugPrint("From Controller ${deliverycontroller.getSelectedCustomer().vCustomerName}");
                     deliverycontroller.setCustomerAddressList(option.vCustomerId);
-                    addressTextController.text = "";
+                    setState(() {
+                      deliverycontroller.setSelectedCustomerAddress(CustomerAddressList(vCustomerId: "", vAddId: "", vArea: "", vBuildingNo: "", vFlatNo: "", vBlockNo: "", vRoadNo: ""));
+                      addressTextController.text = "";
+                    });
                   },
                   optionsBuilder: (TextEditingValue textEditingValue){
                     if(textEditingValue.text == ''){
@@ -70,6 +90,10 @@ class DeliveryScreen extends StatelessWidget {
                 Palette.sizeBoxVarticalSpace,
 
                 Autocomplete <CustomerAddressList>(
+                  initialValue: selectedAddress,
+                  onSelected: (option) {
+                    deliverycontroller.setSelectedCustomerAddress(option);
+                  },
                   optionsBuilder: (TextEditingValue textEditingValue){
                     if(textEditingValue.text == ''){
                       return const Iterable<CustomerAddressList>.empty();

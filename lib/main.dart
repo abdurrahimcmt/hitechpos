@@ -3,7 +3,6 @@ import 'package:hitechpos/common/app_routes.dart';
 import 'package:hitechpos/dependency/hiposbindings.dart';
 import 'package:get/get.dart';
 import 'package:hitechpos/views/Registration/login_screen.dart';
-import 'package:hitechpos/views/Registration/registrationold.dart';
 import 'package:hitechpos/views/dashboard/dashboard_screen.dart';
 import 'package:hitechpos/views/menu/menu_screen.dart';
 import 'package:hitechpos/views/onnboarding/onboarding_screen.dart';
@@ -28,7 +27,7 @@ class MyApp extends StatelessWidget {
       initialRoute: AppRoutes.home,
       getPages: [
         GetPage(name: AppRoutes.home, page: () => const OnBoardingScreen()),
-        GetPage(name: AppRoutes.login, page: () => const LoginScreen()),
+        GetPage(name: AppRoutes.login, page: () => LoginScreen()),
         //GetPage(name: AppRoutes.registration, page: () => const RegistrationScreen()),
         GetPage(name: AppRoutes.dashboard, page: () => const DashboardScreen()),
         GetPage(name: AppRoutes.menu, page: () => MenuScreen()),

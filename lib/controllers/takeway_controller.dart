@@ -5,7 +5,6 @@ import 'package:hitechpos/controllers/login_controller.dart';
 import 'package:hitechpos/models/customerinfo.dart';
 import 'package:http/http.dart' as http;
 
-
 class TakeAwayController extends GetxController{
   final loginController = Get.find<LoginController>();
   final isDataLoading = true.obs;
@@ -13,11 +12,11 @@ class TakeAwayController extends GetxController{
   late  List<CustomerList> customerList;
   late TextEditingController customerTextController = TextEditingController();
 
-  late CustomerList selectedCustomer; 
-  // CustomerList selectedCustomer = CustomerList(vBranchId: "", vCustomerId: "", vCustomerCode: "", 
-  // vCustomerName: "", vVatRegNo: "", vMobileNo: "", vEmailId: "", iCreditLimit: 0, 
-  // iActive: 0, vCreatedBy: "", dCreatedDate: DateTime.now(), vModifiedBy: "", 
-  // dModifiedDate: DateTime.now());
+  //late CustomerList selectedCustomer; 
+  CustomerList selectedCustomer = CustomerList(vBranchId: "", vCustomerId: "", vCustomerCode: "", 
+  vCustomerName: "", vVatRegNo: "", vMobileNo: "", vEmailId: "", iCreditLimit: 0, 
+  iActive: 0, vCreatedBy: "", dCreatedDate: DateTime.now(), vModifiedBy: "", 
+  dModifiedDate: DateTime.now());
 
   @override
   void onInit(){

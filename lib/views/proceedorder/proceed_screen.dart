@@ -1,7 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hitechpos/common/palette.dart';
+import 'package:hitechpos/controllers/cart_controller.dart';
+import 'package:hitechpos/controllers/delivery_controller.dart';
+import 'package:hitechpos/controllers/dini_in_controller.dart';
+import 'package:hitechpos/controllers/drivethrough_controller.dart';
+import 'package:hitechpos/controllers/menu_controller.dart';
+import 'package:hitechpos/controllers/proceed_controller.dart';
+import 'package:hitechpos/controllers/takeway_controller.dart';
 import 'package:hitechpos/data/data.dart';
+import 'package:hitechpos/models/customeraddress.dart';
+import 'package:hitechpos/models/customerinfo.dart';
+import 'package:hitechpos/models/invoiceinfodetails.dart';
+import 'package:hitechpos/views/cart/cart_screen.dart';
 import 'package:hitechpos/views/menu/component/dine_in.dart';
 import 'package:hitechpos/views/proceedorder/ordersuccessful.dart';
 import 'package:hitechpos/widgets/curb_button.dart';
@@ -11,35 +22,85 @@ class ProceedScreen extends StatefulWidget {
   @override
   State<ProceedScreen> createState() => _ProceedScreenState();
 }
-
 class _ProceedScreenState extends State<ProceedScreen> {
+
+  final controller = Get.find<ProceedController>();
+  final menuController = Get.find<MenuScreenController>();
+  final driveThroughController = Get.find<DriveThroughController>();
+  final deliveryController = Get.find<DeliveryController>();
+  final takeAwayController = Get.find<TakeAwayController>();
+  final diniInController = Get.find<DiniInController>();
+  final cartController = Get.find<CartController>();
+
+  late String combinedAddress = "";
+  String floorAndTableName = "";
+  
   int selectedOrderType = 0;
-  List<String> customerNames= <String>[
-    'Ali',
-    'Ahmed',
-    'Kumar',
-    'Hassan',
-    'Khan',
-    'Hussain',
-    'Mohamed',
-    'Abdulla',
-    'Yousif',
-    'Ebrahim',
-    'Janahi',
-    'Salman',
-    'Nair',
-    'Saleh',
-    'Mahmood',
-    'Mathew'
-  ];
+  String selectedOrderTypeName = "";
+
+  @override
+  void initState() {
+    
+    selectedOrderType = menuController.selectedOrderType.value;
+    selectedOrderTypeName = orderTypes[selectedOrderType].name;
+    if(selectedOrderTypeName == "Dine In"){
+      floorAndTableName = "${diniInController.selectedFloor.value.vFloorName}  ${diniInController.selectedTable.value.vTableName}";
+      // setState(() {
+      //  controller.refreshProceedController();
+      // });
+    }
+    else if(selectedOrderTypeName == "Take Away"){
+      //controller.refreshProceedController();
+      if(takeAwayController.selectedCustomer.vCustomerId.isNotEmpty){
+        controller.selectedCustomer = takeAwayController.selectedCustomer;
+      }
+    }
+    else if(selectedOrderTypeName == "Delivery"){
+      //controller.refreshProceedController();
+      if(deliveryController.selectedCustomer.vCustomerId.isNotEmpty){
+        controller.selectedCustomer = deliveryController.selectedCustomer;
+      }
+      if(deliveryController.selectedCustomerAddress.vArea.isNotEmpty){
+        controller.selectedCustomerAddress = deliveryController.selectedCustomerAddress;
+      }
+    }
+    else if(selectedOrderTypeName == "Drive Through"){
+     // controller.refreshProceedController();
+      if(driveThroughController.selectedCustomer.vCustomerId.isNotEmpty){
+        controller.selectedCustomer = driveThroughController.selectedCustomer;
+      }
+      if(driveThroughController.selectedCustomerAddress.vArea.isNotEmpty){
+        controller.selectedCustomerAddress = driveThroughController.selectedCustomerAddress;
+      }
+      if(driveThroughController.carNumberController.text.isNotEmpty){
+        controller.carNumberController.text = driveThroughController.carNumberController.text;
+      }
+    }
+
+    if(controller.getSelectedCustomerAddress().vAddId.isNotEmpty){
+      combinedAddress = controller.combinedCustomerAddressFields(controller.getSelectedCustomerAddress());
+    }
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
+    floorAndTableName = "${diniInController.selectedFloor.value.vFloorName}  ${diniInController.selectedTable.value.vTableName}";
+    TextEditingValue selectedCustomer = TextEditingValue(text: controller.getSelectedCustomer().vCustomerName);
+    TextEditingValue selectedAddress = TextEditingValue(text: combinedAddress);
+    controller.setCustomerList();
+    TextEditingController addressTextController = TextEditingController();
     Size size= MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
         title: const Text("Proceed"),
         backgroundColor: Palette.bgColorPerple,
+        leading: GestureDetector(
+        onTap: () {
+          Get.to(() => const CartScreen());
+        },
+        child: const Icon(Icons.arrow_back),
+        ),
       ),
       body: SingleChildScrollView(
         child: Container(
@@ -104,15 +165,29 @@ class _ProceedScreenState extends State<ProceedScreen> {
                   const SizedBox(
                     height: 20,
                   ),
-                  Autocomplete <String>(
-                  optionsBuilder: (TextEditingValue textEditingValue){
-                    if(textEditingValue.text == ''){
-                      return const Iterable<String>.empty();
-                    }
-                    return customerNames.where((String customer){
-                      return customer.contains(textEditingValue.text.toLowerCase());
+                Autocomplete <CustomerList>(
+                  initialValue: selectedCustomer,
+                  onSelected: (option) {
+                    debugPrint(option.vCustomerName.toString());
+                    controller.setSelectedCustomer(option);
+                    debugPrint("From Controller ${controller.getSelectedCustomer().vCustomerName}");
+                    controller.setCustomerAddressList(option.vCustomerId);
+                    setState(() {
+                      controller.setSelectedCustomerAddress(CustomerAddressList(vCustomerId: "", vAddId: "", vArea: "", vBuildingNo: "", vFlatNo: "", vBlockNo: "", vRoadNo: ""));
+                      addressTextController.text = "";
                     });
                   },
+                  optionsBuilder: (TextEditingValue textEditingValue){
+                    if(textEditingValue.text == ''){
+                      return const Iterable<CustomerList>.empty();
+                    }
+                    return controller.customerList.where((CustomerList customer){
+                      return customer.vCustomerName.toLowerCase().contains(textEditingValue.text.toLowerCase());
+                    });
+                  },
+                   displayStringForOption: (customer) {
+                    return customer.vCustomerName;
+                   },
                   fieldViewBuilder: (context, controller, focusNode, onFieldSubmitted) {
                     return TextField(
                       controller: controller,
@@ -129,18 +204,26 @@ class _ProceedScreenState extends State<ProceedScreen> {
                   },
                 ),
                 Palette.sizeBoxVarticalSpace,
-                Autocomplete <String>(
+                Autocomplete <CustomerAddressList>(
+                  initialValue: selectedAddress,
+                  onSelected: (option) {
+                    controller.setSelectedCustomerAddress(option);
+                  },
                   optionsBuilder: (TextEditingValue textEditingValue){
                     if(textEditingValue.text == ''){
-                      return const Iterable<String>.empty();
+                      return const Iterable<CustomerAddressList>.empty();
                     }
-                    return customerNames.where((String customer){
-                      return customer.contains(textEditingValue.text.toLowerCase());
+                    return controller.customerAddressList.where((CustomerAddressList address){
+                      String combinedAddress = controller.combinedCustomerAddressFields(address);
+                      return combinedAddress.toLowerCase().contains(textEditingValue.text.toLowerCase());
                     });
                   },
-                  fieldViewBuilder: (context, controller, focusNode, onFieldSubmitted) {
+                  displayStringForOption: (address) {
+                    return controller.combinedCustomerAddressFields(address);
+                  },
+                  fieldViewBuilder: (context, addressTextController, focusNode, onFieldSubmitted) {              
                     return TextField(
-                      controller: controller,
+                      controller: addressTextController,
                       focusNode: focusNode,
                       onEditingComplete: onFieldSubmitted,
                       decoration: const InputDecoration(
@@ -154,8 +237,9 @@ class _ProceedScreenState extends State<ProceedScreen> {
                   },
                 ),
                 Palette.sizeBoxVarticalSpace,
-                const TextField(
-                    decoration: InputDecoration(
+                TextField(
+                    controller: controller.carNumberController,
+                    decoration: const InputDecoration(
                       hintText: "Car Number",
                       prefixIcon: Icon(
                         Icons.car_crash,
@@ -169,18 +253,21 @@ class _ProceedScreenState extends State<ProceedScreen> {
                   if(selectedOrderType == 0)
                   Row(
                     children: [
-                      const Text("Floor 1 - Table 5",
-                        style: TextStyle(
-                          fontFamily: Palette.layoutFont,
-                          fontWeight: FontWeight.w600,
-                          color: Palette.textColorPurple,
-                          fontSize: Palette.contentTitleFontSizeL
+                      Obx(
+                        () => Text("${diniInController.selectedFloor.value.vFloorName}  ${diniInController.selectedTable.value.vTableName}",
+                          style: const TextStyle(
+                            fontFamily: Palette.layoutFont,
+                            fontWeight: FontWeight.w600,
+                            color: Palette.textColorPurple,
+                            fontSize: Palette.contentTitleFontSizeL
+                          ),
                         ),
                       ),
                       const SizedBox(
                         width: 30,
                       ),
                       TextButton(onPressed: (){
+                        setState(() {
                           showModalBottomSheet(context: context,
                           isScrollControlled: true,
                           shape: const RoundedRectangleBorder(
@@ -192,6 +279,7 @@ class _ProceedScreenState extends State<ProceedScreen> {
                             return const DineInScreen();
                           }
                         );
+                        });
                       },
                       child: Container(
                         width: 80,
@@ -235,12 +323,20 @@ class _ProceedScreenState extends State<ProceedScreen> {
         padding: const EdgeInsets.symmetric(vertical: 10),
         child: TextButton(
           onPressed: (){
+          InvoiceInfoDetails invoiceData = cartController.getInvoiceInfoDetails(
+            (selectedOrderType + 1).toString(),
+             diniInController.selectedTable.value.vTableId, 
+             controller.getSelectedCustomer().vCustomerName,
+             controller.combinedCustomerAddressFields(controller.getSelectedCustomerAddress())
+             );
+          String jsonData = invoiceInfoDetailsToJson(invoiceData);
+          debugPrint(jsonData);
           // Navigator.push(context,
           // MaterialPageRoute(builder: (_) => const MenuScreen(),),);
           Get.to(const OrderSuccessfulScreen());}, 
-            child: const CurbButton(
-              buttonPadding: EdgeInsets.only(left: 0,right: 0),
-              child: Row(
+          child: const CurbButton(
+            buttonPadding: EdgeInsets.only(left: 0,right: 0),
+            child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 Text("PROCEED",style: TextStyle(

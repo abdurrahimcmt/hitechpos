@@ -10,6 +10,7 @@ class MenuScreenController extends GetxController{
   final loginController = Get.find<LoginController>();
   TextEditingController searchTextEditingController = TextEditingController();
   final selectedOrderType = 0.obs;
+  String selectedOrderTypeName = "Dine In";
   late Future<CategoryInfo> categoryInfoList;
   var itemInfo = ItemInfo(messageId: "", message: "", itemList: []).obs;
   var itemInfoIsloading = true.obs;
@@ -19,7 +20,6 @@ class MenuScreenController extends GetxController{
  @override
   void onInit() {
     super.onInit();
-    
     fatchItemInfo("all","all");
     categoryInfoList = fatchCategoryInfo();
   }
@@ -73,6 +73,12 @@ class MenuScreenController extends GetxController{
     selectedOrderType.value = index;
   }
 
+  setSelectedOrderTypeName(String type){
+    selectedOrderTypeName = type;
+  }
+  getSelectedOrderTypeName(){
+    return selectedOrderTypeName;
+  }
 
 
 }

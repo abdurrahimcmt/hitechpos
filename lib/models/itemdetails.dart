@@ -41,6 +41,9 @@ class ItemViewList {
     String vImagePath;
     String vItemPrice;
     String vPriceDetails;
+    String vVatCatId;
+    String vVatOption;
+    double  mPercentage;
     List<ItemPriceList> itemPriceList;
     List<OnlineModifierList> onlineModifierLists;
 
@@ -53,6 +56,9 @@ class ItemViewList {
         required this.vImagePath,
         required this.vItemPrice,
         required this.vPriceDetails,
+        required this.vVatCatId,
+        required this.vVatOption,
+        required this.mPercentage,
         required this.itemPriceList,
         required this.onlineModifierLists,
     });
@@ -66,6 +72,9 @@ class ItemViewList {
         vImagePath: json["vImagePath"],
         vItemPrice: json["vItemPrice"],
         vPriceDetails: json["vPriceDetails"],
+        vVatCatId: json["vVatCatId"],
+        vVatOption: json["vVatOption"],
+        mPercentage: json["mPercentage"].toDouble(),
         itemPriceList: List<ItemPriceList>.from(json["itemPriceList"].map((x) => ItemPriceList.fromJson(x))),
         onlineModifierLists: List<OnlineModifierList>.from(json["onlineModifierLists"].map((x) => OnlineModifierList.fromJson(x))),
     );
@@ -79,6 +88,9 @@ class ItemViewList {
         "vImagePath": vImagePath,
         "vItemPrice": vItemPrice,
         "vPriceDetails": vPriceDetails,
+        "vVatCatId": vVatCatId,
+        "vVatOption": vVatOption,
+        "mPercentage": mPercentage,
         "itemPriceList": List<dynamic>.from(itemPriceList.map((x) => x.toJson())),
         "onlineModifierLists": List<dynamic>.from(onlineModifierLists.map((x) => x.toJson())),
     };
@@ -87,55 +99,119 @@ class ItemViewList {
 class ItemPriceList {
     String vUnitId;
     String vUnitName;
-    String vPrice;
+    String vVatCatId;
+    String vVatOption;
+    double mPercentage;
+    double mMainPrice;
+    double mVatAmount;
+    double mWoVatAmount;
+    double mFinalPrice;
 
     ItemPriceList({
         required this.vUnitId,
         required this.vUnitName,
-        required this.vPrice,
+        required this.vVatCatId,
+        required this.vVatOption,
+        required this.mPercentage,
+        required this.mMainPrice,
+        required this.mVatAmount,
+        required this.mWoVatAmount,
+        required this.mFinalPrice,
     });
 
     factory ItemPriceList.fromJson(Map<String, dynamic> json) => ItemPriceList(
         vUnitId: json["vUnitId"],
         vUnitName: json["vUnitName"],
-        vPrice: json["vPrice"],
+        vVatCatId: json["vVatCatId"],
+        vVatOption: json["vVatOption"],
+        mPercentage: json["mPercentage"]?.toDouble(),
+        mMainPrice: json["mMainPrice"]?.toDouble(),
+        mVatAmount: json["mVatAmount"]?.toDouble(),
+        mWoVatAmount: json["mWoVatAmount"]?.toDouble(),
+        mFinalPrice: json["mFinalPrice"]?.toDouble(),
     );
 
     Map<String, dynamic> toJson() => {
         "vUnitId": vUnitId,
         "vUnitName": vUnitName,
-        "vPrice": vPrice,
+        "vVatCatId": vVatCatId,
+        "vVatOption": vVatOption,
+        "mPercentage": mPercentage,
+        "mMainPrice": mMainPrice,
+        "mVatAmount": mVatAmount,
+        "mWoVatAmount": mWoVatAmount,
+        "mFinalPrice": mFinalPrice,
     };
 }
 
 class OnlineModifierList {
-    int iSerial;
+    dynamic iSerial;
     String vItemIdModifier;
     String vItemName;
+    String iUnitId;
+    String vUnitName;
     String vQuantity;
     String vMainPrice;
+    double mQuantity;
+    double mMainPrice;
+    double mVatAmount;
+    double mWoVatAmount;
+    double mFinalPrice;
+    String vVatCatId;
+    String vVatOption;
+    double mPercentage;
 
     OnlineModifierList({
-        required this.iSerial,
+        this.iSerial,
         required this.vItemIdModifier,
         required this.vItemName,
+        required this.iUnitId,
+        required this.vUnitName,
         required this.vQuantity,
         required this.vMainPrice,
+        required this.mQuantity,
+        required this.mMainPrice,
+        required this.mVatAmount,
+        required this.mWoVatAmount,
+        required this.mFinalPrice,
+        required this.vVatCatId,
+        required this.vVatOption,
+        required this.mPercentage,
     });
 
     factory OnlineModifierList.fromJson(Map<String, dynamic> json) => OnlineModifierList(
         iSerial: json["iSerial"],
         vItemIdModifier: json["vItemIdModifier"],
         vItemName: json["vItemName"],
+        iUnitId: json["iUnitId"],
+        vUnitName: json["vUnitName"],
         vQuantity: json["vQuantity"],
         vMainPrice: json["vMainPrice"],
+        mQuantity: json["mQuantity"]?.toDouble(),
+        mMainPrice: json["mMainPrice"]?.toDouble(),
+        mVatAmount: json["mVatAmount"]?.toDouble(),
+        mWoVatAmount: json["mWoVatAmount"]?.toDouble(),
+        mFinalPrice: json["mFinalPrice"]?.toDouble(),
+        vVatCatId: json["vVatCatId"],
+        vVatOption: json["vVatOption"],
+        mPercentage: json["mPercentage"]?.toDouble(),
     );
 
     Map<String, dynamic> toJson() => {
         "iSerial": iSerial,
         "vItemIdModifier": vItemIdModifier,
         "vItemName": vItemName,
+        "iUnitId": iUnitId,
+        "vUnitName": vUnitName,
         "vQuantity": vQuantity,
         "vMainPrice": vMainPrice,
+        "mQuantity": mQuantity,
+        "mMainPrice": mMainPrice,
+        "mVatAmount": mVatAmount,
+        "mWoVatAmount": mWoVatAmount,
+        "mFinalPrice": mFinalPrice,
+        "vVatCatId": vVatCatId,
+        "vVatOption": vVatOption,
+        "mPercentage": mPercentage,
     };
 }

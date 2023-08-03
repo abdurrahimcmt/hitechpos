@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:hitechpos/common/palette.dart';
+import 'package:hitechpos/controllers/drivethrough_controller.dart';
+import 'package:hitechpos/models/customeraddress.dart';
+import 'package:hitechpos/models/customerinfo.dart';
 import 'package:hitechpos/widgets/common_submit_button.dart';
 
 class DriveThroughScreen extends StatefulWidget {
@@ -8,29 +12,23 @@ class DriveThroughScreen extends StatefulWidget {
   @override
   State<DriveThroughScreen> createState() => _DriveThroughScreenState();
 }
-
 class _DriveThroughScreenState extends State<DriveThroughScreen> {
-  late TextEditingController customerTextController;
-  List<String> customerNames= <String>[
-    'Ali',
-    'Ahmed',
-    'Kumar',
-    'Hassan',
-    'Khan',
-    'Hussain',
-    'Mohamed',
-    'Abdulla',
-    'Yousif',
-    'Ebrahim',
-    'Janahi',
-    'Salman',
-    'Nair',
-    'Saleh',
-    'Mahmood',
-    'Mathew'
-  ];
+  final driveThroughController = Get.find<DriveThroughController>();
+  late String combinedAddress = "";
+
+  @override
+  void initState() {
+    if(driveThroughController.getSelectedCustomerAddress().vAddId.isNotEmpty){
+      combinedAddress = driveThroughController.combinedCustomerAddressFields(driveThroughController.getSelectedCustomerAddress());
+    }
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
+    TextEditingValue selectedCustomer = TextEditingValue(text: driveThroughController.getSelectedCustomer().vCustomerName);
+    TextEditingValue selectedAddress = TextEditingValue(text: combinedAddress);
+    driveThroughController.setCustomerList();
+    TextEditingController addressTextController = TextEditingController();
     return Container(
       decoration: Palette.containerCurbBoxdecoration,
         height: MediaQuery.of(context).size.height*0.80,
@@ -48,15 +46,29 @@ class _DriveThroughScreenState extends State<DriveThroughScreen> {
                 const SizedBox(
                   height: 100,
                 ),
-                Autocomplete <String>(
-                  optionsBuilder: (TextEditingValue textEditingValue){
-                    if(textEditingValue.text == ''){
-                      return const Iterable<String>.empty();
-                    }
-                    return customerNames.where((String customer){
-                      return customer.contains(textEditingValue.text.toLowerCase());
+                Autocomplete <CustomerList>(
+                  initialValue: selectedCustomer,
+                  onSelected: (option) {
+                    debugPrint(option.vCustomerName.toString());
+                    driveThroughController.setSelectedCustomer(option);
+                    debugPrint("From Controller ${driveThroughController.getSelectedCustomer().vCustomerName}");
+                    driveThroughController.setCustomerAddressList(option.vCustomerId);
+                    setState(() {
+                      driveThroughController.setSelectedCustomerAddress(CustomerAddressList(vCustomerId: "", vAddId: "", vArea: "", vBuildingNo: "", vFlatNo: "", vBlockNo: "", vRoadNo: ""));
+                      addressTextController.text = "";
                     });
                   },
+                  optionsBuilder: (TextEditingValue textEditingValue){
+                    if(textEditingValue.text == ''){
+                      return const Iterable<CustomerList>.empty();
+                    }
+                    return driveThroughController.customerList.where((CustomerList customer){
+                      return customer.vCustomerName.toLowerCase().contains(textEditingValue.text.toLowerCase());
+                    });
+                  },
+                   displayStringForOption: (customer) {
+                    return customer.vCustomerName;
+                   },
                   fieldViewBuilder: (context, controller, focusNode, onFieldSubmitted) {
                     return TextField(
                       controller: controller,
@@ -73,18 +85,26 @@ class _DriveThroughScreenState extends State<DriveThroughScreen> {
                   },
                 ),
                 Palette.sizeBoxVarticalSpace,
-                Autocomplete <String>(
+                Autocomplete <CustomerAddressList>(
+                  initialValue: selectedAddress,
+                  onSelected: (option) {
+                    driveThroughController.setSelectedCustomerAddress(option);
+                  },
                   optionsBuilder: (TextEditingValue textEditingValue){
                     if(textEditingValue.text == ''){
-                      return const Iterable<String>.empty();
+                      return const Iterable<CustomerAddressList>.empty();
                     }
-                    return customerNames.where((String customer){
-                      return customer.contains(textEditingValue.text.toLowerCase());
+                    return driveThroughController.customerAddressList.where((CustomerAddressList address){
+                      String combinedAddress = driveThroughController.combinedCustomerAddressFields(address);
+                      return combinedAddress.toLowerCase().contains(textEditingValue.text.toLowerCase());
                     });
                   },
-                  fieldViewBuilder: (context, controller, focusNode, onFieldSubmitted) {
+                  displayStringForOption: (address) {
+                    return driveThroughController.combinedCustomerAddressFields(address);
+                  },
+                  fieldViewBuilder: (context, addressTextController, focusNode, onFieldSubmitted) {              
                     return TextField(
-                      controller: controller,
+                      controller: addressTextController,
                       focusNode: focusNode,
                       onEditingComplete: onFieldSubmitted,
                       decoration: const InputDecoration(
@@ -96,10 +116,11 @@ class _DriveThroughScreenState extends State<DriveThroughScreen> {
                       ),
                     );
                   },
-                ),
+                ),                
                 Palette.sizeBoxVarticalSpace,
-                const TextField(
-                  decoration: InputDecoration(
+                TextField(
+                  controller: driveThroughController.carNumberController,
+                  decoration: const InputDecoration(
                     hintText: "Car Number",
                     prefixIcon: Icon(
                       Icons.car_crash,
