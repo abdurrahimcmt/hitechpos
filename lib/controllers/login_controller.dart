@@ -158,7 +158,7 @@ class LoginController extends GetxController {
   //select branch if has local storage 
   void selectBranchfromLocalStorage() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-      var  branchId = prefs.getString("branch_Id") ?? "0"; 
+      var  branchId = prefs.getString(SharedPreferencesKeys.loginBranch.name) ?? "0"; 
       if(branchId != "0"){
         selectedBranchId.value = branchId;
       }
@@ -167,9 +167,9 @@ class LoginController extends GetxController {
   void _loadUserNameAndPassword() async{
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      var  username = prefs.getString("username") ?? ""; 
-      var  password = prefs.getString("password") ?? ""; 
-      var  rememberMe = prefs.getBool("remember_me") ?? false;
+      var  username = prefs.getString(SharedPreferencesKeys.loginUserName.name) ?? ""; 
+      var  password = prefs.getString(SharedPreferencesKeys.loginPassword.name) ?? ""; 
+      var  rememberMe = prefs.getBool(SharedPreferencesKeys.rememberMe.name) ?? false;
       debugPrint(username);
       debugPrint(password);
       debugPrint(rememberMe.toString());
@@ -193,17 +193,17 @@ class LoginController extends GetxController {
   void handleRemember(bool value){
     isRememberMe.value = value;
     SharedPreferences.getInstance().then((prefs) {
-          prefs.setBool("remember_me", value);
-          prefs.setString("username", userNameController.text);
-          prefs.setString("password", passwordController.text);
+          prefs.setBool(SharedPreferencesKeys.rememberMe.name, value);
+          prefs.setString(SharedPreferencesKeys.loginUserName.name, userNameController.text);
+          prefs.setString(SharedPreferencesKeys.loginPassword.name, passwordController.text);
           if(selectedBranchId.value.isNotEmpty){
-            prefs.setString("branch_Id", selectedBranchId.value);
+            prefs.setString(SharedPreferencesKeys.loginBranch.name, selectedBranchId.value);
           }
           if(isRememberMe.value){
-            prefs.setBool("autoLogin", true);
+            prefs.setBool(SharedPreferencesKeys.autoLogin.name, true);
           }
           else{
-            prefs.setBool("autoLogin", false);
+            prefs.setBool(SharedPreferencesKeys.autoLogin.name, false);
           }
         }
     );
@@ -239,11 +239,11 @@ class LoginController extends GetxController {
   void setRegistrationInformationFromLocalstorage() async{
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      var registrationSchema = prefs.getString("schema");
-      var registrationDomain = prefs.getString("domain");
-      var registrationPort = prefs.getString("port");
-      var registrationKey = prefs.getString("registrationkey");
-      isRegistrationSuccessfull.value = prefs.getBool("isregistration")! ;
+      var registrationSchema = prefs.getString(SharedPreferencesKeys.schema.name);
+      var registrationDomain = prefs.getString(SharedPreferencesKeys.domain.name);
+      var registrationPort = prefs.getString(SharedPreferencesKeys.port.name);
+      var registrationKey = prefs.getString(SharedPreferencesKeys.registrationkey.name);
+      isRegistrationSuccessfull.value = prefs.getBool(SharedPreferencesKeys.isregistration.name)! ;
 
       if(registrationKey!.isNotEmpty && 
         registrationPort!.isNotEmpty && 
@@ -267,10 +267,10 @@ class LoginController extends GetxController {
   void checkRegistrationInformationIntoLocalstorage() async{
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      var registrationSchema = prefs.getString("schema");
-      var registrationDomain = prefs.getString("domain");
-      var registrationPort = prefs.getString("port");
-      var registrationKey = prefs.getString("registrationkey");
+      var registrationSchema = prefs.getString(SharedPreferencesKeys.schema.name);
+      var registrationDomain = prefs.getString(SharedPreferencesKeys.domain.name);
+      var registrationPort = prefs.getString(SharedPreferencesKeys.port.name);
+      var registrationKey = prefs.getString(SharedPreferencesKeys.registrationkey.name);
       if(registrationKey!.isNotEmpty && 
         registrationPort!.isNotEmpty && 
         registrationDomain!.isNotEmpty && 
@@ -294,11 +294,11 @@ class LoginController extends GetxController {
   void saveRegistrationInformationInLocal(String schema,String domain,String port,String key){
     if(isRegistrationSuccessfull.value){
       SharedPreferences.getInstance().then((prefs) {
-          prefs.setString("schema", schema);
-          prefs.setString("port", port);
-          prefs.setString("domain", domain);
-          prefs.setString("registrationkey", key);
-          prefs.setBool("isregistration", true);
+          prefs.setString(SharedPreferencesKeys.schema.name, schema);
+          prefs.setString(SharedPreferencesKeys.port.name, port);
+          prefs.setString(SharedPreferencesKeys.domain.name, domain);
+          prefs.setString(SharedPreferencesKeys.registrationkey.name, key);
+          prefs.setBool(SharedPreferencesKeys.isregistration.name, true);
         }
       );
       //setBaseUrl();
@@ -317,11 +317,11 @@ class LoginController extends GetxController {
       debugPrint("base Url call");
       //setRegistrationInformationFromLocalstorage();
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      var registrationSchema = prefs.getString("schema");
-      var registrationDomain = prefs.getString("domain");
-      var registrationPort = prefs.getString("port");
-      var registrationKey = prefs.getString("registrationkey");
-      var branchId = prefs.getString("branch_Id");
+      var registrationSchema = prefs.getString(SharedPreferencesKeys.schema.name);
+      var registrationDomain = prefs.getString(SharedPreferencesKeys.domain.name);
+      var registrationPort = prefs.getString(SharedPreferencesKeys.port.name);
+      var registrationKey = prefs.getString(SharedPreferencesKeys.registrationkey.name);
+      var branchId = prefs.getString(SharedPreferencesKeys.loginBranch.name);
       var userId = prefs.getString(SharedPreferencesKeys.vUserId.name);
       baseurlFromLocalStorage = CreateBaseUrl().createBaseUrl(registrationSchema!, registrationDomain!, registrationPort!);
       registrationKeyFromLocalStorage = registrationKey!;
@@ -375,13 +375,13 @@ class LoginController extends GetxController {
         if(selectedBranchId.value.isNotEmpty){
           branchId = selectedBranchId.value;
         }
-        
         String baseurl = baseurlFromLocalStorage;
         final url = Uri.parse('${baseurl}api/login');
         final headers = {
           'Key': registrationKeyFromLocalStorage,
           'Content-Type': 'application/json',
         };
+        
         final body = jsonEncode({
           "BranchId": branchId,
           'Username': username,
@@ -402,6 +402,7 @@ class LoginController extends GetxController {
                 prefs.setString(SharedPreferencesKeys.vEmailId.name, data[SharedPreferencesKeys.vEmailId.name]);
                 prefs.setString(SharedPreferencesKeys.vEmployeeId.name, data[SharedPreferencesKeys.vEmployeeId.name]);
                 prefs.setString(SharedPreferencesKeys.dLastLogin.name, data[SharedPreferencesKeys.dLastLogin.name]);
+                prefs.setString(SharedPreferencesKeys.rendomNumberForOrderId.name, data["vUniqueId"]);
               }
             );
             handleRemember(isRememberMe.value);
@@ -423,4 +424,40 @@ class LoginController extends GetxController {
       debugPrint('Error: $e');
     }
   }
+
+    Future<bool> isUserValid(String username, String password, String branchId) async {
+    try {
+      String baseurl = baseurlFromLocalStorage;
+      final url = Uri.parse('${baseurl}api/login');
+      final headers = {
+        'Key': registrationKeyFromLocalStorage,
+        'Content-Type': 'application/json',
+      };
+      final body = jsonEncode({
+        "BranchId": branchId,
+        'Username': username,
+        'Password': password,
+      });
+      final response = await http.post(url, headers: headers, body: body);
+      if (response.statusCode == 200) {
+        var data = jsonDecode(response.body);
+        debugPrint(data.toString());
+        if(data['messageId'] == '200'){
+          SharedPreferences.getInstance().then((prefs) {
+              prefs.setString(SharedPreferencesKeys.rendomNumberForOrderId.name, data["vUniqueId"]);
+            }
+          );
+          return true;
+        }
+      } 
+      else {
+        Get.snackbar("Error",'Login Failed - Status Code: ${response.statusCode}',snackPosition: SnackPosition.BOTTOM);
+      }
+    } 
+    catch (e) {
+      debugPrint('Error: $e');
+    }
+    return false;
+  }
+
 }

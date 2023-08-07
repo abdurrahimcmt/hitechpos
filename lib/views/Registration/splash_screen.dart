@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:hitechpos/common/palette.dart';
+import 'package:hitechpos/data/data.dart';
 import 'package:hitechpos/views/dashboard/dashboard_screen.dart';
 import 'package:hitechpos/views/onnboarding/onboarding_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -22,7 +23,7 @@ class _SplashScreenState extends State<SplashScreen> {
     void loadedScreen() async{
       try {
         SharedPreferences prefs = await SharedPreferences.getInstance();
-        autoLogin = prefs.getBool("autoLogin") ?? false;
+        autoLogin = prefs.getBool(SharedPreferencesKeys.autoLogin.name) ?? false;
         debugPrint("auto login $autoLogin");
       } catch (e) {
         debugPrint(e.toString());

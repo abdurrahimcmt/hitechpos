@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:hitechpos/common/palette.dart';
+import 'package:hitechpos/data/data.dart';
 import 'package:hitechpos/views/Registration/login_screen.dart';
 import 'package:hitechpos/views/Registration/registrationbeforelogin.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -22,7 +23,7 @@ class _CommonSplashScreenState extends State<CommonSplashScreen> {
     void checkRegistration() async{
       try {
         SharedPreferences prefs = await SharedPreferences.getInstance();
-        isRegistrationSuccessfull = prefs.getBool("isregistration") ?? false;
+        isRegistrationSuccessfull = prefs.getBool(SharedPreferencesKeys.isregistration.name) ?? false;
         debugPrint("Is Registration $isRegistrationSuccessfull");
       } catch (e) {
         debugPrint(e.toString());

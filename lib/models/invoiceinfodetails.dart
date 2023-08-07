@@ -4,6 +4,9 @@
 
 import 'dart:convert';
 
+String formatDateForMySQL(DateTime dateTime) {
+  return "${dateTime.year}-${dateTime.month.toString().padLeft(2, '0')}-${dateTime.day.toString().padLeft(2, '0')} ${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}:${dateTime.second.toString().padLeft(2, '0')}";
+}
 InvoiceInfoDetails invoiceInfoDetailsFromJson(String str) => InvoiceInfoDetails.fromJson(json.decode(str));
 
 String invoiceInfoDetailsToJson(InvoiceInfoDetails data) => json.encode(data.toJson());
@@ -53,9 +56,12 @@ class InvoiceInfo {
     DateTime dCreatedDate;
     String vModifiedBy;
     DateTime dModifiedDate;
+    String  vSyncedMacId;
+    String  iSynced;
+    String vUniqueId;
     List<InvoiceDetail> invoiceDetails;
     List<dynamic> invoiceSettle;
-
+    
     InvoiceInfo({
         required this.vBranchId,
         required this.vInvoiceId,
@@ -87,6 +93,9 @@ class InvoiceInfo {
         required this.dModifiedDate,
         required this.invoiceDetails,
         required this.invoiceSettle,
+        required this.vSyncedMacId,
+        required this.iSynced,
+        required this.vUniqueId,
     });
 
     factory InvoiceInfo.fromJson(Map<String, dynamic> json) => InvoiceInfo(
@@ -118,6 +127,9 @@ class InvoiceInfo {
         dCreatedDate: DateTime.parse(json["dCreatedDate"]),
         vModifiedBy: json["vModifiedBy"],
         dModifiedDate: DateTime.parse(json["dModifiedDate"]),
+        vSyncedMacId: json["vSyncedMacId"],
+        iSynced: json["iSynced"],
+        vUniqueId: json["vUniqueId"],
         invoiceDetails: List<InvoiceDetail>.from(json["invoiceDetails"].map((x) => InvoiceDetail.fromJson(x))),
         invoiceSettle: List<dynamic>.from(json["invoiceSettle"].map((x) => x)),
     );
@@ -139,18 +151,21 @@ class InvoiceInfo {
         "vCustomerId": vCustomerId,
         "vCustomerAddress": vCustomerAddress,
         "iNoOfCustomers": iNoOfCustomers,
-        "dSaveDate": dSaveDate.toIso8601String(),
-        "dSettleDate": dSettleDate.toIso8601String(),
-        "dDeliveryDate": dDeliveryDate.toIso8601String(),
+        "dSaveDate": formatDateForMySQL(dSaveDate),
+        "dSettleDate": formatDateForMySQL(dSettleDate),
+        "dDeliveryDate": formatDateForMySQL(dDeliveryDate),
         "mBillAmount": mBillAmount,
         "mPaidAmount": mPaidAmount,
         "vSpecialNote": vSpecialNote,
         "vRemarksForVoid": vRemarksForVoid,
         "vTerminalName": vTerminalName,
         "vCreatedBy": vCreatedBy,
-        "dCreatedDate": dCreatedDate.toIso8601String(),
+        "dCreatedDate":  formatDateForMySQL(dCreatedDate),
         "vModifiedBy": vModifiedBy,
-        "dModifiedDate": dModifiedDate.toIso8601String(),
+        "dModifiedDate": formatDateForMySQL(dModifiedDate) ,
+        "vSyncedMacId": vSyncedMacId,
+        "iSynced": iSynced,
+        "vUniqueId": vUniqueId,
         "invoiceDetails": List<dynamic>.from(invoiceDetails.map((x) => x.toJson())),
         "invoiceSettle": List<dynamic>.from(invoiceSettle.map((x) => x)),
     };
@@ -294,8 +309,8 @@ class InvoiceDetail {
         "iInvoiceStatusId": iInvoiceStatusId,
         "vStatusRemarks": vStatusRemarks,
         "vCreatedBy": vCreatedBy,
-        "dCreatedDate": dCreatedDate.toIso8601String(),
+        "dCreatedDate": formatDateForMySQL(dCreatedDate),
         "vModifiedBy": vModifiedBy,
-        "dModifiedDate": dModifiedDate.toIso8601String(),
+        "dModifiedDate": formatDateForMySQL(dModifiedDate),
     };
 }

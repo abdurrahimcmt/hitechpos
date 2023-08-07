@@ -9,7 +9,10 @@ import 'package:hitechpos/controllers/takeway_controller.dart';
 import 'package:hitechpos/data/data.dart';
 import 'package:hitechpos/models/customeraddress.dart';
 import 'package:hitechpos/models/customerinfo.dart';
+import 'package:hitechpos/models/invoiceinfodetails.dart';
+import 'package:hitechpos/views/proceedorder/ordersuccessful.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ProceedController extends GetxController {
 
@@ -18,6 +21,7 @@ class ProceedController extends GetxController {
   final driveThroughController = Get.find<DriveThroughController>();
   final deliveryController = Get.find<DeliveryController>();
   final takeAwayController = Get.find<TakeAwayController>();
+  var uniqueId = "";
   final isDataLoading = true.obs;
   late List<CustomerList> customerList;
   late TextEditingController customerTextController = TextEditingController();
@@ -46,8 +50,6 @@ class ProceedController extends GetxController {
     super.onReady();
     setCustomerList();
   }
-
-  
 
   void setOrderTypeData(int orderTypeIndex){
     debugPrint("setOrderTypeData $orderTypeIndex");
@@ -176,6 +178,56 @@ class ProceedController extends GetxController {
     }
     else{
       throw Exception('Failed to load Customer');
+    }
+  }
+
+  Future<bool> checkUserValidity() async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      var  username = prefs.getString(SharedPreferencesKeys.loginUserName.name) ?? ""; 
+      var  password = prefs.getString(SharedPreferencesKeys.loginPassword.name) ?? "";
+      var  branchId = prefs.getString(SharedPreferencesKeys.loginBranch.name) ?? "";
+
+      if(await loginController.isUserValid(username, password, branchId)){
+        return true;
+      }
+    } catch (e) {
+      debugPrint(e.toString());
+    }
+    return false;
+  }
+
+  Future<void> proceedOrderPostRequest(Future<InvoiceInfoDetails> invoiceData) async{
+    if(await checkUserValidity()){
+      String jsonData = invoiceInfoDetailsToJson(await invoiceData);
+      String baseurl = loginController.baseurlFromLocalStorage;
+      final url = Uri.parse('${baseurl}api/invoice/app');
+      debugPrint(url.toString());
+      debugPrint(loginController.registrationKeyFromLocalStorage);
+      debugPrint(jsonData);
+      
+      // https://hiposbh.com:84/api/invoice/app
+      final headers = {
+        'Key': loginController.registrationKeyFromLocalStorage,
+        'Content-Type': 'application/json',
+        'mbserial': '94-E9-79-CB-E9-A3'
+      };
+
+      final body = jsonData;
+      final response = await http.post(url, headers: headers, body: body);
+      debugPrint(response.statusCode.toString());
+      if(response.statusCode == 200){
+        debugPrint("responce 200");
+        var data = jsonDecode(response.body);
+        debugPrint(data.toString());
+        if(data['messageId'] == '200'){
+          debugPrint("Save Successfull");
+          Get.to(const OrderSuccessfulScreen());
+        }
+      }
+
+     // Get.to(const OrderSuccessfulScreen());
+     // debugPrint(jsonData);
     }
   }
 

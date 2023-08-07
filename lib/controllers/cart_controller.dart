@@ -1,14 +1,27 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hitechpos/controllers/login_controller.dart';
+import 'package:hitechpos/data/data.dart';
 import 'package:hitechpos/models/cartDetailsmodel.dart';
 import 'package:hitechpos/models/invoiceinfodetails.dart';
 import 'package:hitechpos/models/itemdetails.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class CartController extends GetxController{
 
   Rx< List<CartDetailsModel> >cartDetailsModelList = Rx<List<CartDetailsModel>>([]);
   final loginController = Get.find<LoginController>();
   double totalBillAmount = 0.000;
+  String uniqueId = "";
+  Future<String> getUniqueId() async{
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      uniqueId = prefs.getString(SharedPreferencesKeys.rendomNumberForOrderId.name)!;
+    } catch (e) {
+      debugPrint(e.toString());
+    }
+    return uniqueId;
+  } 
   void addToCart(
   String itemId,
   String itemName,
@@ -41,8 +54,8 @@ class CartController extends GetxController{
       combinedInvoiceNotesText: combinedInvoiceNotesText));
   }
 
-  InvoiceInfoDetails getInvoiceInfoDetails(String iSalesTypeId, String vTableId,
-   String vCustomerId, String vCustomerAddress){
+  Future<InvoiceInfoDetails> getInvoiceInfoDetails(String iSalesTypeId, String vTableId,
+   String vCustomerId, String vCustomerAddress) async {
     
     List<InvoiceDetail> invoiceDetailsList = [];
 
@@ -68,26 +81,26 @@ class CartController extends GetxController{
           vVatCatId: cartDetailsModel.vatCatId,
           mVatPercent: cartDetailsModel.vatPercent.toStringAsPrecision(3),
           vVatOption: cartDetailsModel.vatCatOption, 
-          mMainPrice: cartDetailsModel.itemPriceList.mMainPrice.toStringAsPrecision(3),
-          mNetAmount: cartDetailsModel.itemPriceList.mFinalPrice.toStringAsPrecision(3),
+          mMainPrice: cartDetailsModel.itemPrice.toStringAsFixed(3),
+          mNetAmount: (cartDetailsModel.itemPrice * cartDetailsModel.orderedQty).toStringAsPrecision(3),
           mDisPercent: 0.toStringAsPrecision(3),
           mDisAmount: cartDetailsModel.discountAmount.toStringAsPrecision(3), 
           mDisCalculated: cartDetailsModel.discountAmount.toStringAsPrecision(3),
-          mAmountAfterDis: cartDetailsModel.itemPriceList.mFinalPrice.toStringAsPrecision(3),
+          mAmountAfterDis: cartDetailsModel.totalPrice.toStringAsPrecision(3),
           mVoidPercent: 0.toStringAsPrecision(3),
           mVoidAmount: 0.toStringAsPrecision(3),
           mVoidCalculated: 0.toStringAsPrecision(3),
-          mAmountAfterDisVoid: cartDetailsModel.itemPriceList.mFinalPrice.toStringAsPrecision(3),
-          mAmountWithoutVat: cartDetailsModel.itemPriceList.mWoVatAmount.toStringAsPrecision(3),
-          mTotalVatAmount: cartDetailsModel.itemPriceList.mVatAmount.toStringAsPrecision(3), 
-          mFinalPrice: cartDetailsModel.itemPriceList.mFinalPrice.toStringAsPrecision(3),
-          mFinalAmount: cartDetailsModel.itemPriceList.mFinalPrice.toStringAsPrecision(3),
-          iClosed: 1.toStringAsFixed(3),
+          mAmountAfterDisVoid: 0.toStringAsPrecision(3),
+          mAmountWithoutVat: (cartDetailsModel.itemPriceList.mWoVatAmount * cartDetailsModel.orderedQty).toStringAsPrecision(3),
+          mTotalVatAmount: (cartDetailsModel.itemPriceList.mVatAmount * cartDetailsModel.orderedQty).toStringAsPrecision(3), 
+          mFinalPrice: cartDetailsModel.itemPrice.toStringAsPrecision(3),
+          mFinalAmount: (cartDetailsModel.itemPrice * cartDetailsModel.orderedQty).toStringAsPrecision(3),
+          iClosed: '1',
           vItemExtra: combinedModifierList,
           vKitchenNote: cartDetailsModel.combinedKitchenNotesText,
           vInvoiceNote: cartDetailsModel.combinedInvoiceNotesText,
           vRemarks: "",
-          iInvoiceStatusId: "", 
+          iInvoiceStatusId: "0", 
           vStatusRemarks: "",
           vCreatedBy: loginController.userIdFromLocalStorage,
           dCreatedDate: DateTime.now(), 
@@ -104,7 +117,7 @@ class CartController extends GetxController{
       vBarcode: "",
       vSplitTicketId: "",
       iSalesTypeId: iSalesTypeId,
-      iStatusId: "", 
+      iStatusId: "1", 
       iClosed: "1", 
       vTableId: vTableId, 
       vWaiterId: loginController.userIdFromLocalStorage, 
@@ -127,7 +140,10 @@ class CartController extends GetxController{
       vModifiedBy: "", 
       dModifiedDate: DateTime.now(), 
       invoiceDetails: invoiceDetailsList, 
-      invoiceSettle: []
+      invoiceSettle: [],
+      vSyncedMacId: "",
+      iSynced: "0",
+      vUniqueId: await getUniqueId()
     );
 
     List<InvoiceInfo> invoiceInfoList = [invoiceInfo];

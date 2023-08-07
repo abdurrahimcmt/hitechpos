@@ -1,3 +1,4 @@
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hitechpos/common/palette.dart';
@@ -54,10 +55,16 @@ class _OrderScreenState extends State<OrderScreen> {
   List<ItemPriceList> itemPriceList = [ItemPriceList(vUnitId: "", vUnitName: "", vVatCatId: "", vVatOption: "", mPercentage: 0.000, mMainPrice: 0.000, mVatAmount: 0.000, mWoVatAmount: 0.000, mFinalPrice: 0.000)];
   List<OnlineModifierList>  itemModifierList = [OnlineModifierList(vItemIdModifier: "", vItemName: "", iUnitId: "0", vUnitName: "", vQuantity: "0", vMainPrice: "0", mQuantity: 0.000, mMainPrice: 0.000, mVatAmount: 0.000, mWoVatAmount: 0.000, mFinalPrice: 0.000, vVatCatId: "", vVatOption: "", mPercentage: 0.000)];
   
+  // void getDeviceinfo() async{
+  //   DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+  //   AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
+  //   debugPrint('Running on ${androidInfo.id}'); 
+  //   Get.snackbar("DeviceId", 'DeviceId ${androidInfo.id}');
+  // }
   @override
-  void initState() {
+  initState() {
     super.initState();
-
+   // getDeviceinfo();
     debugPrint("User: ${loginController.userIdFromLocalStorage}");
     controller.fatchItemDetails(item).then((value) {
       setState(() {
@@ -70,7 +77,6 @@ class _OrderScreenState extends State<OrderScreen> {
     }).catchError((error){
       debugPrint("Error $error");
     });
-    
   }
     @override
   void dispose(){

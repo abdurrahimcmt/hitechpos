@@ -5,6 +5,7 @@ import 'package:hitechpos/controllers/cart_controller.dart';
 import 'package:hitechpos/controllers/delivery_controller.dart';
 import 'package:hitechpos/controllers/dini_in_controller.dart';
 import 'package:hitechpos/controllers/drivethrough_controller.dart';
+import 'package:hitechpos/controllers/login_controller.dart';
 import 'package:hitechpos/controllers/menu_controller.dart';
 import 'package:hitechpos/controllers/proceed_controller.dart';
 import 'package:hitechpos/controllers/takeway_controller.dart';
@@ -326,17 +327,17 @@ class _ProceedScreenState extends State<ProceedScreen> {
         padding: const EdgeInsets.symmetric(vertical: 10),
         child: TextButton(
           onPressed: (){
-          InvoiceInfoDetails invoiceData = cartController.getInvoiceInfoDetails(
-            (selectedOrderType + 1).toString(),
-             diniInController.selectedTable.value.vTableId, 
-             controller.getSelectedCustomer().vCustomerName,
-             controller.combinedCustomerAddressFields(controller.getSelectedCustomerAddress())
-             );
-          String jsonData = invoiceInfoDetailsToJson(invoiceData);
-          debugPrint(jsonData);
-          // Navigator.push(context,
-          // MaterialPageRoute(builder: (_) => const MenuScreen(),),);
-          Get.to(const OrderSuccessfulScreen());}, 
+            Future<InvoiceInfoDetails> invoiceData = cartController.getInvoiceInfoDetails(
+              (selectedOrderType + 1).toString(),
+              diniInController.selectedTable.value.vTableId, 
+              controller.getSelectedCustomer().vCustomerId,
+              controller.combinedCustomerAddressFields(controller.getSelectedCustomerAddress())
+              );
+            controller.proceedOrderPostRequest(invoiceData);
+            // Navigator.push(context,
+            // MaterialPageRoute(builder: (_) => const MenuScreen(),),);
+            //Get.to(const OrderSuccessfulScreen());
+          }, 
           child: const CurbButton(
             buttonPadding: EdgeInsets.only(left: 0,right: 0),
             child: Row(

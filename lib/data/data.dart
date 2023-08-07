@@ -14,7 +14,18 @@ enum SharedPreferencesKeys {
   vMobileNo,
   vEmailId,
   vEmployeeId,
-  dLastLogin
+  dLastLogin,
+  loginBranch,
+  loginUserName,
+  loginPassword,
+  rememberMe,
+  autoLogin,
+  schema,
+  port,
+  domain,
+  registrationkey,
+  isregistration,
+  rendomNumberForOrderId
 }
 
 extension KeyValue on SharedPreferencesKeys {
@@ -34,6 +45,28 @@ extension KeyValue on SharedPreferencesKeys {
         return 'vEmployeeId';
       case SharedPreferencesKeys.dLastLogin:
         return 'dLastLogin';
+      case SharedPreferencesKeys.rememberMe:
+        return 'remember_me';
+      case SharedPreferencesKeys.loginBranch:
+        return 'branch_Id';
+      case SharedPreferencesKeys.loginUserName:
+        return 'username';
+      case SharedPreferencesKeys.loginPassword:
+        return 'password';
+      case SharedPreferencesKeys.autoLogin:
+        return 'autoLogin';
+      case SharedPreferencesKeys.schema:
+        return 'schema';
+      case SharedPreferencesKeys.domain:
+        return 'domain';
+      case SharedPreferencesKeys.port:
+        return 'port';
+      case SharedPreferencesKeys.registrationkey:
+        return 'registrationkey';
+      case SharedPreferencesKeys.isregistration:
+        return 'isregistration';
+      case SharedPreferencesKeys.rendomNumberForOrderId:
+        return 'rendomNumber';              
       default:
         return '';
     }
