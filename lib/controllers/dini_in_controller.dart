@@ -52,7 +52,7 @@ class DiniInController extends GetxController{
     }
     else{
       isTableInfoLoding.value= false;
-      throw Exception('Failed to load Table');
+      debugPrint('Failed to load Table');
     }
     isTableInfoLoding.value= false;
     selectedTable.value = OnlineTableList(vBranchId: "", vTableId: "", vTableName: "", vInvoiceId: "", vInvoiceNo: "");

@@ -9,7 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class CartController extends GetxController{
 
-  Rx< List<CartDetailsModel> >cartDetailsModelList = Rx<List<CartDetailsModel>>([]);
+  Rx< List<CartDetailsModel> > cartDetailsModelList = Rx<List<CartDetailsModel>>([]);
   final loginController = Get.find<LoginController>();
   double totalBillAmount = 0.000;
   String uniqueId = "";
@@ -95,12 +95,12 @@ class CartController extends GetxController{
           mTotalVatAmount: (cartDetailsModel.itemPriceList.mVatAmount * cartDetailsModel.orderedQty).toStringAsPrecision(3), 
           mFinalPrice: cartDetailsModel.itemPrice.toStringAsPrecision(3),
           mFinalAmount: (cartDetailsModel.itemPrice * cartDetailsModel.orderedQty).toStringAsPrecision(3),
-          iClosed: '1',
+          iClosed: '0',
           vItemExtra: combinedModifierList,
           vKitchenNote: cartDetailsModel.combinedKitchenNotesText,
           vInvoiceNote: cartDetailsModel.combinedInvoiceNotesText,
           vRemarks: "",
-          iInvoiceStatusId: "0", 
+          iInvoiceStatusId: "1", 
           vStatusRemarks: "",
           vCreatedBy: loginController.userIdFromLocalStorage,
           dCreatedDate: DateTime.now(), 
@@ -118,7 +118,7 @@ class CartController extends GetxController{
       vSplitTicketId: "",
       iSalesTypeId: iSalesTypeId,
       iStatusId: "1", 
-      iClosed: "1", 
+      iClosed: "0", 
       vTableId: vTableId, 
       vWaiterId: loginController.userIdFromLocalStorage, 
       vPromotionId: "", 

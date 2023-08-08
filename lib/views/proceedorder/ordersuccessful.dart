@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hitechpos/common/palette.dart';
+import 'package:hitechpos/controllers/ordersuccessfull_controller.dart';
+import 'package:hitechpos/controllers/proceed_controller.dart';
 import 'package:hitechpos/views/menu/menu_screen.dart';
 
-class OrderSuccessfulScreen extends StatelessWidget {
-  const OrderSuccessfulScreen({super.key});
-    
+class OrderSuccessfulScreen extends GetView<OrderSuccessfullController> {
+  OrderSuccessfulScreen({Key ? key}) : super(key : key);
+  final proceedController = Get.find<ProceedController>();
   @override
   Widget build(BuildContext context) {
-    _commonTextStyle(double fSize){
+    commonTextStyle(double fSize){
       return TextStyle(
         fontFamily: Palette.layoutFont,
         fontWeight: FontWeight.w600,
@@ -52,36 +54,37 @@ class OrderSuccessfulScreen extends StatelessWidget {
                     SizedBox(
                       height: sizeboxheight,
                     ),
-                    Text("Order Successfully Done",
-                      style: _commonTextStyle(20),
+                    Text("Order Successfully Processed",
+                      style: commonTextStyle(20),
                     ),
                     SizedBox(
                       height: sizeboxheight,
                     ),
-                    Text("Total Amount: BHD 154.000 ",
-                      style: _commonTextStyle(15),
+                    Text("Total Amount: BHD ${proceedController.totalInvoiceAmount.toStringAsFixed(3)} ",
+                      style: commonTextStyle(15),
                     ),
                     SizedBox(
                       height: sizeboxheight+20,
                     ),
                     Text("Order Number",
-                      style: _commonTextStyle(18),
+                      style: commonTextStyle(18),
                     ),
                     const SizedBox(
                       height: 10,
                     ),
-                    Text("58440",
-                      style: _commonTextStyle(60),
+                    Text(proceedController.successfulInvoiceNo,
+                      style: commonTextStyle(60),
                     ),
 
                   ],
                 ),
               ),
               SizedBox(
-                height: ispotrait ? size.height*0.1 : 5,
+                height: ispotrait ? size.height * 0.1 : 5,
               ),
               TextButton(onPressed: (){
-                  Get.off(MenuScreen());
+                  controller.clearCartData();
+                  Get.to(() => MenuScreen());
                 },
                 child: Container(
                   width: MediaQuery.of(context).size.width*0.4,

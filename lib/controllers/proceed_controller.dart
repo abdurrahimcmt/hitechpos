@@ -35,6 +35,10 @@ class ProceedController extends GetxController {
   String selectedOrderTypeName = "";
   Rx<TextEditingValue> selectedCustomertext = const TextEditingValue(text: "").obs;
   Rx<TextEditingValue>  selectedAddress = const TextEditingValue(text: "").obs;
+
+  double totalInvoiceAmount = 0.000;
+  String successfulInvoiceId = "";
+  String successfulInvoiceNo = "";
  
   @override
   void onInit(){
@@ -198,6 +202,7 @@ class ProceedController extends GetxController {
   }
 
   Future<void> proceedOrderPostRequest(Future<InvoiceInfoDetails> invoiceData) async{
+
     if(await checkUserValidity()){
       String jsonData = invoiceInfoDetailsToJson(await invoiceData);
       String baseurl = loginController.baseurlFromLocalStorage;
@@ -206,7 +211,6 @@ class ProceedController extends GetxController {
       debugPrint(loginController.registrationKeyFromLocalStorage);
       debugPrint(jsonData);
       
-      // https://hiposbh.com:84/api/invoice/app
       final headers = {
         'Key': loginController.registrationKeyFromLocalStorage,
         'Content-Type': 'application/json',
@@ -215,19 +219,19 @@ class ProceedController extends GetxController {
 
       final body = jsonData;
       final response = await http.post(url, headers: headers, body: body);
-      debugPrint(response.statusCode.toString());
+
       if(response.statusCode == 200){
         debugPrint("responce 200");
         var data = jsonDecode(response.body);
         debugPrint(data.toString());
         if(data['messageId'] == '200'){
-          debugPrint("Save Successfull");
-          Get.to(const OrderSuccessfulScreen());
+          debugPrint(data.toString());
+          totalInvoiceAmount =  double.parse(data["billAmount"].toString());
+          successfulInvoiceId = data["invoiceId"];
+          successfulInvoiceNo =  data["invoiceNo"].toString().substring(8,data["invoiceNo"].toString().length);
+          Get.to(() => OrderSuccessfulScreen());
         }
       }
-
-     // Get.to(const OrderSuccessfulScreen());
-     // debugPrint(jsonData);
     }
   }
 
