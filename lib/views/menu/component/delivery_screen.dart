@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hitechpos/common/palette.dart';
-import 'package:hitechpos/controllers/delivery_controller.dart';
+import 'package:hitechpos/controllers/customer_and_address_controller.dart';
 import 'package:hitechpos/models/customeraddress.dart';
 import 'package:hitechpos/models/customerinfo.dart';
 import 'package:hitechpos/widgets/common_submit_button.dart';
@@ -14,12 +14,12 @@ class DeliveryScreen extends StatefulWidget {
 }
 
 class _DeliveryScreenState extends State<DeliveryScreen> {
-  final deliverycontroller = Get.find<DeliveryController>();
+  final controller = Get.find<CustomerAndAddressController>();
   late String combinedAddress = "";
   @override
   void initState() {
-    if(deliverycontroller.getSelectedCustomerAddress().vAddId.isNotEmpty){
-      combinedAddress = deliverycontroller.combinedCustomerAddressFields(deliverycontroller.getSelectedCustomerAddress());
+    if(controller.getSelectedCustomerAddress().vAddId.isNotEmpty){
+      combinedAddress = controller.combinedCustomerAddressFields(controller.getSelectedCustomerAddress());
     }
     
     super.initState();
@@ -27,10 +27,10 @@ class _DeliveryScreenState extends State<DeliveryScreen> {
   @override
   Widget build(BuildContext context) {
     
-    TextEditingValue selectedCustomer = TextEditingValue(text: deliverycontroller.getSelectedCustomer().vCustomerName);
+    TextEditingValue selectedCustomer = TextEditingValue(text: controller.getSelectedCustomer().vCustomerName);
     TextEditingValue selectedAddress = TextEditingValue(text: combinedAddress);
-    //selectedCustomer.text = deliverycontroller.getSelectedCustomer().vCustomerName;
-    deliverycontroller.setCustomerList();
+    //selectedCustomer.text = controller.getSelectedCustomer().vCustomerName;
+    controller.setCustomerList();
     TextEditingController addressTextController = TextEditingController();
     return Container(
       decoration: Palette.containerCurbBoxdecoration,
@@ -53,11 +53,11 @@ class _DeliveryScreenState extends State<DeliveryScreen> {
                   initialValue: selectedCustomer,
                   onSelected: (option) {
                     debugPrint(option.vCustomerName.toString());
-                    deliverycontroller.setSelectedCustomer(option);
-                    debugPrint("From Controller ${deliverycontroller.getSelectedCustomer().vCustomerName}");
-                    deliverycontroller.setCustomerAddressList(option.vCustomerId);
+                    controller.setSelectedCustomer(option);
+                    debugPrint("From Controller ${controller.getSelectedCustomer().vCustomerName}");
+                    controller.setCustomerAddressList(option.vCustomerId);
                     setState(() {
-                      deliverycontroller.setSelectedCustomerAddress(CustomerAddressList(vCustomerId: "", vAddId: "", vArea: "", vBuildingNo: "", vFlatNo: "", vBlockNo: "", vRoadNo: ""));
+                      controller.setSelectedCustomerAddress(CustomerAddressList(vCustomerId: "", vAddId: "", vArea: "", vBuildingNo: "", vFlatNo: "", vBlockNo: "", vRoadNo: ""));
                       addressTextController.text = "";
                     });
                   },
@@ -65,7 +65,7 @@ class _DeliveryScreenState extends State<DeliveryScreen> {
                     if(textEditingValue.text == ''){
                       return const Iterable<CustomerList>.empty();
                     }
-                    return deliverycontroller.customerList.where((CustomerList customer){
+                    return controller.customerList.where((CustomerList customer){
                       return customer.vCustomerName.toLowerCase().contains(textEditingValue.text.toLowerCase());
                     });
                   },
@@ -92,19 +92,19 @@ class _DeliveryScreenState extends State<DeliveryScreen> {
                 Autocomplete <CustomerAddressList>(
                   initialValue: selectedAddress,
                   onSelected: (option) {
-                    deliverycontroller.setSelectedCustomerAddress(option);
+                    controller.setSelectedCustomerAddress(option);
                   },
                   optionsBuilder: (TextEditingValue textEditingValue){
                     if(textEditingValue.text == ''){
                       return const Iterable<CustomerAddressList>.empty();
                     }
-                    return deliverycontroller.customerAddressList.where((CustomerAddressList address){
-                      String combinedAddress = deliverycontroller.combinedCustomerAddressFields(address);
+                    return controller.customerAddressList.where((CustomerAddressList address){
+                      String combinedAddress = controller.combinedCustomerAddressFields(address);
                       return combinedAddress.toLowerCase().contains(textEditingValue.text.toLowerCase());
                     });
                   },
                   displayStringForOption: (address) {
-                    return deliverycontroller.combinedCustomerAddressFields(address);
+                    return controller.combinedCustomerAddressFields(address);
                   },
                   fieldViewBuilder: (context, addressTextController, focusNode, onFieldSubmitted) {              
                     return TextField(
@@ -124,7 +124,7 @@ class _DeliveryScreenState extends State<DeliveryScreen> {
                 
                 // Obx(
                 //   () { 
-                //     if(deliverycontroller.isDataLoading.value){
+                //     if(controller.isDataLoading.value){
                 //         return const CircularProgressIndicator();
                 //     }
                 //     else{
@@ -137,8 +137,8 @@ class _DeliveryScreenState extends State<DeliveryScreen> {
                 //             color: Color.fromARGB(106, 113, 15, 131),
                 //           ),
                 //         ),
-                //         value: deliverycontroller.selectedCustomerAddress,
-                //         items: deliverycontroller.addressDropdownItemMenu.value,
+                //         value: controller.selectedCustomerAddress,
+                //         items: controller.addressDropdownItemMenu.value,
                 //         autovalidateMode: AutovalidateMode.onUserInteraction,
                 //         // validator: (value) {
                 //         //   if(value! == "0"){
@@ -147,7 +147,7 @@ class _DeliveryScreenState extends State<DeliveryScreen> {
                 //         //   return null;
                 //         // },
                 //         onChanged: (val) {
-                //           deliverycontroller.setSelectedCustomerAddress(val!);
+                //           controller.setSelectedCustomerAddress(val!);
                 //           debugPrint(val);
                 //         }
                 //       );

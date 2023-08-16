@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import 'package:hitechpos/controllers/cart_controller.dart';
+import 'package:hitechpos/controllers/customer_and_address_controller.dart';
 import 'package:hitechpos/controllers/delivery_controller.dart';
 import 'package:hitechpos/controllers/dini_in_controller.dart';
 import 'package:hitechpos/controllers/drivethrough_controller.dart';
@@ -23,5 +24,6 @@ class HiposBinding implements Bindings{
     Get.lazyPut(() => DriveThroughController());
     Get.lazyPut(() => ProceedController());
     Get.lazyPut(() => OrderSuccessfullController());
+    Get.lazyPut(() => CustomerAndAddressController());
   }
 }

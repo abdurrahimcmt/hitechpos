@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hitechpos/common/palette.dart';
-import 'package:hitechpos/controllers/drivethrough_controller.dart';
+import 'package:hitechpos/controllers/customer_and_address_controller.dart';
 import 'package:hitechpos/models/customeraddress.dart';
 import 'package:hitechpos/models/customerinfo.dart';
 import 'package:hitechpos/widgets/common_submit_button.dart';
@@ -13,21 +13,21 @@ class DriveThroughScreen extends StatefulWidget {
   State<DriveThroughScreen> createState() => _DriveThroughScreenState();
 }
 class _DriveThroughScreenState extends State<DriveThroughScreen> {
-  final driveThroughController = Get.find<DriveThroughController>();
+  final controller = Get.find<CustomerAndAddressController>();
   late String combinedAddress = "";
 
   @override
   void initState() {
-    if(driveThroughController.getSelectedCustomerAddress().vAddId.isNotEmpty){
-      combinedAddress = driveThroughController.combinedCustomerAddressFields(driveThroughController.getSelectedCustomerAddress());
+    if(controller.getSelectedCustomerAddress().vAddId.isNotEmpty){
+      combinedAddress = controller.combinedCustomerAddressFields(controller.getSelectedCustomerAddress());
     }
     super.initState();
   }
   @override
   Widget build(BuildContext context) {
-    TextEditingValue selectedCustomer = TextEditingValue(text: driveThroughController.getSelectedCustomer().vCustomerName);
+    TextEditingValue selectedCustomer = TextEditingValue(text: controller.getSelectedCustomer().vCustomerName);
     TextEditingValue selectedAddress = TextEditingValue(text: combinedAddress);
-    driveThroughController.setCustomerList();
+    controller.setCustomerList();
     TextEditingController addressTextController = TextEditingController();
     return Container(
       decoration: Palette.containerCurbBoxdecoration,
@@ -50,11 +50,11 @@ class _DriveThroughScreenState extends State<DriveThroughScreen> {
                   initialValue: selectedCustomer,
                   onSelected: (option) {
                     debugPrint(option.vCustomerName.toString());
-                    driveThroughController.setSelectedCustomer(option);
-                    debugPrint("From Controller ${driveThroughController.getSelectedCustomer().vCustomerName}");
-                    driveThroughController.setCustomerAddressList(option.vCustomerId);
+                    controller.setSelectedCustomer(option);
+                    debugPrint("From Controller ${controller.getSelectedCustomer().vCustomerName}");
+                    controller.setCustomerAddressList(option.vCustomerId);
                     setState(() {
-                      driveThroughController.setSelectedCustomerAddress(CustomerAddressList(vCustomerId: "", vAddId: "", vArea: "", vBuildingNo: "", vFlatNo: "", vBlockNo: "", vRoadNo: ""));
+                      controller.setSelectedCustomerAddress(CustomerAddressList(vCustomerId: "", vAddId: "", vArea: "", vBuildingNo: "", vFlatNo: "", vBlockNo: "", vRoadNo: ""));
                       addressTextController.text = "";
                     });
                   },
@@ -62,7 +62,7 @@ class _DriveThroughScreenState extends State<DriveThroughScreen> {
                     if(textEditingValue.text == ''){
                       return const Iterable<CustomerList>.empty();
                     }
-                    return driveThroughController.customerList.where((CustomerList customer){
+                    return controller.customerList.where((CustomerList customer){
                       return customer.vCustomerName.toLowerCase().contains(textEditingValue.text.toLowerCase());
                     });
                   },
@@ -88,19 +88,19 @@ class _DriveThroughScreenState extends State<DriveThroughScreen> {
                 Autocomplete <CustomerAddressList>(
                   initialValue: selectedAddress,
                   onSelected: (option) {
-                    driveThroughController.setSelectedCustomerAddress(option);
+                    controller.setSelectedCustomerAddress(option);
                   },
                   optionsBuilder: (TextEditingValue textEditingValue){
                     if(textEditingValue.text == ''){
                       return const Iterable<CustomerAddressList>.empty();
                     }
-                    return driveThroughController.customerAddressList.where((CustomerAddressList address){
-                      String combinedAddress = driveThroughController.combinedCustomerAddressFields(address);
+                    return controller.customerAddressList.where((CustomerAddressList address){
+                      String combinedAddress = controller.combinedCustomerAddressFields(address);
                       return combinedAddress.toLowerCase().contains(textEditingValue.text.toLowerCase());
                     });
                   },
                   displayStringForOption: (address) {
-                    return driveThroughController.combinedCustomerAddressFields(address);
+                    return controller.combinedCustomerAddressFields(address);
                   },
                   fieldViewBuilder: (context, addressTextController, focusNode, onFieldSubmitted) {              
                     return TextField(
@@ -119,7 +119,7 @@ class _DriveThroughScreenState extends State<DriveThroughScreen> {
                 ),                
                 Palette.sizeBoxVarticalSpace,
                 TextField(
-                  controller: driveThroughController.carNumberController,
+                  controller: controller.carNumberController,
                   decoration: const InputDecoration(
                     hintText: "Car Number",
                     prefixIcon: Icon(

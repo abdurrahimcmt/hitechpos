@@ -13,7 +13,7 @@ class DiniInController extends GetxController{
 
   final newSelectedTable = "".obs;
   final isTableInfoLoding = true.obs;
-  int selectcount = 0;
+  //int selectcount = 0;
   Rx<OnlineFloorTableList> selectedFloor = OnlineFloorTableList(vBranchId: "", iFloorId: "", vFloorName: "", onlineTableList: []).obs;
   Rx<OnlineTableList> selectedTable = OnlineTableList(vBranchId: "", vTableId: "", vTableName: "", vInvoiceId: "", vInvoiceNo: "").obs;
   late Future<FloorAndTableInfo> floorInfoList;
@@ -27,13 +27,24 @@ class DiniInController extends GetxController{
     });
   }
 
-  @override
-  void onReady(){
-    Timer(const Duration(seconds: 2), () {
-      fatchTableInfo(selectedFloor.value.iFloorId);
-    });
-    super.onReady();
+  void refreshDiniInFloorAndTable(){
+    isSelectedTabels = [];                                                                                         
+    newSelectedTable.value = "";
+    selectedFloor = selectedFloor;
+    selectedTable.value = OnlineTableList(vBranchId: "", vTableId: "", vTableName: "", vInvoiceId: "", vInvoiceNo: "");
   }
+  // @override
+  // void onReady(){
+  //   if(selectedFloor.value.iFloorId.isNotEmpty){
+  //     fatchTableInfo(selectedFloor.value.iFloorId);
+  //   }
+  //   else{
+  //     Timer(const Duration(seconds: 1), () {
+  //       fatchTableInfo(selectedFloor.value.iFloorId);
+  //     });
+  //   }
+  //   super.onReady();
+  // }
 
   Future<void> fatchTableInfo(String floor) async {
     isTableInfoLoding.value = true;
@@ -55,9 +66,9 @@ class DiniInController extends GetxController{
       debugPrint('Failed to load Table');
     }
     isTableInfoLoding.value= false;
-    selectedTable.value = OnlineTableList(vBranchId: "", vTableId: "", vTableName: "", vInvoiceId: "", vInvoiceNo: "");
-    newSelectedTable.value = "";
-    selectcount = 0;
+    //selectedTable.value = OnlineTableList(vBranchId: "", vTableId: "", vTableName: "", vInvoiceId: "", vInvoiceNo: "");
+    //newSelectedTable.value = "";
+    //selectcount = 0;
   }
 
 Future<FloorAndTableInfo> fatchFloorAndTableInfo() async {

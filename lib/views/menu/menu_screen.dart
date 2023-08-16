@@ -55,18 +55,6 @@ class MenuScreen extends GetView<MenuScreenController> {
           actions: [
             TextButton(
               onPressed: () => Get.to( () => const CartScreen()),
-              //  Navigator.push(
-              //   context,
-              //   MaterialPageRoute(
-              //     builder: (_) => const CartScreen(),
-              //   ),
-              // ),
-              // child: Text(
-              //   'Cart  (${currentUser.cart.length})',
-              //   style: const TextStyle(
-              //     color: Colors.white,
-              //   ),
-              // ),
               child: badges.Badge(
                 badgeContent: Text(
                   cartController.cartDetailsModelList.value.length.toString(),
@@ -411,6 +399,7 @@ class MenuScreen extends GetView<MenuScreenController> {
       ),
       builder: (BuildContext context){
         if(name == "Dine In"){
+          
           controller.setSelectedOrderTypeName("Dine In");
            return const DineInScreen();
         }

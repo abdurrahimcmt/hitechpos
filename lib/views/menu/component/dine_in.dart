@@ -1,17 +1,37 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hitechpos/common/palette.dart';
 import 'package:hitechpos/controllers/dini_in_controller.dart';
 import 'package:hitechpos/models/floorandtableinfo.dart';
 import 'package:hitechpos/widgets/common_submit_button.dart';
-class DineInScreen extends GetView<DiniInController> {
-  const DineInScreen({super.key});
 
+class DineInScreen extends StatefulWidget {
+ const DineInScreen({super.key});
+
+  @override
+  State<DineInScreen> createState() => _DineInScreenState();
+}
+
+class _DineInScreenState extends State<DineInScreen> {
+  final controller = Get.find<DiniInController>();
+  int tableSelectCount = 0; 
  // List<String> isSelectedTabels = selectedTables;
-
- // String newSelectedTable = "";
-
-  //int selectcount = 0;
+ @override
+  void initState() {
+    setState(() {
+      if(controller.selectedFloor.value.iFloorId.isNotEmpty){
+        controller.fatchTableInfo(controller.selectedFloor.value.iFloorId);
+      }
+      else{
+        Timer(const Duration(milliseconds: 2000), () {
+          controller.fatchTableInfo(controller.selectedFloor.value.iFloorId);
+        });
+      }
+    });
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -77,6 +97,7 @@ class DineInScreen extends GetView<DiniInController> {
                     else if(snapshot.hasError){
                        return SnackBar( content: Text("${snapshot.error}"),);
                     }
+                    
                     else{
                       return const Center(child: CircularProgressIndicator());
                     }
@@ -89,104 +110,114 @@ class DineInScreen extends GetView<DiniInController> {
                     child: SingleChildScrollView(
                       child: Padding(
                         padding: const EdgeInsets.all(10.0),
-                        child: Obx( () {
-                          final tableinfo = controller.tableList.value;
-                          if(controller.isTableInfoLoding.value){
-                            return const Column(
-                              children: [
-                                SizedBox(
-                                  height: 200,
-                                ),
-                                CircularProgressIndicator(),
-                              ],
-                            );
-                          }
-                          else{
-                            if(tableinfo.onlineFloorTableList.isNotEmpty){
-                              return Row(
-                              children: [
-                                Expanded(
-                                  child: Wrap(
-                                  alignment: WrapAlignment.center,
-                                  direction: Axis.horizontal,
-                                  spacing: 0,
-                                  runSpacing: 2,
-                                  children: List.generate(tableinfo.onlineFloorTableList.first.onlineTableList.length, (index) {
-                                    String tableName= tableinfo.onlineFloorTableList.first.onlineTableList[index].vTableName;
-                                    String invoiceNo = tableinfo.onlineFloorTableList.first.onlineTableList[index].vInvoiceNo; 
-                                      if(invoiceNo.trim().isNotEmpty){
-                                         controller.isSelectedTabels.add(tableName);
-                                      }
-                                      return TextButton(
-                                        onPressed: controller.isSelectedTabels.contains(tableName)  ? null :
-                                        
-                                        (){
-                                          controller.newSelectedTable.value = tableName;
-                                          controller.selectedTable.value = tableinfo.onlineFloorTableList.first.onlineTableList[index];
-                                          debugPrint(controller.selectedTable.value.vTableName);
-                                            // if(!controller.isSelectedTabels.contains(tableName)){
-                                            //    controller.isSelectedTabels.add(tableName);
-                                            //   controller.selectcount ++;
-                                            //  }
-                                            //  else{
-                                            //    controller.isSelectedTabels.remove(tableName);
-                                            //    controller.selectcount--;
-                                            //  }
-                                          // setState(() {
-                                          //   newSelectedTable = tables[index];
-                                            // if(!isSelectedTabels.contains(tables[index])){
-                                            //    isSelectedTabels.add(tables[index]);
-                                            //    selectcount++;
-                                            //  }
-                                            //  else{
-                                            //    isSelectedTabels.remove(tables[index]);
-                                            //    selectcount--;
-                                            //  }
-                                          // });
-                                        } ,
-                                        child: Container(
-                                          decoration: BoxDecoration(
-                                            color: controller.isSelectedTabels.contains(tableName) || controller.newSelectedTable.value == tableName ? Colors.red : Colors.white,
-                                            borderRadius:const BorderRadius.all(Radius.circular(10)),
-                                            boxShadow: const [
-                                              BoxShadow(
-                                              color: Palette.btnBoxShadowColor,
-                                              spreadRadius: 2,
-                                              blurRadius: 1,
-                                              offset: Offset(0, 2),
-                                              )
-                                            ],
-                                          ),
-                                          height: 70,
-                                          width: 70,
-                                          child: Column(
-                                            mainAxisAlignment: MainAxisAlignment.center,
-                                            children: [
-                                              Text(tableName,
-                                                style: TextStyle(
-                                                  color: controller.isSelectedTabels.contains(tableName) || controller.newSelectedTable.value == tableName  ? Colors.white :Palette.textColorPurple,
-                                                  fontFamily: Palette.layoutFont,
-                                                  fontSize: Palette.containerButtonFontSize,
-                                                ),
-                                              ),
-                                              if(controller.isSelectedTabels.contains(tableName) || controller.newSelectedTable.value == tableName) 
-                                              Text(invoiceNo,
-                                                style: TextStyle(
-                                                  color: controller.isSelectedTabels.contains(tableName) || controller.newSelectedTable.value == tableName  ? Colors.white :Palette.textColorPurple,
-                                                  fontFamily: Palette.layoutFont,
-                                                  fontSize: Palette.containerButtonFontSize,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ), 
-                                      );
-                                    }
+                          child: Obx( () {
+                            final tableinfo = controller.tableList.value;
+                            if(controller.isTableInfoLoding.value){
+                              return const Column(
+                                children: [
+                                  SizedBox(
+                                    height: 200,
                                   ),
+                                  CircularProgressIndicator(),
+                                ],
+                              );
+                            }
+                            else{
+                              if(tableinfo.onlineFloorTableList.first.onlineTableList.isNotEmpty){
+                                return Row(
+                                  children: [
+                                    Expanded(
+                                      child: Wrap(
+                                      alignment: WrapAlignment.center,
+                                      direction: Axis.horizontal,
+                                      spacing: 0,
+                                      runSpacing: 2,
+                                      children: List.generate(tableinfo.onlineFloorTableList.first.onlineTableList.length, (index) {
+                                        String tableName= tableinfo.onlineFloorTableList.first.onlineTableList[index].vTableName;
+                                        String invoiceNo = tableinfo.onlineFloorTableList.first.onlineTableList[index].vInvoiceNo; 
+                                          if(invoiceNo.trim().isNotEmpty){
+                                              controller.isSelectedTabels.add(tableName);
+                                          }
+                                          else{
+                                            controller.isSelectedTabels.remove(tableName);
+                                          }
+                                          return TextButton(
+                                            onPressed: controller.isSelectedTabels.contains(tableName)  ? null :
+                                            (){
+                                              if(tableSelectCount == 0){
+                                                controller.newSelectedTable.value = tableName;
+                                                controller.selectedTable.value = tableinfo.onlineFloorTableList.first.onlineTableList[index];
+                                                debugPrint(controller.selectedTable.value.vTableName);
+                                                tableSelectCount ++;
+                                              }
+                                              else{
+                                                controller.newSelectedTable.value = "";
+                                                controller.selectedTable.value = OnlineTableList(vBranchId: "", vTableId: "", vTableName: "", vInvoiceId: "", vInvoiceNo: "");
+                                                tableSelectCount --;
+                                              }
+                                                // if(!controller.isSelectedTabels.contains(tableName)){
+                                                //    controller.isSelectedTabels.add(tableName);
+                                                //   controller.selectcount ++;
+                                                //  }
+                                                //  else{
+                                                //    controller.isSelectedTabels.remove(tableName);
+                                                //    controller.selectcount--;
+                                                //  }
+                                              // setState(() {
+                                              //   newSelectedTable = tables[index];
+                                                // if(!isSelectedTabels.contains(tables[index])){
+                                                //    isSelectedTabels.add(tables[index]);
+                                                //    selectcount++;
+                                                //  }
+                                                //  else{
+                                                //    isSelectedTabels.remove(tables[index]);
+                                                //    selectcount--;
+                                                //  }
+                                              // });
+                                            } ,
+                                            child: Container(
+                                              decoration: BoxDecoration(
+                                                color: controller.isSelectedTabels.contains(tableName) || controller.newSelectedTable.value == tableName ? Colors.red : Colors.white,
+                                                borderRadius:const BorderRadius.all(Radius.circular(10)),
+                                                boxShadow: const [
+                                                  BoxShadow(
+                                                  color: Palette.btnBoxShadowColor,
+                                                  spreadRadius: 2,
+                                                  blurRadius: 1,
+                                                  offset: Offset(0, 2),
+                                                  )
+                                                ],
+                                              ),
+                                              height: 70,
+                                              width: 70,
+                                              child: Column(
+                                                mainAxisAlignment: MainAxisAlignment.center,
+                                                children: [
+                                                  Text(tableName,
+                                                    style: TextStyle(
+                                                      color: controller.isSelectedTabels.contains(tableName) || controller.newSelectedTable.value == tableName  ? Colors.white :Palette.textColorPurple,
+                                                      fontFamily: Palette.layoutFont,
+                                                      fontSize: Palette.containerButtonFontSize,
+                                                    ),
+                                                  ),
+                                                  if(controller.isSelectedTabels.contains(tableName) || controller.newSelectedTable.value == tableName) 
+                                                  Text(invoiceNo,
+                                                    style: TextStyle(
+                                                      color: controller.isSelectedTabels.contains(tableName) || controller.newSelectedTable.value == tableName  ? Colors.white :Palette.textColorPurple,
+                                                      fontFamily: Palette.layoutFont,
+                                                      fontSize: Palette.containerButtonFontSize,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ), 
+                                          );
+                                        }
+                                      ),
+                                    ),
                                   ),
-                                ),
-                              ],
-                            );
+                                ],
+                              );
                             }
                             else{
                               return const SizedBox(

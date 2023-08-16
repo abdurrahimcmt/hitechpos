@@ -14,7 +14,7 @@ class MenuScreenController extends GetxController{
   late Future<CategoryInfo> categoryInfoList;
   var itemInfo = ItemInfo(messageId: "", message: "", itemList: []).obs;
   var itemInfoIsloading = true.obs;
-  List<String> isSelectedTabels = <String>[].obs;
+  //List<String> isSelectedTabels = <String>[].obs;
   final selectedCategoryName = "".obs;
   
  @override
@@ -23,8 +23,10 @@ class MenuScreenController extends GetxController{
     fatchItemInfo("all","all");
     categoryInfoList = fatchCategoryInfo();
   }
-  
-
+  void refreshMenuController(){
+    selectedOrderType.value = 0;
+    selectedOrderTypeName = "Dine In";
+  }
   Future<CategoryInfo> fatchCategoryInfo() async {
     //when Auto login is true then we need to create baseUrl 
     await loginController.setBaseUrl();
@@ -79,6 +81,5 @@ class MenuScreenController extends GetxController{
   getSelectedOrderTypeName(){
     return selectedOrderTypeName;
   }
-
 
 }

@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hitechpos/common/palette.dart';
-import 'package:hitechpos/controllers/takeway_controller.dart';
+import 'package:hitechpos/controllers/customer_and_address_controller.dart';
 import 'package:hitechpos/models/customerinfo.dart';
 import 'package:hitechpos/widgets/common_submit_button.dart';
 
 class TakeAwayScreen extends StatelessWidget {
   TakeAwayScreen({Key?key}) : super(key:key);
-  final controller = Get.find<TakeAwayController>();
+  final controller = Get.find<CustomerAndAddressController>();
   @override
   Widget build(BuildContext context) {
     controller.setCustomerList();
+    TextEditingValue selectedCustomer = TextEditingValue(text: controller.getSelectedCustomer().vCustomerName);
     return Container(
       decoration: Palette.containerCurbBoxdecoration,
         height: MediaQuery.of(context).size.height*0.80,
@@ -29,6 +30,7 @@ class TakeAwayScreen extends StatelessWidget {
                   height: 100,
                 ),
                 Autocomplete <CustomerList>(
+                  initialValue: selectedCustomer,
                   onSelected: (option) {
                     debugPrint(option.vCustomerName.toString());
                     controller.setSelectedCustomer(option);

@@ -20,7 +20,14 @@ class CartScreen extends StatefulWidget {
 class _CartScreenState extends State<CartScreen> {
   final cartController = Get.find<CartController>();
   late Rx<List<CartDetailsModel>> cartDetailsModelList;
+  double totalPrice = 0.000;
+  double totalVatAmount = 0.000;
+  double totalPriceWithoutVate = 0.000;
+  double discountAmount = 0.000;
 
+  double totalModifierAmount= 0.000;
+  double totalModifierVatAmount= 0.000;
+  double totalModifierWithOutVatAmount = 0.000;
  // double grandTotal = 0.000;
  // double grandTotalVat = 0.000;
 
@@ -31,14 +38,15 @@ class _CartScreenState extends State<CartScreen> {
   }
   @override
   Widget build(BuildContext context) {
-    double totalPrice = 0.000;
-    double totalVatAmount = 0.000;
-    double totalPriceWithoutVate = 0.000;
-    double discountAmount = 0.000;
+    totalPrice = 0.000;
+    totalVatAmount = 0.000;
+    totalPriceWithoutVate = 0.000;
+    discountAmount = 0.000;
 
-    double totalModifierAmount= 0.000;
-    double totalModifierVatAmount= 0.000;
-    double totalModifierWithOutVatAmount = 0.000;
+    totalModifierAmount= 0.000;
+    totalModifierVatAmount= 0.000;
+    totalModifierWithOutVatAmount = 0.000;
+    
     final cartController = Get.find<CartController>();
     Size size = MediaQuery.of(context).size;
     var contentTitleFontSize = (size.width < 600)? Palette.contentTitleFontSize : Palette.contentTitleFontSizeL;
@@ -77,15 +85,23 @@ class _CartScreenState extends State<CartScreen> {
           },
           child: const Icon(Icons.arrow_back),
         ),
-        title: badges.Badge(
-          badgeContent: Text(
-            cartDetailsModelList.value.length.toString(),
-            style: const TextStyle(
-            color: Colors.white,
+
+        title: const Text('Cart'),
+
+        actions: [
+          TextButton(
+            onPressed: null,
+            child: badges.Badge(
+              badgeContent: Text(
+                cartController.cartDetailsModelList.value.length.toString(),
+                style: const TextStyle(
+                color: Colors.white,
+                ),
+              ), 
+              child: const Icon(Icons.shopping_cart,color: Colors.white,),
             ),
-          ),    
-          child: const Icon(Icons.shopping_cart,color: Colors.white,),
-        ),
+          ),
+        ],
         //title: Text('Cart (${currentUser.cart.length})'),
       ),
       body: ListView.separated(

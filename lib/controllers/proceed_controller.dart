@@ -1,14 +1,15 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:hitechpos/controllers/delivery_controller.dart';
-import 'package:hitechpos/controllers/drivethrough_controller.dart';
+import 'package:hitechpos/controllers/cart_controller.dart';
+import 'package:hitechpos/controllers/customer_and_address_controller.dart';
+import 'package:hitechpos/controllers/dini_in_controller.dart';
 import 'package:hitechpos/controllers/login_controller.dart';
 import 'package:hitechpos/controllers/menu_controller.dart';
-import 'package:hitechpos/controllers/takeway_controller.dart';
 import 'package:hitechpos/data/data.dart';
 import 'package:hitechpos/models/customeraddress.dart';
 import 'package:hitechpos/models/customerinfo.dart';
+import 'package:hitechpos/models/invoice_report.dart';
 import 'package:hitechpos/models/invoiceinfodetails.dart';
 import 'package:hitechpos/views/proceedorder/ordersuccessful.dart';
 import 'package:http/http.dart' as http;
@@ -18,128 +19,159 @@ class ProceedController extends GetxController {
 
   final loginController = Get.find<LoginController>();
   final menuController = Get.find<MenuScreenController>();
-  final driveThroughController = Get.find<DriveThroughController>();
-  final deliveryController = Get.find<DeliveryController>();
-  final takeAwayController = Get.find<TakeAwayController>();
+  final customerAndAddressController = Get.find<CustomerAndAddressController>();
+  final diniInController = Get.find<DiniInController>();
+  final cartController = Get.find<CartController>();
+
   var uniqueId = "";
   final isDataLoading = true.obs;
-  late List<CustomerList> customerList;
-  late TextEditingController customerTextController = TextEditingController();
 
-  CustomerList selectedCustomer = CustomerList(vBranchId: "", vCustomerId: "", vCustomerCode: "", vCustomerName: "", vVatRegNo: "", vMobileNo: "", vEmailId: "", iCreditLimit: 0, iActive: 0, vCreatedBy: "", dCreatedDate: DateTime.now(), vModifiedBy: "", dModifiedDate: DateTime.now());
-  CustomerAddressList selectedCustomerAddress = CustomerAddressList(vCustomerId: "", vAddId: "", vArea: "", vBuildingNo: "", vFlatNo: "", vBlockNo: "", vRoadNo: "");
-
-  late RxList<CustomerAddressList> customerAddressList = <CustomerAddressList>[].obs;
-
-  TextEditingController carNumberController = TextEditingController();
   String selectedOrderTypeName = "";
-  Rx<TextEditingValue> selectedCustomertext = const TextEditingValue(text: "").obs;
-  Rx<TextEditingValue>  selectedAddress = const TextEditingValue(text: "").obs;
+  // double totalInvoiceAmount = 0.000;
+  // String successfulInvoiceId = "";
+  // String successfulInvoiceNo = "";
+  // String successfulInvoiceNoFull = "";
 
-  double totalInvoiceAmount = 0.000;
-  String successfulInvoiceId = "";
-  String successfulInvoiceNo = "";
+  String selectedTableForParam = "";
+  bool valid = true;
+  String customerId = "";
+  String customerAddress = "";
+  String carNumber = "";
+
+  InvoiceReportModel invoiceReportData = InvoiceReportModel(messageId: "", message: "", returnValue: "",
+   invoiceId: "", invoiceNo: "", billAmount: 0.00, reportDetails: []);
  
   @override
   void onInit(){
     setOrderTypeData(menuController.selectedOrderType.value);
-    selectedCustomertext.value = TextEditingValue(text: getSelectedCustomer().vCustomerName);
-    selectedAddress.value = TextEditingValue(text: combinedCustomerAddressFields(getSelectedCustomerAddress()));
-    setCustomerList();
+    customerAndAddressController.selectedCustomertext.value = TextEditingValue(text: customerAndAddressController.getSelectedCustomer().vCustomerName);
+    customerAndAddressController.selectedAddress.value = TextEditingValue(text: customerAndAddressController.combinedCustomerAddressFields(customerAndAddressController.getSelectedCustomerAddress()));
+    customerAndAddressController.setCustomerList();
     super.onInit();
   }
 
   @override
   void onReady(){
     super.onReady();
-    setCustomerList();
+    customerAndAddressController.setCustomerList();
   }
-
   void setOrderTypeData(int orderTypeIndex){
     debugPrint("setOrderTypeData $orderTypeIndex");
     selectedOrderTypeName = orderTypes[orderTypeIndex].name;
     if(selectedOrderTypeName == "Dine In"){
-      refreshProceedController();
-      debugPrint("name${selectedCustomer.vCustomerName}");
-      debugPrint("Area${selectedCustomerAddress.vArea}");
+      //refreshProceedController();
+      debugPrint("name${customerAndAddressController.selectedCustomer.value.vCustomerName}");
+      debugPrint("Area${customerAndAddressController.selectedCustomerAddress.vArea}");
     }
     else if(selectedOrderTypeName == "Take Away"){
-      refreshProceedController();
-      if(takeAwayController.selectedCustomer.vCustomerId.isNotEmpty){
-        selectedCustomer = takeAwayController.selectedCustomer;
+     // refreshProceedController();
+      if(customerAndAddressController.selectedCustomer.value.vCustomerId.isNotEmpty){
+        customerAndAddressController.selectedCustomer = customerAndAddressController.selectedCustomer;
       }
-      debugPrint("name${selectedCustomer.vCustomerName}");
-      debugPrint("Area${selectedCustomerAddress.vArea}");
+      debugPrint("name${customerAndAddressController.selectedCustomer.value.vCustomerName}");
+      debugPrint("Area${customerAndAddressController.selectedCustomerAddress.vArea}");
     }
     else if(selectedOrderTypeName == "Delivery"){
-      refreshProceedController();
-      if(deliveryController.selectedCustomer.vCustomerId.isNotEmpty){
-        selectedCustomer = deliveryController.selectedCustomer;
+     // refreshProceedController();
+      if(customerAndAddressController.selectedCustomer.value.vCustomerId.isNotEmpty){
+        customerAndAddressController.selectedCustomer = customerAndAddressController.selectedCustomer;
       }
-      if(deliveryController.selectedCustomerAddress.vArea.isNotEmpty){
-        selectedCustomerAddress = deliveryController.selectedCustomerAddress;
+      if(customerAndAddressController.selectedCustomerAddress.vArea.isNotEmpty){
+        customerAndAddressController.selectedCustomerAddress = customerAndAddressController.selectedCustomerAddress;
       }
-      debugPrint("name${selectedCustomer.vCustomerName}");
-      debugPrint("Area${selectedCustomerAddress.vArea}");
+      debugPrint("name${customerAndAddressController.selectedCustomer.value.vCustomerName}");
+      debugPrint("Area${customerAndAddressController.selectedCustomerAddress.vArea}");
     }
     else if(selectedOrderTypeName == "Drive Through"){
-      refreshProceedController();
-      if(driveThroughController.selectedCustomer.vCustomerId.isNotEmpty){
-        selectedCustomer = driveThroughController.selectedCustomer;
+     // refreshProceedController();
+      if(customerAndAddressController.selectedCustomer.value.vCustomerId.isNotEmpty){
+        customerAndAddressController.selectedCustomer = customerAndAddressController.selectedCustomer;
       }
-      if(driveThroughController.selectedCustomerAddress.vArea.isNotEmpty){
-        selectedCustomerAddress = driveThroughController.selectedCustomerAddress;
+      if(customerAndAddressController.selectedCustomerAddress.vArea.isNotEmpty){
+        customerAndAddressController.selectedCustomerAddress = customerAndAddressController.selectedCustomerAddress;
       }
-      if(driveThroughController.carNumberController.text.isNotEmpty){
-        carNumberController.text = driveThroughController.carNumberController.text;
+      if(customerAndAddressController.carNumberController.text.isNotEmpty){
+        customerAndAddressController.carNumberController.text = customerAndAddressController.carNumberController.text;
       }
-      debugPrint("name${selectedCustomer.vCustomerName}");
-      debugPrint("Area${selectedCustomerAddress.vArea}");
+      debugPrint("name${customerAndAddressController.selectedCustomer.value.vCustomerName}");
+      debugPrint("Area${customerAndAddressController.selectedCustomerAddress.vArea}");
 
-      selectedCustomertext.value = TextEditingValue(text: getSelectedCustomer().vCustomerName);
-      selectedAddress.value = TextEditingValue(text: combinedCustomerAddressFields(getSelectedCustomerAddress()));
+      customerAndAddressController.selectedCustomertext.value = TextEditingValue(text: customerAndAddressController.getSelectedCustomer().vCustomerName);
+      customerAndAddressController.selectedAddress.value = TextEditingValue(text: combinedCustomerAddressFields(customerAndAddressController.getSelectedCustomerAddress()));
     }
   }
 
+  void orderProceeedValidation(int selectedOrderType){
+    if(selectedOrderType == 0){
+      if(diniInController.selectedTable.value.vTableId.isNotEmpty){
+        selectedTableForParam = diniInController.selectedTable.value.vTableId;
+        valid = true;
+      }
+      else{
+        Get.snackbar("Error", "Please select table",snackPosition: SnackPosition.BOTTOM);
+        valid = false;
+      }
+    }
+    else if(selectedOrderType == 1){
+      customerId = customerAndAddressController.getSelectedCustomer().vCustomerId;
+    }
+    else if(selectedOrderType == 2){
+      customerId = customerAndAddressController.getSelectedCustomer().vCustomerId;
+      customerAddress = customerAndAddressController.getSelectedCustomerAddress().vArea;  
+      if(customerId.isNotEmpty){
+        if(customerAddress.isNotEmpty){
+          customerAddress = customerAndAddressController.combinedCustomerAddressFields(customerAndAddressController.getSelectedCustomerAddress());
+          valid = true;
+        }
+        else{
+          Get.snackbar("Error", "Please select Address", snackPosition: SnackPosition.BOTTOM);
+          valid = false;
+        }
+      }
+      else{
+        Get.snackbar("Error", "Please select Customer", snackPosition: SnackPosition.BOTTOM);
+        valid = false;
+      }
+    }
+    else if (selectedOrderType == 3){
+      customerId = customerAndAddressController.getSelectedCustomer().vCustomerId;
+      customerAddress = customerAndAddressController.combinedCustomerAddressFields(customerAndAddressController.getSelectedCustomerAddress());
+      carNumber = customerAndAddressController.carNumberController.text;
+    }
+    else{
+      selectedTableForParam = "";
+      customerId = "";
+      customerAddress = "";
+      carNumber = "";
+    }
+    if(valid){
+    Future<InvoiceInfoDetails> invoiceData = cartController.getInvoiceInfoDetails(
+      (selectedOrderType + 1).toString(),
+        selectedTableForParam, 
+        customerId,
+        customerAddress,
+        carNumber
+      );
+      proceedOrderPostRequest(invoiceData);
+    }
+  }
+  
   void refreshProceedController(){
-    selectedCustomer = CustomerList(vBranchId: "", vCustomerId: "", 
+    selectedTableForParam = "";
+    valid = true;
+    customerId = "";
+    customerAddress = "";
+    carNumber = "";
+    customerAndAddressController.selectedCustomer.value = CustomerList(vBranchId: "", vCustomerId: "", 
     vCustomerCode: "", vCustomerName: "", vVatRegNo: "", vMobileNo: "", vEmailId: "", 
     iCreditLimit: 0, iActive: 0, vCreatedBy: "", dCreatedDate: DateTime.now(), vModifiedBy: "", 
     dModifiedDate: DateTime.now());
 
-    selectedCustomerAddress = CustomerAddressList(vCustomerId: "", vAddId: "",
+    customerAndAddressController.selectedCustomerAddress = CustomerAddressList(vCustomerId: "", vAddId: "",
     vArea: "", vBuildingNo: "", vFlatNo: "", vBlockNo: "", vRoadNo: "");
 
-    carNumberController.text = "";
-  }
-
-  void setCustomerAddressList(String customer){
-    fatchAddressInfo(customer).then((value) => {
-      customerAddressList.clear(),
-      customerAddressList.value = value.customerAddressList,
-    });
-  }
-
-  void setCustomerList(){
-    fatchCustomerInfo().then((value) => {
-      customerList = value.customerList,
-    });
-  }
-
-  void setSelectedCustomer(CustomerList customer){
-    selectedCustomer = customer;
-  }
-
-  CustomerList getSelectedCustomer(){
-    return selectedCustomer;
-  }
-
-  void setSelectedCustomerAddress(CustomerAddressList address){
-    selectedCustomerAddress = address;
-  }
-
-  CustomerAddressList getSelectedCustomerAddress(){
-    return selectedCustomerAddress;
+    customerAndAddressController.carNumberController.text = "";
+    
   }
 
   String combinedCustomerAddressFields(CustomerAddressList address){
@@ -148,40 +180,6 @@ class ProceedController extends GetxController {
     }
     else{
       return "";
-    }
-  }
-
-  Future<CustomerAddress> fatchAddressInfo(String customer) async{
-    String baseurl = loginController.baseurlFromLocalStorage;
-    final url = Uri.parse("${baseurl}api/waiterapp/cusaddress/$customer");
-    debugPrint(url.toString());
-    final headers = {
-      'Key': loginController.registrationKeyFromLocalStorage.toString(),
-      'Content-Type': 'application/json',
-    };
-    final response = await http.get(url,headers: headers);
-    if(response.statusCode == 200){
-      return CustomerAddress.fromJson(jsonDecode(response.body));
-    }
-    else{
-      throw Exception('Failed to load Customer address');
-    }
-  }
-
-  Future<CustomerInfo> fatchCustomerInfo() async{
-    String baseurl = loginController.baseurlFromLocalStorage;
-    final url = Uri.parse("${baseurl}api/waiterapp/customer");
-    debugPrint(url.toString());
-    final headers = {
-      'Key': loginController.registrationKeyFromLocalStorage.toString(),
-      'Content-Type': 'application/json',
-    };
-    final response = await http.get(url,headers: headers);
-    if(response.statusCode == 200){
-      return CustomerInfo.fromJson(jsonDecode(response.body));
-    }
-    else{
-      throw Exception('Failed to load Customer');
     }
   }
 
@@ -221,15 +219,29 @@ class ProceedController extends GetxController {
       final response = await http.post(url, headers: headers, body: body);
 
       if(response.statusCode == 200){
+
         debugPrint("responce 200");
         var data = jsonDecode(response.body);
-        debugPrint(data.toString());
+        debugPrint(response.body);
+
         if(data['messageId'] == '200'){
-          debugPrint(data.toString());
-          totalInvoiceAmount =  double.parse(data["billAmount"].toString());
-          successfulInvoiceId = data["invoiceId"];
-          successfulInvoiceNo =  data["invoiceNo"].toString().substring(8,data["invoiceNo"].toString().length);
-          Get.to(() => OrderSuccessfulScreen());
+          final Map<String, dynamic> jsonData = json.decode(response.body);
+          invoiceReportData = InvoiceReportModel.fromJson(jsonData);
+
+          debugPrint(invoiceReportData.toString());
+          Get.to(() => OrderSuccessfulScreen(), arguments: Future.value(invoiceReportData));
+          // totalInvoiceAmount =  invoiceReportData.billAmount;
+          // successfulInvoiceId = invoiceReportData.invoiceId;
+          // successfulInvoiceNoFull = invoiceReportData.invoiceNo;
+          // successfulInvoiceNo =  invoiceReportData.invoiceNo.toString().substring(8,invoiceReportData.invoiceNo.toString().length);
+
+          // totalInvoiceAmount =  double.parse(data["billAmount"].toString());
+          // successfulInvoiceId = data["invoiceId"];
+          // successfulInvoiceNoFull = data["invoiceNo"].toString();
+          // successfulInvoiceNo =  data["invoiceNo"].toString().substring(8,data["invoiceNo"].toString().length);
+
+          
+
         }
       }
     }

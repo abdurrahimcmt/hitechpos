@@ -59,6 +59,7 @@ class InvoiceInfo {
     String  vSyncedMacId;
     String  iSynced;
     String vUniqueId;
+    String vCarNumber;
     List<InvoiceDetail> invoiceDetails;
     List<dynamic> invoiceSettle;
     
@@ -96,6 +97,7 @@ class InvoiceInfo {
         required this.vSyncedMacId,
         required this.iSynced,
         required this.vUniqueId,
+        required this.vCarNumber
     });
 
     factory InvoiceInfo.fromJson(Map<String, dynamic> json) => InvoiceInfo(
@@ -130,6 +132,7 @@ class InvoiceInfo {
         vSyncedMacId: json["vSyncedMacId"],
         iSynced: json["iSynced"],
         vUniqueId: json["vUniqueId"],
+        vCarNumber: json["vCarNumber"],
         invoiceDetails: List<InvoiceDetail>.from(json["invoiceDetails"].map((x) => InvoiceDetail.fromJson(x))),
         invoiceSettle: List<dynamic>.from(json["invoiceSettle"].map((x) => x)),
     );
@@ -166,6 +169,7 @@ class InvoiceInfo {
         "vSyncedMacId": vSyncedMacId,
         "iSynced": iSynced,
         "vUniqueId": vUniqueId,
+        "vCarNumber": vCarNumber,
         "invoiceDetails": List<dynamic>.from(invoiceDetails.map((x) => x.toJson())),
         "invoiceSettle": List<dynamic>.from(invoiceSettle.map((x) => x)),
     };

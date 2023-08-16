@@ -2,20 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hitechpos/common/palette.dart';
 import 'package:hitechpos/controllers/cart_controller.dart';
-import 'package:hitechpos/controllers/delivery_controller.dart';
+import 'package:hitechpos/controllers/customer_and_address_controller.dart';
 import 'package:hitechpos/controllers/dini_in_controller.dart';
-import 'package:hitechpos/controllers/drivethrough_controller.dart';
-import 'package:hitechpos/controllers/login_controller.dart';
 import 'package:hitechpos/controllers/menu_controller.dart';
 import 'package:hitechpos/controllers/proceed_controller.dart';
-import 'package:hitechpos/controllers/takeway_controller.dart';
 import 'package:hitechpos/data/data.dart';
 import 'package:hitechpos/models/customeraddress.dart';
 import 'package:hitechpos/models/customerinfo.dart';
-import 'package:hitechpos/models/invoiceinfodetails.dart';
 import 'package:hitechpos/views/cart/cart_screen.dart';
 import 'package:hitechpos/views/menu/component/dine_in.dart';
-import 'package:hitechpos/views/proceedorder/ordersuccessful.dart';
 import 'package:hitechpos/widgets/curb_button.dart';
 class ProceedScreen extends StatefulWidget {
   const ProceedScreen({super.key});
@@ -27,9 +22,7 @@ class _ProceedScreenState extends State<ProceedScreen> {
 
   final controller = Get.find<ProceedController>();
   final menuController = Get.find<MenuScreenController>();
-  final driveThroughController = Get.find<DriveThroughController>();
-  final deliveryController = Get.find<DeliveryController>();
-  final takeAwayController = Get.find<TakeAwayController>();
+  final customerAndAddressController = Get.find<CustomerAndAddressController>();
   final diniInController = Get.find<DiniInController>();
   final cartController = Get.find<CartController>();
 
@@ -41,55 +34,24 @@ class _ProceedScreenState extends State<ProceedScreen> {
 
   @override
   void initState() {
-    
-    selectedOrderType = menuController.selectedOrderType.value;
-    selectedOrderTypeName = orderTypes[selectedOrderType].name;
-    if(selectedOrderTypeName == "Dine In"){
-      floorAndTableName = "${diniInController.selectedFloor.value.vFloorName}  ${diniInController.selectedTable.value.vTableName}";
-      // setState(() {
-      //  controller.refreshProceedController();
-      // });
-    }
-    else if(selectedOrderTypeName == "Take Away"){
-      //controller.refreshProceedController();
-      if(takeAwayController.selectedCustomer.vCustomerId.isNotEmpty){
-        controller.selectedCustomer = takeAwayController.selectedCustomer;
+    setState(() {
+      if(customerAndAddressController.getSelectedCustomerAddress().vAddId.isNotEmpty){
+        combinedAddress = customerAndAddressController.combinedCustomerAddressFields(customerAndAddressController.getSelectedCustomerAddress());
       }
-    }
-    else if(selectedOrderTypeName == "Delivery"){
-      //controller.refreshProceedController();
-      if(deliveryController.selectedCustomer.vCustomerId.isNotEmpty){
-        controller.selectedCustomer = deliveryController.selectedCustomer;
-      }
-      if(deliveryController.selectedCustomerAddress.vArea.isNotEmpty){
-        controller.selectedCustomerAddress = deliveryController.selectedCustomerAddress;
-      }
-    }
-    else if(selectedOrderTypeName == "Drive Through"){
-     // controller.refreshProceedController();
-      if(driveThroughController.selectedCustomer.vCustomerId.isNotEmpty){
-        controller.selectedCustomer = driveThroughController.selectedCustomer;
-      }
-      if(driveThroughController.selectedCustomerAddress.vArea.isNotEmpty){
-        controller.selectedCustomerAddress = driveThroughController.selectedCustomerAddress;
-      }
-      if(driveThroughController.carNumberController.text.isNotEmpty){
-        controller.carNumberController.text = driveThroughController.carNumberController.text;
-      }
-    }
+      selectedOrderType = menuController.selectedOrderType.value;
+      selectedOrderTypeName = orderTypes[selectedOrderType].name;
 
-    if(controller.getSelectedCustomerAddress().vAddId.isNotEmpty){
-      combinedAddress = controller.combinedCustomerAddressFields(controller.getSelectedCustomerAddress());
-    }
+      controller.setOrderTypeData(menuController.selectedOrderType.value);
+      customerAndAddressController.selectedCustomertext.value = TextEditingValue(text: customerAndAddressController.getSelectedCustomer().vCustomerName);
+      customerAndAddressController.selectedAddress.value = TextEditingValue(text: customerAndAddressController.combinedCustomerAddressFields(customerAndAddressController.getSelectedCustomerAddress()));
+      customerAndAddressController.setCustomerList();
+
+    });
     super.initState();
   }
   @override
   Widget build(BuildContext context) {
     floorAndTableName = "${diniInController.selectedFloor.value.vFloorName}  ${diniInController.selectedTable.value.vTableName}";
-    TextEditingValue selectedCustomer = TextEditingValue(text: controller.getSelectedCustomer().vCustomerName);
-    TextEditingValue selectedAddress = TextEditingValue(text: combinedAddress);
-    controller.setCustomerList();
-    TextEditingController addressTextController = TextEditingController();
     Size size= MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
@@ -140,9 +102,6 @@ class _ProceedScreenState extends State<ProceedScreen> {
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              // Image(image: AssetImage(orderTypes[index].imageUrl),
-                              // height: 50,
-                              // fit: BoxFit.cover,),
                               Padding(
                                 padding: const EdgeInsets.all(5.0),
                                 child: FittedBox(
@@ -168,28 +127,27 @@ class _ProceedScreenState extends State<ProceedScreen> {
                 ),
                 if(selectedOrderType == 1 || selectedOrderType == 2 || selectedOrderType == 3) 
                 Autocomplete <CustomerList>(
-                  initialValue: selectedCustomer,
+                  initialValue: customerAndAddressController.selectedCustomertext.value,
                   onSelected: (option) {
                     debugPrint(option.vCustomerName.toString());
-                    controller.setSelectedCustomer(option);
-                    debugPrint("From Controller ${controller.getSelectedCustomer().vCustomerName}");
-                    controller.setCustomerAddressList(option.vCustomerId);
-                    setState(() {
-                      controller.setSelectedCustomerAddress(CustomerAddressList(vCustomerId: "", vAddId: "", vArea: "", vBuildingNo: "", vFlatNo: "", vBlockNo: "", vRoadNo: ""));
-                      addressTextController.text = "";
-                    });
+                    customerAndAddressController.setSelectedCustomer(option);
+                    debugPrint("From Controller ${customerAndAddressController.getSelectedCustomer().vCustomerName}");
+                    customerAndAddressController.setCustomerAddressList(option.vCustomerId);
+                    // setState(() {
+                    //   customerAndAddressController.setSelectedCustomerAddress(CustomerAddressList(vCustomerId: "", vAddId: "", vArea: "", vBuildingNo: "", vFlatNo: "", vBlockNo: "", vRoadNo: ""));
+                    // });
                   },
                   optionsBuilder: (TextEditingValue textEditingValue){
                     if(textEditingValue.text == ''){
                       return const Iterable<CustomerList>.empty();
                     }
-                    return controller.customerList.where((CustomerList customer){
+                    return customerAndAddressController.customerList.where((CustomerList customer){
                       return customer.vCustomerName.toLowerCase().contains(textEditingValue.text.toLowerCase());
                     });
                   },
-                   displayStringForOption: (customer) {
+                    displayStringForOption: (customer) {
                     return customer.vCustomerName;
-                   },
+                    },
                   fieldViewBuilder: (context, controller, focusNode, onFieldSubmitted) {
                     return TextField(
                       controller: controller,
@@ -205,44 +163,48 @@ class _ProceedScreenState extends State<ProceedScreen> {
                     );
                   },
                 ),
+                
                 Palette.sizeBoxVarticalSpace,
                 if(selectedOrderType == 2 || selectedOrderType == 3) 
-                Autocomplete <CustomerAddressList>(
-                  initialValue: selectedAddress,
-                  onSelected: (option) {
-                    controller.setSelectedCustomerAddress(option);
-                  },
-                  optionsBuilder: (TextEditingValue textEditingValue){
-                    if(textEditingValue.text == ''){
-                      return const Iterable<CustomerAddressList>.empty();
-                    }
-                    return controller.customerAddressList.where((CustomerAddressList address){
-                      String combinedAddress = controller.combinedCustomerAddressFields(address);
-                      return combinedAddress.toLowerCase().contains(textEditingValue.text.toLowerCase());
-                    });
-                  },
-                  displayStringForOption: (address) {
-                    return controller.combinedCustomerAddressFields(address);
-                  },
-                  fieldViewBuilder: (context, addressTextController, focusNode, onFieldSubmitted) {              
-                    return TextField(
-                      controller: addressTextController,
-                      focusNode: focusNode,
-                      onEditingComplete: onFieldSubmitted,
-                      decoration: const InputDecoration(
-                        hintText: "Address",
-                        prefixIcon: Icon(
-                          Icons.location_on,
-                          color: Color.fromARGB(106, 113, 15, 131),
+                // We should use RawAutocomplete here
+
+                 Autocomplete <CustomerAddressList>(
+                    initialValue: customerAndAddressController.selectedAddress.value,
+                    onSelected: (option) {
+                      customerAndAddressController.setSelectedCustomerAddress(option);
+                    },
+                    optionsBuilder: (TextEditingValue textEditingValue){
+                      if(textEditingValue.text == ''){
+                        return const Iterable<CustomerAddressList>.empty();
+                      }
+                      return customerAndAddressController.customerAddressList.where((CustomerAddressList address){
+                        String combinedAddress = customerAndAddressController.combinedCustomerAddressFields(address);
+                        return combinedAddress.toLowerCase().contains(textEditingValue.text.toLowerCase());
+                      });
+                    },
+                    displayStringForOption: (address) {
+                      return customerAndAddressController.combinedCustomerAddressFields(address);
+                    },
+                    fieldViewBuilder: (context, addressTextController, focusNode, onFieldSubmitted) {              
+                      return TextField(
+                        controller: addressTextController,
+                        focusNode: focusNode,
+                        onEditingComplete: onFieldSubmitted,
+                        decoration: const InputDecoration(
+                          hintText: "Address",
+                          prefixIcon: Icon(
+                            Icons.location_on,
+                            color: Color.fromARGB(106, 113, 15, 131),
+                          ),
                         ),
-                      ),
-                    );
-                  },
+                      );
+                    },
+                  
                 ),
                 Palette.sizeBoxVarticalSpace,
                 if(selectedOrderType == 3) 
                 TextField(
-                    controller: controller.carNumberController,
+                    controller: customerAndAddressController.carNumberController,
                     decoration: const InputDecoration(
                       hintText: "Car Number",
                       prefixIcon: Icon(
@@ -327,16 +289,7 @@ class _ProceedScreenState extends State<ProceedScreen> {
         padding: const EdgeInsets.symmetric(vertical: 10),
         child: TextButton(
           onPressed: (){
-            Future<InvoiceInfoDetails> invoiceData = cartController.getInvoiceInfoDetails(
-              (selectedOrderType + 1).toString(),
-              diniInController.selectedTable.value.vTableId, 
-              controller.getSelectedCustomer().vCustomerId,
-              controller.combinedCustomerAddressFields(controller.getSelectedCustomerAddress())
-              );
-            controller.proceedOrderPostRequest(invoiceData);
-            // Navigator.push(context,
-            // MaterialPageRoute(builder: (_) => const MenuScreen(),),);
-            //Get.to(const OrderSuccessfulScreen());
+            controller.orderProceeedValidation(selectedOrderType);
           }, 
           child: const CurbButton(
             buttonPadding: EdgeInsets.only(left: 0,right: 0),
