@@ -4,9 +4,12 @@
 
 import 'dart:convert';
 
+import 'package:intl/intl.dart';
+
 String formatDateForMySQL(DateTime dateTime) {
   return "${dateTime.year}-${dateTime.month.toString().padLeft(2, '0')}-${dateTime.day.toString().padLeft(2, '0')} ${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}:${dateTime.second.toString().padLeft(2, '0')}";
 }
+
 InvoiceInfoDetails invoiceInfoDetailsFromJson(String str) => InvoiceInfoDetails.fromJson(json.decode(str));
 
 String invoiceInfoDetailsToJson(InvoiceInfoDetails data) => json.encode(data.toJson());
@@ -33,9 +36,9 @@ class InvoiceInfo {
     String vInvoiceNo;
     String vBarcode;
     String vSplitTicketId;
-    String iSalesTypeId;
-    String iStatusId;
-    String iClosed;
+    int iSalesTypeId;
+    int iStatusId;
+    int iClosed;
     String vTableId;
     String vWaiterId;
     String vPromotionId;
@@ -43,12 +46,12 @@ class InvoiceInfo {
     String vZoneId;
     String vCustomerId;
     String vCustomerAddress;
-    String iNoOfCustomers;
+    int iNoOfCustomers;
     DateTime dSaveDate;
     DateTime dSettleDate;
     DateTime dDeliveryDate;
-    String mBillAmount;
-    String mPaidAmount;
+    double mBillAmount;
+    double mPaidAmount;
     String vSpecialNote;
     String vRemarksForVoid;
     String vTerminalName;
@@ -56,9 +59,9 @@ class InvoiceInfo {
     DateTime dCreatedDate;
     String vModifiedBy;
     DateTime dModifiedDate;
-    String  vSyncedMacId;
-    String  iSynced;
-    String vUniqueId;
+    String?  vSyncedMacId;
+    String?  iSynced;
+    String? vUniqueId;
     String vCarNumber;
     List<InvoiceDetail> invoiceDetails;
     List<dynamic> invoiceSettle;
@@ -94,9 +97,9 @@ class InvoiceInfo {
         required this.dModifiedDate,
         required this.invoiceDetails,
         required this.invoiceSettle,
-        required this.vSyncedMacId,
-        required this.iSynced,
-        required this.vUniqueId,
+        this.vSyncedMacId,
+        this.iSynced,
+        this.vUniqueId,
         required this.vCarNumber
     });
 
@@ -117,18 +120,18 @@ class InvoiceInfo {
         vCustomerId: json["vCustomerId"],
         vCustomerAddress: json["vCustomerAddress"],
         iNoOfCustomers: json["iNoOfCustomers"],
-        dSaveDate: DateTime.parse(json["dSaveDate"]),
-        dSettleDate: DateTime.parse(json["dSettleDate"]),
-        dDeliveryDate: DateTime.parse(json["dDeliveryDate"]),
-        mBillAmount: json["mBillAmount"],
-        mPaidAmount: json["mPaidAmount"],
+        dSaveDate: DateFormat('MM/dd/yyyy h:mm:ss a').parse(json["dSaveDate"]), 
+        dSettleDate: DateFormat('MM/dd/yyyy h:mm:ss a').parse(json["dSettleDate"]),
+        dDeliveryDate: DateFormat('MM/dd/yyyy h:mm:ss a').parse(json["dDeliveryDate"]),
+        mBillAmount: json["mBillAmount"].toDouble(),
+        mPaidAmount:  json["mPaidAmount"].toDouble(),
         vSpecialNote: json["vSpecialNote"],
         vRemarksForVoid: json["vRemarksForVoid"],
         vTerminalName: json["vTerminalName"],
         vCreatedBy: json["vCreatedBy"],
-        dCreatedDate: DateTime.parse(json["dCreatedDate"]),
+        dCreatedDate: DateFormat('MM/dd/yyyy h:mm:ss a').parse(json["dCreatedDate"]),
         vModifiedBy: json["vModifiedBy"],
-        dModifiedDate: DateTime.parse(json["dModifiedDate"]),
+        dModifiedDate: DateFormat('MM/dd/yyyy h:mm:ss a').parse(json["dModifiedDate"]),
         vSyncedMacId: json["vSyncedMacId"],
         iSynced: json["iSynced"],
         vUniqueId: json["vUniqueId"],
@@ -178,32 +181,34 @@ class InvoiceInfo {
 class InvoiceDetail {
     String vInvoiceId;
     String vItemId;
+    String vItemName;
     String vUnitId;
-    String mQuantity;
-    String mCosting;
+    String vUnitName;
+    int mQuantity;
+    double mCosting;
     String vVatCatId;
-    String mVatPercent;
+    double mVatPercent;
     String vVatOption;
-    String mMainPrice;
-    String mNetAmount;
-    String mDisPercent;
-    String mDisAmount;
-    String mDisCalculated;
-    String mAmountAfterDis;
-    String mVoidPercent;
-    String mVoidAmount;
-    String mVoidCalculated;
-    String mAmountAfterDisVoid;
-    String mAmountWithoutVat;
-    String mTotalVatAmount;
-    String mFinalPrice;
-    String mFinalAmount;
-    String iClosed;
+    double mMainPrice;
+    double mNetAmount;
+    double mDisPercent;
+    double mDisAmount;
+    double mDisCalculated;
+    double mAmountAfterDis;
+    double mVoidPercent;
+    double mVoidAmount;
+    double mVoidCalculated;
+    double mAmountAfterDisVoid;
+    double mAmountWithoutVat;
+    double mTotalVatAmount;
+    double mFinalPrice;
+    double mFinalAmount;
+    int iClosed;
     String vItemExtra;
     String vKitchenNote;
     String vInvoiceNote;
     String vRemarks;
-    String iInvoiceStatusId;
+    int iInvoiceStatusId;
     String vStatusRemarks;
     String vCreatedBy;
     DateTime dCreatedDate;
@@ -213,7 +218,9 @@ class InvoiceDetail {
     InvoiceDetail({
         required this.vInvoiceId,
         required this.vItemId,
+        required this.vItemName,
         required this.vUnitId,
+        required this.vUnitName,
         required this.mQuantity,
         required this.mCosting,
         required this.vVatCatId,
@@ -249,26 +256,28 @@ class InvoiceDetail {
     factory InvoiceDetail.fromJson(Map<String, dynamic> json) => InvoiceDetail(
         vInvoiceId: json["vInvoiceId"],
         vItemId: json["vItemId"],
+        vItemName: json["vItemName"],
         vUnitId: json["vUnitId"],
+        vUnitName: json["vUnitName"],
         mQuantity: json["mQuantity"],
-        mCosting: json["mCosting"],
+        mCosting: json["mCosting"].toDouble(),
         vVatCatId: json["vVatCatId"],
-        mVatPercent: json["mVatPercent"],
+        mVatPercent: json["mVatPercent"].toDouble(),
         vVatOption: json["vVatOption"],
-        mMainPrice: json["mMainPrice"],
-        mNetAmount: json["mNetAmount"],
-        mDisPercent: json["mDisPercent"],
-        mDisAmount: json["mDisAmount"],
-        mDisCalculated: json["mDisCalculated"],
-        mAmountAfterDis: json["mAmountAfterDis"],
-        mVoidPercent: json["mVoidPercent"],
-        mVoidAmount: json["mVoidAmount"],
-        mVoidCalculated: json["mVoidCalculated"],
-        mAmountAfterDisVoid: json["mAmountAfterDisVoid"],
-        mAmountWithoutVat: json["mAmountWithoutVat"],
-        mTotalVatAmount: json["mTotalVatAmount"],
-        mFinalPrice: json["mFinalPrice"],
-        mFinalAmount: json["mFinalAmount"],
+        mMainPrice: json["mMainPrice"].toDouble(),
+        mNetAmount: json["mNetAmount"].toDouble(),
+        mDisPercent: json["mDisPercent"].toDouble(),
+        mDisAmount: json["mDisAmount"].toDouble(),
+        mDisCalculated: json["mDisCalculated"].toDouble(),
+        mAmountAfterDis: json["mAmountAfterDis"].toDouble(),
+        mVoidPercent: json["mVoidPercent"].toDouble(),
+        mVoidAmount: json["mVoidAmount"].toDouble(),
+        mVoidCalculated: json["mVoidCalculated"].toDouble(),
+        mAmountAfterDisVoid: json["mAmountAfterDisVoid"].toDouble(),
+        mAmountWithoutVat: json["mAmountWithoutVat"].toDouble(),
+        mTotalVatAmount: json["mTotalVatAmount"].toDouble(),
+        mFinalPrice: json["mFinalPrice"].toDouble(),
+        mFinalAmount: json["mFinalAmount"].toDouble(),
         iClosed: json["iClosed"],
         vItemExtra: json["vItemExtra"],
         vKitchenNote: json["vKitchenNote"],
@@ -277,15 +286,17 @@ class InvoiceDetail {
         iInvoiceStatusId: json["iInvoiceStatusId"],
         vStatusRemarks: json["vStatusRemarks"],
         vCreatedBy: json["vCreatedBy"],
-        dCreatedDate: DateTime.parse(json["dCreatedDate"]),
+        dCreatedDate: DateFormat('MM/dd/yyyy h:mm:ss a').parse(json["dCreatedDate"]),
         vModifiedBy: json["vModifiedBy"],
-        dModifiedDate: DateTime.parse(json["dModifiedDate"]),
+        dModifiedDate: DateFormat('MM/dd/yyyy h:mm:ss a').parse(json["dModifiedDate"]),
     );
 
     Map<String, dynamic> toJson() => {
         "vInvoiceId": vInvoiceId,
         "vItemId": vItemId,
+        "vItemName": vItemName,
         "vUnitId": vUnitId,
+        "vUnitName": vUnitName,
         "mQuantity": mQuantity,
         "mCosting": mCosting,
         "vVatCatId": vVatCatId,

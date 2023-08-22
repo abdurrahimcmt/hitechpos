@@ -73,6 +73,7 @@ class DiniInController extends GetxController{
 
 Future<FloorAndTableInfo> fatchFloorAndTableInfo() async {
     final loginController = Get.find<LoginController>();
+    await loginController.setBaseUrl();
     String baseurl = loginController.baseurlFromLocalStorage;
     String branchId = loginController.branchIdFromLocalStorage;
     final url = Uri.parse("${baseurl}api/waiterapp/table/all/$branchId");

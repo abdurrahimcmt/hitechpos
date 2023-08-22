@@ -1,14 +1,20 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hitechpos/common/palette.dart';
 import 'package:hitechpos/controllers/cart_controller.dart';
 import 'package:hitechpos/controllers/customer_and_address_controller.dart';
 import 'package:hitechpos/controllers/dini_in_controller.dart';
+import 'package:hitechpos/controllers/login_controller.dart';
 import 'package:hitechpos/controllers/menu_controller.dart';
+import 'package:hitechpos/controllers/orderlist_controller.dart';
 import 'package:hitechpos/controllers/proceed_controller.dart';
 import 'package:hitechpos/data/data.dart';
 import 'package:hitechpos/models/customeraddress.dart';
 import 'package:hitechpos/models/customerinfo.dart';
+import 'package:hitechpos/models/floorandtableinfo.dart';
+import 'package:hitechpos/models/invoiceinfodetails.dart';
 import 'package:hitechpos/views/cart/cart_screen.dart';
 import 'package:hitechpos/views/menu/component/dine_in.dart';
 import 'package:hitechpos/widgets/curb_button.dart';
@@ -25,12 +31,43 @@ class _ProceedScreenState extends State<ProceedScreen> {
   final customerAndAddressController = Get.find<CustomerAndAddressController>();
   final diniInController = Get.find<DiniInController>();
   final cartController = Get.find<CartController>();
+  final loginController = Get.find<LoginController>();
+  final orderListController = Get.find<OrderListController>();
 
   late String combinedAddress = "";
   String floorAndTableName = "";
   
   int selectedOrderType = 0;
   String selectedOrderTypeName = "";
+  late Future<InvoiceInfoDetails> invoiceInfoDetailsFuture;
+  late String floorName;
+  late String customerId;
+  late String addressId;
+
+  void setDataFromDatabase(){
+    if(loginController.invoiceId.isNotEmpty){
+      invoiceInfoDetailsFuture = orderListController.fatchInvoiceInfo(loginController.invoiceId);
+      invoiceInfoDetailsFuture.then((value) {
+          floorName = value.invoiceInfo.first.vTableId;
+          customerId = value.invoiceInfo.first.vCustomerId;
+          addressId = value.invoiceInfo.first.vCustomerAddress;
+
+          if(cartController.isDataUpdate){
+            customerAndAddressController.selectedAddress.value = TextEditingValue(text: addressId);
+            debugPrint("address : $addressId");
+          } 
+          // if(value.invoiceInfo.first.iSalesTypeId == 1){
+          //   Future<FloorAndTableInfo> floorInfoList =  diniInController.fatchFloorAndTableInfo();
+          //   floorInfoList.then((value) {
+          //     diniInController.selectedFloor.value = value.onlineFloorTableList.singleWhere((element) {
+          //       return element.vFloorName == floorName;
+          //     });
+          //   });
+          // }
+
+      });
+    }
+  }
 
   @override
   void initState() {
@@ -40,17 +77,22 @@ class _ProceedScreenState extends State<ProceedScreen> {
       }
       selectedOrderType = menuController.selectedOrderType.value;
       selectedOrderTypeName = orderTypes[selectedOrderType].name;
-
       controller.setOrderTypeData(menuController.selectedOrderType.value);
       customerAndAddressController.selectedCustomertext.value = TextEditingValue(text: customerAndAddressController.getSelectedCustomer().vCustomerName);
       customerAndAddressController.selectedAddress.value = TextEditingValue(text: customerAndAddressController.combinedCustomerAddressFields(customerAndAddressController.getSelectedCustomerAddress()));
+      
       customerAndAddressController.setCustomerList();
-
     });
     super.initState();
   }
   @override
   Widget build(BuildContext context) {
+    // Timer(const Duration(seconds: 2), () {
+    //   setState(() {
+    //     setDataFromDatabase();
+    //   });
+    // });
+    
     floorAndTableName = "${diniInController.selectedFloor.value.vFloorName}  ${diniInController.selectedTable.value.vTableName}";
     Size size= MediaQuery.of(context).size;
     return Scaffold(

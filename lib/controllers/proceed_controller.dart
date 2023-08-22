@@ -146,7 +146,7 @@ class ProceedController extends GetxController {
     }
     if(valid){
     Future<InvoiceInfoDetails> invoiceData = cartController.getInvoiceInfoDetails(
-      (selectedOrderType + 1).toString(),
+      selectedOrderType + 1,
         selectedTableForParam, 
         customerId,
         customerAddress,
@@ -216,6 +216,7 @@ class ProceedController extends GetxController {
       };
 
       final body = jsonData;
+      debugPrint(body);
       final response = await http.post(url, headers: headers, body: body);
 
       if(response.statusCode == 200){

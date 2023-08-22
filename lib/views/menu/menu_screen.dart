@@ -316,18 +316,28 @@ class MenuScreen extends GetView<MenuScreenController> {
   }
 
   _buildMenuItem(ItemList menuItem) {
+
     return Stack(
       alignment: Alignment.center,
       children: [
+        if(menuItem.vItemImage == "0")
         Container(
           height: 100.0,
           width: 100.0,
           decoration: BoxDecoration(
-            // image: DecorationImage(
-            //   image: NetworkImage("https://images.unsplash.com/photo-1610970878459-a0e464d7592b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=924&q=80"),
-            //   //image: NetworkImage(menuItem.vImagePath,),
-            //   fit: BoxFit.cover,
-            // ),
+            borderRadius: BorderRadius.circular(10.0),
+          ),
+        ),
+        if(menuItem.vItemImage != "0")
+        Container(
+          height: 100.0,
+          width: 100.0,
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              //image: NetworkImage("https://hiposbh.com/report/HiPOS/POS/ItemImages/FI47.jpg"),
+              image: NetworkImage(menuItem.vItemImage),
+              fit: BoxFit.cover,
+            ),
             borderRadius: BorderRadius.circular(10.0),
           ),
         ),
@@ -419,7 +429,7 @@ class MenuScreen extends GetView<MenuScreenController> {
     );
   }
 }
-
+//need to update
 Future<CategoryWithItemList> fatchCategoryWithItemList(String catid,String item,String searchText) async {
   final response = await http.get(Uri.parse("https://hiposbh.com:84/api/AppsAPI/online/08f4f0d8-ddf4-4498-b878-2c69eec6452e/$catid/$item/$searchText"));
   if(response.statusCode == 200){

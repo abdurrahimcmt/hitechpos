@@ -91,7 +91,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         flex: 6,
                         child: GestureDetector(
                           onTap: () {
-                            Get.to(const OrderListScreen());
+                            Get.to(() => const OrderListScreen());
                           },
                           child: const DashBoardButton(title: "Order List", buttonIcon: Icons.list),
                         ),
@@ -126,7 +126,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   ),
                   TextButton(
                     onPressed: () {
-                      Get.to(MenuScreen());
+                      Get.to(() => MenuScreen());
                     },
                     child: const CurbButton(
                         buttonPadding: EdgeInsets.only(left: 0,right: 0),

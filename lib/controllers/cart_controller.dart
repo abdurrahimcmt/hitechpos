@@ -2,6 +2,7 @@ import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hitechpos/controllers/login_controller.dart';
+import 'package:hitechpos/controllers/orderlist_controller.dart';
 import 'package:hitechpos/data/data.dart';
 import 'package:hitechpos/models/cartDetailsmodel.dart';
 import 'package:hitechpos/models/invoiceinfodetails.dart';
@@ -10,10 +11,19 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class CartController extends GetxController{
 
+  //This list maintain the cart data
   Rx< List<CartDetailsModel> > cartDetailsModelList = Rx<List<CartDetailsModel>>([]);
   final loginController = Get.find<LoginController>();
+  //final orderListController = Get.find<OrderListController>();
   double totalBillAmount = 0.000;
   String uniqueId = "";
+  bool isDataUpdate = false;
+
+  void refreshCartController(){
+      totalBillAmount = 0.000;
+      uniqueId = "";
+      isDataUpdate = false;
+  }
 
   Future<String> getDeviceinfo() async{
     DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
@@ -37,28 +47,47 @@ class CartController extends GetxController{
   String itemId,
   String itemName,
   int orderedQty,
-  double itemPrice,
+  //mFinalPrice of ItemPriceList
+  double mFinalPrice,
   double totalPrice,
   double discountAmount,
   String vatCatId,
   String vatCatOption,
   double vatPercent,
-  ItemPriceList itemPriceList,
+
+  String vUnitId,
+  String vUnitName,
+
+  double mMainPrice,
+  double mVatAmount,
+  double mWoVatAmount,
+  
+
+ // ItemPriceList itemPriceList,
   List<OnlineModifierList> onlineModifierLists,
   String combinedKitchenNotesText,
   String combinedInvoiceNotesText)
   {
     cartDetailsModelList.value.add(  
-      CartDetailsModel(itemId: itemId, itemName: itemName,orderedQty: orderedQty, itemPrice: itemPrice, totalPrice: totalPrice,
+      CartDetailsModel(itemId: itemId, itemName: itemName,orderedQty: orderedQty, mFinalPrice: mFinalPrice, totalPrice: totalPrice,
       discountAmount: discountAmount,vatCatId: vatCatId,vatCatOption: vatCatOption,vatPercent: vatPercent,
-      itemPriceList: itemPriceList, onlineModifierLists: onlineModifierLists,
+       onlineModifierLists: onlineModifierLists,
       combinedKitchenNotesText: combinedKitchenNotesText, 
-      combinedInvoiceNotesText: combinedInvoiceNotesText));
+      combinedInvoiceNotesText: combinedInvoiceNotesText,
+      vUnitId: vUnitId,
+      vUnitName: vUnitName,
+      mMainPrice: mMainPrice,
+      mVatAmount: mVatAmount,
+      mWoVatAmount: mWoVatAmount
+      
+      ));
   }
+  // load card from database
 
-  Future<InvoiceInfoDetails> getInvoiceInfoDetails(String iSalesTypeId, String vTableId,
+
+  //for submit data
+  Future<InvoiceInfoDetails> getInvoiceInfoDetails(int iSalesTypeId, String vTableId,
    String vCustomerId, String vCustomerAddress,String carNumber) async {
-
     List<InvoiceDetail> invoiceDetailsList = [];
     // Name with Modifier Serial
     String itemExtra = '';
@@ -77,37 +106,41 @@ class CartController extends GetxController{
         // If Item have modifier then Name start with modifier serial 1
         itemExtra = "$modifierItemExtraId#${cartDetailsModel.itemId}";
       }
+
       invoiceDetailsList.add(
         // Main Item add
+
         InvoiceDetail(
-          vInvoiceId: "", 
+          vInvoiceId: loginController.getInvoiceId, 
           vItemId: cartDetailsModel.itemId, 
-          vUnitId: cartDetailsModel.itemPriceList.vUnitId,
-          mQuantity: cartDetailsModel.orderedQty.toStringAsPrecision(3), 
-          mCosting: 0.toStringAsPrecision(3), 
+          vItemName: cartDetailsModel.itemName, 
+          vUnitId: cartDetailsModel.vUnitId,
+          vUnitName: cartDetailsModel.vUnitName,
+          mQuantity: cartDetailsModel.orderedQty, 
+          mCosting: 0.000, 
           vVatCatId: cartDetailsModel.vatCatId,
-          mVatPercent: cartDetailsModel.vatPercent.toStringAsPrecision(3),
+          mVatPercent: cartDetailsModel.vatPercent,
           vVatOption: cartDetailsModel.vatCatOption, 
-          mMainPrice: cartDetailsModel.itemPrice.toStringAsFixed(3),
-          mNetAmount: (cartDetailsModel.itemPrice * cartDetailsModel.orderedQty).toStringAsPrecision(3),
-          mDisPercent: 0.toStringAsPrecision(3),
-          mDisAmount: cartDetailsModel.discountAmount.toStringAsPrecision(3), 
-          mDisCalculated: cartDetailsModel.discountAmount.toStringAsPrecision(3),
-          mAmountAfterDis: cartDetailsModel.totalPrice.toStringAsPrecision(3),
-          mVoidPercent: 0.toStringAsPrecision(3),
-          mVoidAmount: 0.toStringAsPrecision(3),
-          mVoidCalculated: 0.toStringAsPrecision(3),
-          mAmountAfterDisVoid: 0.toStringAsPrecision(3),
-          mAmountWithoutVat: (cartDetailsModel.itemPriceList.mWoVatAmount * cartDetailsModel.orderedQty).toStringAsPrecision(3),
-          mTotalVatAmount: (cartDetailsModel.itemPriceList.mVatAmount * cartDetailsModel.orderedQty).toStringAsPrecision(3), 
-          mFinalPrice: cartDetailsModel.itemPrice.toStringAsPrecision(3),
-          mFinalAmount: (cartDetailsModel.itemPrice * cartDetailsModel.orderedQty).toStringAsPrecision(3),
-          iClosed: '0',
+          mMainPrice: cartDetailsModel.mFinalPrice,
+          mNetAmount: (cartDetailsModel.mFinalPrice * cartDetailsModel.orderedQty),
+          mDisPercent: 0.000,
+          mDisAmount: cartDetailsModel.discountAmount, 
+          mDisCalculated: cartDetailsModel.discountAmount,
+          mAmountAfterDis: (cartDetailsModel.mMainPrice * cartDetailsModel.orderedQty),
+          mVoidPercent: 0.000,
+          mVoidAmount: 0.000,
+          mVoidCalculated: 0.000,
+          mAmountAfterDisVoid: 0.000,
+          mAmountWithoutVat: (cartDetailsModel.mWoVatAmount * cartDetailsModel.orderedQty),
+          mTotalVatAmount: (cartDetailsModel.mVatAmount * cartDetailsModel.orderedQty), 
+          mFinalPrice: cartDetailsModel.mFinalPrice,
+          mFinalAmount: (cartDetailsModel.mFinalPrice * cartDetailsModel.orderedQty),
+          iClosed: 0,
           vItemExtra: itemExtra,
           vKitchenNote: cartDetailsModel.combinedKitchenNotesText,
           vInvoiceNote: cartDetailsModel.combinedInvoiceNotesText,
           vRemarks: "",
-          iInvoiceStatusId: "1", 
+          iInvoiceStatusId: 1, 
           vStatusRemarks: "",
           vCreatedBy: loginController.userIdFromLocalStorage,
           dCreatedDate: DateTime.now(), 
@@ -125,34 +158,36 @@ class CartController extends GetxController{
           invoiceDetailsList.add(
             // Modifier add
             InvoiceDetail(
-              vInvoiceId: "", 
+              vInvoiceId: loginController.getInvoiceId, 
               vItemId: modifier.vItemIdModifier, 
+              vItemName: modifier.vItemName, 
               vUnitId: modifier.iUnitId,
-              mQuantity: modifier.mQuantity.toStringAsPrecision(3), 
-              mCosting: 0.toStringAsPrecision(3), 
+              vUnitName: modifier.vUnitName,
+              mQuantity: cartDetailsModel.orderedQty,
+              mCosting: 0.000, 
               vVatCatId: modifier.vVatCatId,
-              mVatPercent: modifier.mPercentage.toStringAsPrecision(3),
+              mVatPercent: modifier.mPercentage,
               vVatOption: modifier.vVatOption, 
-              mMainPrice: modifier.mMainPrice.toStringAsFixed(3),
-              mNetAmount: (modifier.mFinalPrice * cartDetailsModel.orderedQty).toStringAsPrecision(3),
-              mDisPercent: 0.toStringAsPrecision(3),
-              mDisAmount: 0.toStringAsPrecision(3), 
-              mDisCalculated: 0.toStringAsPrecision(3),
-              mAmountAfterDis: (modifier.mFinalPrice * cartDetailsModel.orderedQty).toStringAsPrecision(3),
-              mVoidPercent: 0.toStringAsPrecision(3),
-              mVoidAmount: 0.toStringAsPrecision(3),
-              mVoidCalculated: 0.toStringAsPrecision(3),
-              mAmountAfterDisVoid: 0.toStringAsPrecision(3),
-              mAmountWithoutVat: (modifier.mWoVatAmount * cartDetailsModel.orderedQty).toStringAsPrecision(3),
-              mTotalVatAmount: (modifier.mVatAmount * cartDetailsModel.orderedQty).toStringAsPrecision(3), 
-              mFinalPrice: modifier.mFinalPrice.toStringAsPrecision(3),
-              mFinalAmount: (modifier.mFinalPrice * cartDetailsModel.orderedQty).toStringAsPrecision(3),
-              iClosed: '0',
+              mMainPrice: modifier.mMainPrice,
+              mNetAmount: (modifier.mFinalPrice * cartDetailsModel.orderedQty),
+              mDisPercent: 0.000,
+              mDisAmount: 0.000, 
+              mDisCalculated: 0.000,
+              mAmountAfterDis: (modifier.mMainPrice * cartDetailsModel.orderedQty),
+              mVoidPercent: 0.000,
+              mVoidAmount: 0.000,
+              mVoidCalculated: 0.000,
+              mAmountAfterDisVoid: 0.000,
+              mAmountWithoutVat: (modifier.mWoVatAmount * cartDetailsModel.orderedQty),
+              mTotalVatAmount: (modifier.mVatAmount * cartDetailsModel.orderedQty), 
+              mFinalPrice: modifier.mFinalPrice,
+              mFinalAmount: (modifier.mFinalPrice * cartDetailsModel.orderedQty),
+              iClosed: 0,
               vItemExtra: itemExtra,
               vKitchenNote: "",
               vInvoiceNote: "",
               vRemarks: "",
-              iInvoiceStatusId: "1", 
+              iInvoiceStatusId: 1, 
               vStatusRemarks: "",
               vCreatedBy: loginController.userIdFromLocalStorage,
               dCreatedDate: DateTime.now(), 
@@ -172,13 +207,13 @@ class CartController extends GetxController{
     }
     InvoiceInfo invoiceInfo = InvoiceInfo(
       vBranchId: loginController.branchIdFromLocalStorage,
-      vInvoiceId: "",
-      vInvoiceNo: "",
+      vInvoiceId: loginController.getInvoiceId,
+      vInvoiceNo: loginController.getInvoiceNo,
       vBarcode: "",
       vSplitTicketId: "",
       iSalesTypeId: iSalesTypeId,
-      iStatusId: "1", 
-      iClosed: "0", 
+      iStatusId: 1, 
+      iClosed: 0, 
       vTableId: vTableId, 
       vWaiterId: loginController.userIdFromLocalStorage, 
       vPromotionId: "", 
@@ -186,12 +221,12 @@ class CartController extends GetxController{
       vZoneId: "", 
       vCustomerId: vCustomerId, 
       vCustomerAddress: vCustomerAddress, 
-      iNoOfCustomers: "1", 
+      iNoOfCustomers: 1, 
       dSaveDate: DateTime.now(), 
       dSettleDate: DateTime.now(), 
       dDeliveryDate: DateTime.now(), 
-      mBillAmount: totalBillAmount.toStringAsFixed(3), 
-      mPaidAmount: 0.toStringAsFixed(3), 
+      mBillAmount: double.parse(totalBillAmount.toStringAsFixed(3)) , 
+      mPaidAmount: double.parse(0.toStringAsFixed(3)) , 
       vSpecialNote: "", 
       vRemarksForVoid: "", 
       //vTerminalName: await getDeviceinfo(), 

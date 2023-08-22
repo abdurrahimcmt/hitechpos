@@ -759,8 +759,13 @@ class _OrderScreenState extends State<OrderScreen> {
         cartController.addToCart(
           item, itemViewList.vItemName,orderQuentity, itemViewList.itemPriceList[selectedFoodItemSizeIndex].mFinalPrice , price,
           0.000, itemViewList.vVatCatId,itemViewList.vVatOption,itemViewList.mPercentage,
-          itemPriceList[selectedFoodItemSizeIndex], 
+          itemViewList.itemPriceList[selectedFoodItemSizeIndex].vUnitId,
+          itemViewList.itemPriceList[selectedFoodItemSizeIndex].vUnitName,
+          itemViewList.itemPriceList[selectedFoodItemSizeIndex].mMainPrice,
+          itemViewList.itemPriceList[selectedFoodItemSizeIndex].mVatAmount,
+          itemViewList.itemPriceList[selectedFoodItemSizeIndex].mWoVatAmount,
           selectedModifierList, concatedKitchenNotes, concatedInvoiceNotes
+
         );
         Get.to(() => MenuScreen());}, 
         child: const CurbButton(

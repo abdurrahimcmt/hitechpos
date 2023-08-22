@@ -5,19 +5,26 @@ class CartDetailsModel{
   String itemName;
  // String modifiedBy;
   int orderedQty;
-  double itemPrice;
+  double mFinalPrice;
   double totalPrice;
   double discountAmount;
   String vatCatId;
   String vatCatOption;
   double vatPercent;
+
+  String vUnitId;
+  String vUnitName;
+
+  double mMainPrice;
+  double mVatAmount;
+  double mWoVatAmount;
   //double totalVatAmount;
   //double finalAmount;
   //double mainPrice;
   //double netAmount;
  // double amountWithoutVat;
   //double vatAmount;
-  ItemPriceList itemPriceList;
+  //ItemPriceList itemPriceList;
   List<OnlineModifierList> onlineModifierLists;
   String combinedKitchenNotesText;
   String combinedInvoiceNotesText;
@@ -27,7 +34,7 @@ class CartDetailsModel{
       required this.itemName,
       //required this.modifiedBy,
       required this.orderedQty,
-      required this.itemPrice,
+      required this.mFinalPrice,
       required this.totalPrice,
       required this.discountAmount,
       required this.vatCatId,
@@ -39,10 +46,16 @@ class CartDetailsModel{
       //required this.netAmount,
       //required this.amountWithoutVat,
       //required this.vatAmount,
-      required this.itemPriceList,
+      //required this.itemPriceList,
       required this.onlineModifierLists,
       required this.combinedKitchenNotesText,
-      required this.combinedInvoiceNotesText
+      required this.combinedInvoiceNotesText,
+      required this.vUnitId,
+      required this.vUnitName,
+      required this.mMainPrice, 
+      required this.mVatAmount,
+      required this.mWoVatAmount
+      
     }
   );
 }

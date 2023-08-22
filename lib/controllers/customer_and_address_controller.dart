@@ -91,6 +91,7 @@ class CustomerAndAddressController extends GetxController{
   }
 
   Future<CustomerInfo> fatchCustomerInfo() async {
+    await loginController.setBaseUrl();
     String baseurl = loginController.baseurlFromLocalStorage;
     // https://hiposbh.com:84/api/waiterapp/customer
     final url = Uri.parse("${baseurl}api/waiterapp/customer");

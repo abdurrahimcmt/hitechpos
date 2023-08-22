@@ -2,10 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hitechpos/common/palette.dart';
 import 'package:hitechpos/controllers/cart_controller.dart';
-import 'package:hitechpos/controllers/menu_controller.dart';
-import 'package:hitechpos/data/data.dart';
 import 'package:hitechpos/models/cartDetailsmodel.dart';
-import 'package:hitechpos/models/order.dart';
 import 'package:hitechpos/views/menu/menu_screen.dart';
 import 'package:hitechpos/widgets/curb_button.dart';
 import 'package:badges/badges.dart' as badges;
@@ -34,6 +31,7 @@ class _CartScreenState extends State<CartScreen> {
   @override
   void initState() {
     cartDetailsModelList = cartController.cartDetailsModelList;
+    debugPrint(cartDetailsModelList.toString());
     super.initState();
   }
   @override
@@ -58,28 +56,35 @@ class _CartScreenState extends State<CartScreen> {
       double modifierPrice = 0.000;
       double modifiervat = 0.000;
       double modifierWithoutvatAmount = 0.000;
-
+      
+      debugPrint(cartOrder.onlineModifierLists.length.toString());
       for(var modifier in cartOrder.onlineModifierLists){
           modifierPrice += modifier.mFinalPrice;
           modifiervat += modifier.mVatAmount;
           modifierWithoutvatAmount += modifier.mWoVatAmount;
+        debugPrint("modifier.mFinalPrice ${modifier.mFinalPrice}");
+        debugPrint("modifier.mVatAmount ${modifier.mVatAmount}");
+        debugPrint("modifier.mWoVatAmount ${modifier.mWoVatAmount}");
       }
-
-      totalPrice += (modifierPrice * cartOrder.orderedQty) + (cartOrder.itemPriceList.mFinalPrice * cartOrder.orderedQty);
+      debugPrint("modifierWithoutvatAmount $modifierWithoutvatAmount");
+      totalPrice += (modifierPrice * cartOrder.orderedQty) + (cartOrder.mFinalPrice * cartOrder.orderedQty);
       cartController.totalBillAmount = totalPrice;
       totalModifierAmount += (modifierPrice * cartOrder.orderedQty);
       totalModifierVatAmount += (modifiervat * cartOrder.orderedQty);
-      totalModifierWithOutVatAmount += (modifierWithoutvatAmount * cartOrder.orderedQty);
+      totalModifierWithOutVatAmount += (modifierWithoutvatAmount * cartOrder.orderedQty.toDouble());
+      totalPriceWithoutVate += (modifierWithoutvatAmount * cartOrder.orderedQty.toDouble()) + (cartOrder.mWoVatAmount * cartOrder.orderedQty.toDouble());
+      debugPrint("totalPriceWithoutVate $totalPriceWithoutVate");
+      debugPrint("totalModifierWithOutVatAmount $totalModifierWithOutVatAmount");
+      debugPrint("orderedQty ${cartOrder.orderedQty}");
+      debugPrint("cartOrder.mWoVatAmount ${cartOrder.mWoVatAmount}");
 
-      totalPriceWithoutVate += (modifierWithoutvatAmount * cartOrder.orderedQty) + (cartOrder.itemPriceList.mWoVatAmount * cartOrder.orderedQty);
-      totalVatAmount += (modifiervat * cartOrder.orderedQty) + (cartOrder.itemPriceList.mVatAmount * cartOrder.orderedQty);
-
+      totalVatAmount += (modifiervat * cartOrder.orderedQty) + (cartOrder.mVatAmount * cartOrder.orderedQty);
     }
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
         backgroundColor: Palette.bgColorPerple,
-          leading: GestureDetector(
+        leading: GestureDetector(
           onTap: () {
             Get.to(() => MenuScreen());
           },
@@ -266,7 +271,7 @@ class _CartScreenState extends State<CartScreen> {
                       SizedBox(
                         width: size.width > 700 ? 100 : 60,
                         child: Text(
-                          (order.itemPriceList.mFinalPrice * order.orderedQty).toStringAsFixed(3),
+                          (order.mFinalPrice * order.orderedQty).toStringAsFixed(3),
                           style: TextStyle(
                           fontSize: discriptionFontSize,
                           fontWeight: FontWeight.bold,

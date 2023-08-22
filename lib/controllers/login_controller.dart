@@ -38,6 +38,19 @@ class LoginController extends GetxController {
   Rx<List<DropdownMenuItem<String>>> branchDropdownItemMenu = Rx<List<DropdownMenuItem<String>>>([]);
   var selectedBranchId = "0".obs;
   bool baseUrlLoading = false;
+
+  late String invoiceId = "";
+  late String invoiceNo = "";
+
+  get getInvoiceId => invoiceId;
+  get getInvoiceNo => invoiceNo;
+
+  set setInvoiceId(String invoiceId){
+    this.invoiceId = invoiceId;
+  }
+  set setInvoiceNo(String invoiceNo){
+    this.invoiceNo = invoiceNo;
+  }
   
   @override
   void onInit() async{
