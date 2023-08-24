@@ -8,7 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key, required this.title}) : super(key: key);
-
+  
   final String title;
 
   @override
@@ -20,6 +20,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
   _SplashScreenState() {
     var autoLogin = false;
+
     void loadedScreen() async{
       try {
         SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -29,10 +30,15 @@ class _SplashScreenState extends State<SplashScreen> {
         debugPrint(e.toString());
       }
     }
+
     loadedScreen();
+
     debugPrint("auto login $autoLogin");
+
+
     Timer(const Duration(milliseconds: 2000), () {
       setState(() {
+
         Navigator.of(context).pushAndRemoveUntil(
             MaterialPageRoute(builder: (context) => autoLogin ? const DashboardScreen() : const OnBoardingScreen()),
             (route) => false);

@@ -3,7 +3,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hitechpos/common/palette.dart';
+import 'package:hitechpos/controllers/cart_controller.dart';
 import 'package:hitechpos/controllers/dini_in_controller.dart';
+import 'package:hitechpos/controllers/login_controller.dart';
 import 'package:hitechpos/models/floorandtableinfo.dart';
 import 'package:hitechpos/widgets/common_submit_button.dart';
 
@@ -16,6 +18,8 @@ class DineInScreen extends StatefulWidget {
 
 class _DineInScreenState extends State<DineInScreen> {
   final controller = Get.find<DiniInController>();
+  final cartController = Get.find<CartController>();
+  final loginController = Get.find<LoginController>();
   int tableSelectCount = 0; 
  // List<String> isSelectedTabels = selectedTables;
  @override
@@ -26,6 +30,7 @@ class _DineInScreenState extends State<DineInScreen> {
       }
       else{
         Timer(const Duration(milliseconds: 2000), () {
+          
           controller.fatchTableInfo(controller.selectedFloor.value.iFloorId);
         });
       }
@@ -124,6 +129,7 @@ class _DineInScreenState extends State<DineInScreen> {
                             }
                             else{
                               if(tableinfo.onlineFloorTableList.first.onlineTableList.isNotEmpty){
+                                String selectedtableForSearchedInvoice= "";
                                 return Row(
                                   children: [
                                     Expanded(
@@ -136,10 +142,18 @@ class _DineInScreenState extends State<DineInScreen> {
                                         String tableName= tableinfo.onlineFloorTableList.first.onlineTableList[index].vTableName;
                                         String invoiceNo = tableinfo.onlineFloorTableList.first.onlineTableList[index].vInvoiceNo; 
                                           if(invoiceNo.trim().isNotEmpty){
-                                              controller.isSelectedTabels.add(tableName);
+                                            controller.isSelectedTabels.add(tableName);
                                           }
                                           else{
                                             controller.isSelectedTabels.remove(tableName);
+                                          }
+                                          if(cartController.isDataUpdate && 
+                                            loginController.invoiceNo.trim().isNotEmpty &&
+                                            invoiceNo.trim().isNotEmpty){
+                                              if(loginController.invoiceNo.trim().substring(8,loginController.invoiceNo.toString().length) == invoiceNo.trim()){
+                                                controller.isSelectedTabels.remove(tableName);         
+                                                selectedtableForSearchedInvoice = tableName;
+                                              }
                                           }
                                           return TextButton(
                                             onPressed: controller.isSelectedTabels.contains(tableName)  ? null :
@@ -152,32 +166,16 @@ class _DineInScreenState extends State<DineInScreen> {
                                               }
                                               else{
                                                 controller.newSelectedTable.value = "";
+                                                //selectedtableForSearchedInvoice = "";
                                                 controller.selectedTable.value = OnlineTableList(vBranchId: "", vTableId: "", vTableName: "", vInvoiceId: "", vInvoiceNo: "");
                                                 tableSelectCount --;
                                               }
-                                                // if(!controller.isSelectedTabels.contains(tableName)){
-                                                //    controller.isSelectedTabels.add(tableName);
-                                                //   controller.selectcount ++;
-                                                //  }
-                                                //  else{
-                                                //    controller.isSelectedTabels.remove(tableName);
-                                                //    controller.selectcount--;
-                                                //  }
-                                              // setState(() {
-                                              //   newSelectedTable = tables[index];
-                                                // if(!isSelectedTabels.contains(tables[index])){
-                                                //    isSelectedTabels.add(tables[index]);
-                                                //    selectcount++;
-                                                //  }
-                                                //  else{
-                                                //    isSelectedTabels.remove(tables[index]);
-                                                //    selectcount--;
-                                                //  }
-                                              // });
                                             } ,
                                             child: Container(
                                               decoration: BoxDecoration(
-                                                color: controller.isSelectedTabels.contains(tableName) || controller.newSelectedTable.value == tableName ? Colors.red : Colors.white,
+                                                color: controller.isSelectedTabels.contains(tableName) || 
+                                                controller.newSelectedTable.value == tableName || selectedtableForSearchedInvoice == tableName
+                                                ? Colors.red : Colors.white,
                                                 borderRadius:const BorderRadius.all(Radius.circular(10)),
                                                 boxShadow: const [
                                                   BoxShadow(
@@ -195,15 +193,15 @@ class _DineInScreenState extends State<DineInScreen> {
                                                 children: [
                                                   Text(tableName,
                                                     style: TextStyle(
-                                                      color: controller.isSelectedTabels.contains(tableName) || controller.newSelectedTable.value == tableName  ? Colors.white :Palette.textColorPurple,
+                                                      color: controller.isSelectedTabels.contains(tableName) || controller.newSelectedTable.value == tableName || selectedtableForSearchedInvoice == tableName ? Colors.white :Palette.textColorPurple,
                                                       fontFamily: Palette.layoutFont,
                                                       fontSize: Palette.containerButtonFontSize,
                                                     ),
                                                   ),
-                                                  if(controller.isSelectedTabels.contains(tableName) || controller.newSelectedTable.value == tableName) 
+                                                  if(controller.isSelectedTabels.contains(tableName) || controller.newSelectedTable.value == tableName || selectedtableForSearchedInvoice == tableName ) 
                                                   Text(invoiceNo,
                                                     style: TextStyle(
-                                                      color: controller.isSelectedTabels.contains(tableName) || controller.newSelectedTable.value == tableName  ? Colors.white :Palette.textColorPurple,
+                                                      color: controller.isSelectedTabels.contains(tableName) || controller.newSelectedTable.value == tableName || selectedtableForSearchedInvoice == tableName ? Colors.white :Palette.textColorPurple,
                                                       fontFamily: Palette.layoutFont,
                                                       fontSize: Palette.containerButtonFontSize,
                                                     ),

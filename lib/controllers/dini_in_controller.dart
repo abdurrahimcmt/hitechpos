@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hitechpos/controllers/login_controller.dart';
@@ -17,14 +16,34 @@ class DiniInController extends GetxController{
   Rx<OnlineFloorTableList> selectedFloor = OnlineFloorTableList(vBranchId: "", iFloorId: "", vFloorName: "", onlineTableList: []).obs;
   Rx<OnlineTableList> selectedTable = OnlineTableList(vBranchId: "", vTableId: "", vTableName: "", vInvoiceId: "", vInvoiceNo: "").obs;
   late Future<FloorAndTableInfo> floorInfoList;
+  late Future<FloorAndTableInfo> tableListfuture;
   var tableList = FloorAndTableInfo(message: '', messageId: '', onlineFloorTableList: []).obs;
   @override
   void onInit() {
     super.onInit();
-    floorInfoList =  fatchFloorAndTableInfo();
+    isSelectedTabels.clear();
+    setfloorList();
     floorInfoList.then((value) {
       selectedFloor.value = value.onlineFloorTableList.first;
     });
+  }
+  void setSelectedTableAndFloorfromDatabase(String? floorId,String tableId) async {
+    floorInfoList.then((value) {
+      selectedFloor.value = value.onlineFloorTableList.firstWhere(
+          (element) => element.iFloorId == floorId,
+          orElse: () => OnlineFloorTableList(vBranchId: "", iFloorId: "", vFloorName: "", onlineTableList: []),
+        );
+      });
+      if(selectedFloor.value.onlineTableList.isNotEmpty){
+        selectedTable.value = selectedFloor.value.onlineTableList.firstWhere(
+          (element) => element.vTableId == tableId,
+          orElse: () => OnlineTableList(vBranchId: "", vTableId: "", vTableName: "", vInvoiceId: "", vInvoiceNo: ""),
+      );   
+    }
+  }
+   
+  void setfloorList(){
+    floorInfoList =  fatchFloorAndTableInfo();
   }
 
   void refreshDiniInFloorAndTable(){
@@ -71,7 +90,7 @@ class DiniInController extends GetxController{
     //selectcount = 0;
   }
 
-Future<FloorAndTableInfo> fatchFloorAndTableInfo() async {
+  Future<FloorAndTableInfo> fatchFloorAndTableInfo() async {
     final loginController = Get.find<LoginController>();
     await loginController.setBaseUrl();
     String baseurl = loginController.baseurlFromLocalStorage;

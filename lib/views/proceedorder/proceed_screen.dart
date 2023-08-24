@@ -13,11 +13,11 @@ import 'package:hitechpos/controllers/proceed_controller.dart';
 import 'package:hitechpos/data/data.dart';
 import 'package:hitechpos/models/customeraddress.dart';
 import 'package:hitechpos/models/customerinfo.dart';
-import 'package:hitechpos/models/floorandtableinfo.dart';
 import 'package:hitechpos/models/invoiceinfodetails.dart';
 import 'package:hitechpos/views/cart/cart_screen.dart';
 import 'package:hitechpos/views/menu/component/dine_in.dart';
 import 'package:hitechpos/widgets/curb_button.dart';
+import 'package:hitechpos/widgets/loading_prograss_screen.dart';
 class ProceedScreen extends StatefulWidget {
   const ProceedScreen({super.key});
 
@@ -44,30 +44,6 @@ class _ProceedScreenState extends State<ProceedScreen> {
   late String customerId;
   late String addressId;
 
-  void setDataFromDatabase(){
-    if(loginController.invoiceId.isNotEmpty){
-      invoiceInfoDetailsFuture = orderListController.fatchInvoiceInfo(loginController.invoiceId);
-      invoiceInfoDetailsFuture.then((value) {
-          floorName = value.invoiceInfo.first.vTableId;
-          customerId = value.invoiceInfo.first.vCustomerId;
-          addressId = value.invoiceInfo.first.vCustomerAddress;
-
-          if(cartController.isDataUpdate){
-            customerAndAddressController.selectedAddress.value = TextEditingValue(text: addressId);
-            debugPrint("address : $addressId");
-          } 
-          // if(value.invoiceInfo.first.iSalesTypeId == 1){
-          //   Future<FloorAndTableInfo> floorInfoList =  diniInController.fatchFloorAndTableInfo();
-          //   floorInfoList.then((value) {
-          //     diniInController.selectedFloor.value = value.onlineFloorTableList.singleWhere((element) {
-          //       return element.vFloorName == floorName;
-          //     });
-          //   });
-          // }
-
-      });
-    }
-  }
 
   @override
   void initState() {
@@ -77,22 +53,15 @@ class _ProceedScreenState extends State<ProceedScreen> {
       }
       selectedOrderType = menuController.selectedOrderType.value;
       selectedOrderTypeName = orderTypes[selectedOrderType].name;
-      controller.setOrderTypeData(menuController.selectedOrderType.value);
+      //controller.setOrderTypeData(menuController.selectedOrderType.value);
       customerAndAddressController.selectedCustomertext.value = TextEditingValue(text: customerAndAddressController.getSelectedCustomer().vCustomerName);
       customerAndAddressController.selectedAddress.value = TextEditingValue(text: customerAndAddressController.combinedCustomerAddressFields(customerAndAddressController.getSelectedCustomerAddress()));
-      
       customerAndAddressController.setCustomerList();
     });
     super.initState();
   }
   @override
   Widget build(BuildContext context) {
-    // Timer(const Duration(seconds: 2), () {
-    //   setState(() {
-    //     setDataFromDatabase();
-    //   });
-    // });
-    
     floorAndTableName = "${diniInController.selectedFloor.value.vFloorName}  ${diniInController.selectedTable.value.vTableName}";
     Size size= MediaQuery.of(context).size;
     return Scaffold(
@@ -128,6 +97,7 @@ class _ProceedScreenState extends State<ProceedScreen> {
                           setState(() {
                             // _buildModelBottomSheet(orderTypes[index].name);
                             selectedOrderType = index;
+                            customerAndAddressController.refreshWhenSelectOrderType(index);
                           });
                         }, 
                         child: Container(
@@ -209,7 +179,6 @@ class _ProceedScreenState extends State<ProceedScreen> {
                 Palette.sizeBoxVarticalSpace,
                 if(selectedOrderType == 2 || selectedOrderType == 3) 
                 // We should use RawAutocomplete here
-
                  Autocomplete <CustomerAddressList>(
                     initialValue: customerAndAddressController.selectedAddress.value,
                     onSelected: (option) {
@@ -329,23 +298,25 @@ class _ProceedScreenState extends State<ProceedScreen> {
       ),
       bottomSheet:  Padding(
         padding: const EdgeInsets.symmetric(vertical: 10),
-        child: TextButton(
-          onPressed: (){
-            controller.orderProceeedValidation(selectedOrderType);
-          }, 
-          child: const CurbButton(
-            buttonPadding: EdgeInsets.only(left: 0,right: 0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                Text("PROCEED",style: TextStyle(
-                  fontFamily: Palette.layoutFont,
-                  fontWeight: Palette.btnFontWeight,
-                  fontSize: Palette.btnFontsize,
-                  color: Palette.btnTextColor,
-                ),),
-                Icon(Icons.arrow_forward,size: 20,color: Colors.white,),
-              ],
+        child: Obx(
+           () => TextButton(
+            onPressed: controller.isProceedStart.value ? null : () {
+              controller.orderProceeedValidation(selectedOrderType);
+            }, 
+            child: CurbButton(
+              buttonPadding: EdgeInsets.only(left: 0,right: 0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  Text("PROCEED",style: TextStyle(
+                    fontFamily: Palette.layoutFont,
+                    fontWeight: Palette.btnFontWeight,
+                    fontSize: Palette.btnFontsize,
+                    color: controller.isProceedStart.value ?Palette.bgColorPerple :Palette.btnTextColor,
+                  ),),
+                  Icon(Icons.arrow_forward,size: 20,color: Colors.white,),
+                ],
+              ),
             ),
           ),
         ),

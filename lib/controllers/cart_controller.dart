@@ -86,7 +86,7 @@ class CartController extends GetxController{
 
 
   //for submit data
-  Future<InvoiceInfoDetails> getInvoiceInfoDetails(int iSalesTypeId, String vTableId,
+  Future<InvoiceInfoDetails> getInvoiceInfoDetails(int iSalesTypeId,String vFloorId,String vTableId,
    String vCustomerId, String vCustomerAddress,String carNumber) async {
     List<InvoiceDetail> invoiceDetailsList = [];
     // Name with Modifier Serial
@@ -214,6 +214,7 @@ class CartController extends GetxController{
       iSalesTypeId: iSalesTypeId,
       iStatusId: 1, 
       iClosed: 0, 
+      vFloorId: vFloorId,
       vTableId: vTableId, 
       vWaiterId: loginController.userIdFromLocalStorage, 
       vPromotionId: "", 

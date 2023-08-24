@@ -39,6 +39,7 @@ class InvoiceInfo {
     int iSalesTypeId;
     int iStatusId;
     int iClosed;
+    String? vFloorId;
     String vTableId;
     String vWaiterId;
     String vPromotionId;
@@ -75,6 +76,7 @@ class InvoiceInfo {
         required this.iSalesTypeId,
         required this.iStatusId,
         required this.iClosed,
+        required this.vFloorId,
         required this.vTableId,
         required this.vWaiterId,
         required this.vPromotionId,
@@ -112,6 +114,7 @@ class InvoiceInfo {
         iSalesTypeId: json["iSalesTypeId"],
         iStatusId: json["iStatusId"],
         iClosed: json["iClosed"],
+        vFloorId: json["vFloorId"],
         vTableId: json["vTableId"],
         vWaiterId: json["vWaiterId"],
         vPromotionId: json["vPromotionId"],
@@ -149,6 +152,7 @@ class InvoiceInfo {
         "iSalesTypeId": iSalesTypeId,
         "iStatusId": iStatusId,
         "iClosed": iClosed,
+        "vFloorId": vFloorId,
         "vTableId": vTableId,
         "vWaiterId": vWaiterId,
         "vPromotionId": vPromotionId,

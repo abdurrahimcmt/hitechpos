@@ -9,10 +9,12 @@ import 'package:hitechpos/controllers/dini_in_controller.dart';
 import 'package:hitechpos/controllers/login_controller.dart';
 import 'package:hitechpos/controllers/menu_controller.dart';
 import 'package:hitechpos/controllers/proceed_controller.dart';
+import 'package:hitechpos/models/customeraddress.dart';
 import 'package:hitechpos/models/invoiceinfodetails.dart';
 import 'package:hitechpos/models/itemdetails.dart';
 import 'package:hitechpos/models/orderlistmodel.dart';
 import 'package:hitechpos/views/cart/cart_screen.dart';
+import 'package:hitechpos/widgets/loading_prograss_screen.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 
@@ -26,9 +28,9 @@ class OrderListController extends GetxController{
   final customerAndAddressController = Get.find<CustomerAndAddressController>();
 
   TextEditingController searchTextEditingController = TextEditingController();
-
+  int scroolNumber = 0;
   int _page = 0;
-  int _limit = 10;
+  int _limit = 15;
   String orderTypes = "all";
   String status = "all";
   String fromDate = "2000-01-01";
@@ -40,14 +42,22 @@ class OrderListController extends GetxController{
   final RxBool _hasNextPage = true.obs;
   final RxBool _isloadMoreRunning = false.obs;
   RxList orderList = [].obs;
-  late ScrollController _scrollController ;
   late Future<OrderListModel> orderListModel;
   late Future<InvoiceInfoDetails> invoiceInfoDetailsFuture;
+
+  //filter fields
+  List<int> listOfStatusId = [];
+  List<String> isSelectedDate = [];
+  List<int> selectedOrderType = [];
+  List<String> selectedStatus = [];
+  TextEditingController dateFieldFromDate = TextEditingController();
+  TextEditingController dateFieldtoDate = TextEditingController();
+
+
 
   get getIsFirstLoadRunning => _isFirstLoadRunning;
   get getHasNextPage => _hasNextPage;
   get getIsloadMoreRunning => _isloadMoreRunning;
-  get getScrollController => _scrollController;
   get getPage => _page;
   get getLimit => _limit;
   get getOrderType => orderTypes;
@@ -90,13 +100,15 @@ class OrderListController extends GetxController{
   
   @override
   void onInit(){
+    if(scroolNumber == 0){
+      scroolNumber++;
+    }
     super.onInit();
     fatchOrderList();
-    _scrollController = ScrollController()..addListener(loadMore);
   }
 
   Future<OrderListModel> fatchOrderList() async {
-
+    _isFirstLoadRunning.value = true;
     await loginController.setBaseUrl();
 
     String baseurl = loginController.baseurlFromLocalStorage;
@@ -119,6 +131,7 @@ class OrderListController extends GetxController{
     final response = await http.get(url,headers: headers);
     if(response.statusCode == 200){
       debugPrint(response.body);
+      _isFirstLoadRunning.value = false;
         return OrderListModel.fromJson(jsonDecode(response.body));
     }
     else{
@@ -126,37 +139,38 @@ class OrderListController extends GetxController{
     }
   }
 
-  void loadMore() async{
-    if(_hasNextPage.value == true && 
-       _isFirstLoadRunning.value == false && 
-       _isloadMoreRunning.value == false &&
-       _scrollController.position.extentAfter < 300
-        ){
-        _isloadMoreRunning.value = true;
-        _page = _page + _limit ;
-      
-      try {
-        orderListModel = fatchOrderList();
-        orderListModel.then((value) {
-          if(value.invoiceStatusList.isNotEmpty){
-            orderList.addAll(value.invoiceStatusList);
-          }
-          else{
-            _hasNextPage.value = false;
-          }
-        });
-      } catch (e) {
-        debugPrint("Something went wrong");
+  void loadMore(){
+    //debugPrint("Scroll Controller" + _scrollController.position.extentAfter.toString());
+      if(_hasNextPage.value == true && 
+        _isFirstLoadRunning.value == false && 
+        _isloadMoreRunning.value == false
+          ){
+          _isloadMoreRunning.value = true;
+          _page = _page + _limit ;
+        
+        try {
+          orderListModel = fatchOrderList();
+          orderListModel.then((value) {
+            if(value.invoiceStatusList.isNotEmpty){
+              orderList.addAll(value.invoiceStatusList);
+            }
+            else{
+              _hasNextPage.value = false;
+            }
+          });
+        } catch (e) {
+          debugPrint("Something went wrong");
+        }
+        _isloadMoreRunning.value = false;
       }
-      _isloadMoreRunning.value = false;
-    }
+    
   }
 
   void firstLoad() async{
-    _isFirstLoadRunning.value = true;
+    
     try {
       _page =0;
-      _limit = 10;
+      _limit = 15;
       orderListModel = fatchOrderList();
       orderListModel.then((value) {
         orderList.value = value.invoiceStatusList;
@@ -168,14 +182,17 @@ class OrderListController extends GetxController{
   }
 
   void loadInvoiceDatafromDatabase(String invoiceId, String invoiceNo) async {
+    Get.to(() => const LoadingPrograssScreen());
       try {
+        proceedController.refreshProceedController();
         cartController.isDataUpdate = true;
         loginController.setInvoiceId = invoiceId;
         loginController.setInvoiceNo = invoiceNo;
         cartController.cartDetailsModelList.value.clear();
         List< InvoiceDetail> mainItemList = [];
         List< InvoiceDetail> modifierList = [];
-        late String floorName;
+        late String tableId;
+        late String? floorId = "";
         late String customerId;
         late String fullAddress;
         
@@ -184,11 +201,19 @@ class OrderListController extends GetxController{
 
           if(value.invoiceInfo.isNotEmpty){
 
-            floorName = value.invoiceInfo.first.vTableId;
+            tableId = value.invoiceInfo.first.vTableId;
+            if(floorId != null){
+              floorId = value.invoiceInfo.first.vFloorId;
+            }
+            
             customerId = value.invoiceInfo.first.vCustomerId;
             fullAddress = value.invoiceInfo.first.vCustomerAddress;
             debugPrint("addressId: $fullAddress");
             menuController.selectedOrderType.value = value.invoiceInfo.first.iSalesTypeId - 1;
+
+            if(value.invoiceInfo.first.iSalesTypeId == 1){
+              dineInController.setSelectedTableAndFloorfromDatabase(floorId, tableId);
+            }
 
             if(value.invoiceInfo.first.iSalesTypeId == 2 || value.invoiceInfo.first.iSalesTypeId == 3 || value.invoiceInfo.first.iSalesTypeId == 4){
               customerAndAddressController.setCustomerList();
@@ -197,12 +222,20 @@ class OrderListController extends GetxController{
                  return element.vCustomerId == customerId;
               });
               if(value.invoiceInfo.first.iSalesTypeId == 3 || value.invoiceInfo.first.iSalesTypeId == 4){
-                debugPrint("Customer Name ${customerAndAddressController.getSelectedCustomer().vCustomerName}");
-                customerAndAddressController.setCustomerAddressList(customerAndAddressController.selectedCustomer.value.vCustomerId);
-                // customerAndAddressController.selectedCustomerAddress = customerAndAddressController.customerAddressList.singleWhere((element) {
-                //  return element.vAddId == addressId;
-                // });
-                customerAndAddressController.selectedAddress.value = TextEditingValue(text: fullAddress);
+                  customerAndAddressController.setCustomerAddressList(customerAndAddressController.selectedCustomer.value.vCustomerId);
+                  Timer(const Duration(seconds: 2), () { 
+
+                    customerAndAddressController.selectedCustomerAddress = customerAndAddressController.customerAddressList.firstWhere(
+                      (element) => customerAndAddressController.combinedCustomerAddressFields(element) == fullAddress,
+                      orElse: () => CustomerAddressList(vCustomerId: "", vAddId: "", vArea: "", vBuildingNo: "", vFlatNo: "", vBlockNo: "", vRoadNo: ""),
+                    );
+                    // customerAndAddressController.selectedCustomerAddress = customerAndAddressController.customerAddressList.singleWhere((element) {
+                    //   return customerAndAddressController.combinedCustomerAddressFields(element)  == fullAddress;
+                    // });
+                });
+              }
+              if(value.invoiceInfo.first.iSalesTypeId == 4){
+                customerAndAddressController.carNumberController.text = value.invoiceInfo.first.vCarNumber;
               }
             }
 
@@ -297,7 +330,7 @@ class OrderListController extends GetxController{
           }
         });
 
-        Timer(const Duration(seconds: 3), () {
+        Timer(const Duration(seconds: 2), () {
           debugPrint(cartController.cartDetailsModelList.value.length.toString());
           Get.to(() => const CartScreen());
          });

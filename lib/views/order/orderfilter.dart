@@ -22,21 +22,21 @@ class _OrderFilterScreenState extends State<OrderFilterScreen> {
   bool isSelectedOrderType = false;
   List<String> listOfDate = ["Today","Yesterday","Last Week"];
   List<String> listOfStatus = ["Pending","Settled"];
-  List<int> listOfStatusId = [];
-  List<String> isSelectedDate = [];
-  List<int> selectedOrderType = [];
-  List<String> selectedStatus = [];
+  // List<int> listOfStatusId = [];
+  // List<String> isSelectedDate = [];
+  // List<int> selectedOrderType = [];
+  // List<String> selectedStatus = [];
 
-  TextEditingController fromDate = TextEditingController();
-  TextEditingController toDate = TextEditingController();
+  //TextEditingController fromDate = TextEditingController();
+ // TextEditingController toDate = TextEditingController();
 
   @override
   void initState() {
-    isSelectedDate = [];
-    selectedOrderType = [];
-    selectedStatus = [];
-    fromDate.text = "";
-    toDate.text = "";
+    //isSelectedDate = [];
+   // selectedOrderType = [];
+   // selectedStatus = [];
+   // fromDate.text = "";
+   // toDate.text = "";
     super.initState();
   }
   @override
@@ -49,7 +49,7 @@ class _OrderFilterScreenState extends State<OrderFilterScreen> {
         backgroundColor: Palette.bgColorPerple,
         leading: GestureDetector(
           onTap: () {
-            Get.to(() => const OrderListScreen());
+            Get.off(() => const OrderListScreen());
           },
           child: const Icon(Icons.arrow_back),
         ),
@@ -96,11 +96,11 @@ class _OrderFilterScreenState extends State<OrderFilterScreen> {
                           onPressed: (){
                             setState(() {
                               // _buildModelBottomSheet(orderTypes[index].name);
-                              if(!selectedOrderType.contains(index + 1)){
-                                selectedOrderType.add(index + 1) ;
+                              if(!orderListController.selectedOrderType.contains(index + 1)){
+                                orderListController.selectedOrderType.add(index + 1) ;
                               }
                               else{
-                                selectedOrderType.remove(index + 1) ;
+                                orderListController.selectedOrderType.remove(index + 1) ;
                               }
                             });
                           }, 
@@ -108,7 +108,7 @@ class _OrderFilterScreenState extends State<OrderFilterScreen> {
                             width: size.width < 800 ? size.width * 0.18 : size.width * 0.20,
                             height: 40,
                             decoration: BoxDecoration(
-                              gradient: selectedOrderType.contains(index + 1)? Palette.btnGradientColor : Palette.bgGradient,
+                              gradient: orderListController.selectedOrderType.contains(index + 1)? Palette.btnGradientColor : Palette.bgGradient,
                               borderRadius: Palette.textContainerBorderRadius,
                               border: Border.all(
                                 color: Palette.btnBoxShadowColor,
@@ -129,7 +129,7 @@ class _OrderFilterScreenState extends State<OrderFilterScreen> {
                                             fontFamily: Palette.layoutFont,
                                             fontSize: Palette.containerButtonFontSize,
                                             fontWeight: FontWeight.bold,
-                                            color: selectedOrderType.contains(index + 1)? Colors.white: Palette.textColorLightPurple,
+                                            color: orderListController.selectedOrderType.contains(index + 1)? Colors.white: Palette.textColorLightPurple,
                                           ),
                                           textAlign: TextAlign.center,
                                         ),
@@ -239,7 +239,7 @@ class _OrderFilterScreenState extends State<OrderFilterScreen> {
                         Expanded(
                           flex: 6,
                           child: TextField(
-                            controller: fromDate,
+                            controller: orderListController.dateFieldFromDate,
                             decoration: InputDecoration(
                               icon: const Icon(Icons.calendar_today,color: Palette.iconBackgroundColorPurple,),
                               labelText: "From Date",
@@ -247,7 +247,7 @@ class _OrderFilterScreenState extends State<OrderFilterScreen> {
                                 color: Palette.textColorLightPurple,
                               ),
                               border: InputBorder.none,
-                              suffix: IconButton(onPressed: (){fromDate.text = "";}, icon: const Icon(Icons.clear,size: 15,))
+                              suffix: IconButton(onPressed: (){orderListController.dateFieldFromDate.text = "";}, icon: const Icon(Icons.clear,size: 15,))
                             ),
                             
                             readOnly: true,
@@ -261,7 +261,7 @@ class _OrderFilterScreenState extends State<OrderFilterScreen> {
                               if(pickedFromDate !=null){
                                 String formattedFromDate = DateFormat('yyyy-MM-dd').format(pickedFromDate);
                                 setState(() {
-                                  fromDate.text = formattedFromDate;
+                                  orderListController.dateFieldFromDate.text = formattedFromDate;
                                 });
                               }
                               else{
@@ -273,7 +273,7 @@ class _OrderFilterScreenState extends State<OrderFilterScreen> {
                         Expanded(
                           flex: 6,
                           child: TextField(
-                            controller: toDate,
+                            controller: orderListController.dateFieldtoDate,
                             decoration: InputDecoration(
                               icon: const Icon(Icons.calendar_today,color: Palette.iconBackgroundColorPurple,),
                               labelText: "To Date",
@@ -281,7 +281,7 @@ class _OrderFilterScreenState extends State<OrderFilterScreen> {
                                 color: Palette.textColorLightPurple,
                               ),
                               border: InputBorder.none,
-                              suffix: IconButton(onPressed: (){toDate.text = "";}, icon: const Icon(Icons.clear,size: 15,))
+                              suffix: IconButton(onPressed: (){orderListController.dateFieldtoDate.text = "";}, icon: const Icon(Icons.clear,size: 15,))
                             ),
                             readOnly: true,
                             onTap: () async {
@@ -294,7 +294,7 @@ class _OrderFilterScreenState extends State<OrderFilterScreen> {
                               if(pickedToDate !=null){
                                 String formattedToDate = DateFormat('yyyy-MM-dd').format(pickedToDate);
                                 setState(() {
-                                  toDate.text = formattedToDate;
+                                  orderListController.dateFieldtoDate.text = formattedToDate;
                                 });
                               }
                               else{
@@ -332,13 +332,13 @@ class _OrderFilterScreenState extends State<OrderFilterScreen> {
                           onPressed: (){
                             setState(() {
                               // _buildModelBottomSheet(orderTypes[index].name);
-                              if(!selectedStatus.contains(listOfStatus[index])){
-                                selectedStatus.add(listOfStatus[index]) ;
-                                listOfStatusId .add(index+1);
+                              if(!orderListController. selectedStatus.contains(listOfStatus[index])){
+                                orderListController. selectedStatus.add(listOfStatus[index]) ;
+                                orderListController. listOfStatusId .add(index+1);
                               }
                               else{
-                                selectedStatus.remove(listOfStatus[index]) ;
-                                listOfStatusId .remove(index+1);
+                                orderListController.selectedStatus.remove(listOfStatus[index]) ;
+                                orderListController.listOfStatusId .remove(index+1);
                               }
                             });
                           }, 
@@ -346,7 +346,7 @@ class _OrderFilterScreenState extends State<OrderFilterScreen> {
                             width: size.width < 800 ? size.width * 0.40 : size.width * 0.45,
                             height: 40,
                             decoration: BoxDecoration(
-                              gradient: selectedStatus.contains(listOfStatus[index])? Palette.btnGradientColor : Palette.bgGradient,
+                              gradient: orderListController.selectedStatus.contains(listOfStatus[index])? Palette.btnGradientColor : Palette.bgGradient,
                               borderRadius: Palette.textContainerBorderRadius,
                               border: Border.all(
                                 color: Palette.btnBoxShadowColor,
@@ -367,7 +367,7 @@ class _OrderFilterScreenState extends State<OrderFilterScreen> {
                                             fontFamily: Palette.layoutFont,
                                             fontSize: Palette.containerButtonFontSize,
                                             fontWeight: FontWeight.bold,
-                                            color: selectedStatus.contains(listOfStatus[index])? Colors.white: Palette.textColorLightPurple,
+                                            color: orderListController.selectedStatus.contains(listOfStatus[index])? Colors.white: Palette.textColorLightPurple,
                                           ),
                                           textAlign: TextAlign.center,
                                         ),
@@ -388,33 +388,37 @@ class _OrderFilterScreenState extends State<OrderFilterScreen> {
                   height: 20,
                 ),
                 TextButton(onPressed: (){
-                  setState(() {
-                    orderListController.setPage = 0;
-                    orderListController.setLimit = 10;
-                    if(selectedOrderType.isNotEmpty){
-                      orderListController.setOrderTypes = selectedOrderType.join(',');
+                  
+                    if(orderListController.selectedOrderType.isNotEmpty){
+                      orderListController.setOrderTypes = orderListController.selectedOrderType.join(',');
                     }
                     else{
                       orderListController.setOrderTypes = "all";
                     }
-                    if(listOfStatusId.isNotEmpty){
-                      orderListController.setStatus = listOfStatusId.join(',');
+                    if(orderListController.listOfStatusId.isNotEmpty){
+                      orderListController.setStatus = orderListController.listOfStatusId.join(',');
                     }
                    else{
                       orderListController.setStatus = "all";
                     }
-                    if(fromDate.text.isNotEmpty){
-                      orderListController.setFromDate = fromDate.text;
+                    if(orderListController.dateFieldFromDate.text.isNotEmpty){
+                      orderListController.setFromDate = orderListController.dateFieldFromDate.text;
                     }
-                    if(toDate.text.isNotEmpty){
-                      orderListController.toToDate = toDate.text;
+                    else{
+                      orderListController.setFromDate = "2000-01-01";;
+                    }
+                    if(orderListController.dateFieldtoDate.text.isNotEmpty){
+                      orderListController.toToDate = orderListController.dateFieldtoDate.text;
+                    }
+                    else{
+                      orderListController.toToDate = DateTime.now().toString();;
                     }
                     //orderListController.fatchOrderList();
                     Get.to(() => const OrderListScreen());
                     // Timer(const Duration(seconds: 1), () {
                     //   Get.back();
                     //   });
-                  });
+                  
                 },
                 child: Container(
                   width: MediaQuery.of(context).size.width*0.4,

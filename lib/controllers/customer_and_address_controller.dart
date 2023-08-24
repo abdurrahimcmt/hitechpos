@@ -1,7 +1,9 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hitechpos/controllers/login_controller.dart';
+import 'package:hitechpos/data/data.dart';
 import 'package:hitechpos/models/customeraddress.dart';
 import 'package:hitechpos/models/customerinfo.dart';
 import 'package:http/http.dart' as http;
@@ -13,7 +15,7 @@ class CustomerAndAddressController extends GetxController{
   late Future<CustomerInfo> customerInfo;
   late  List<CustomerList> customerList;
   late TextEditingController customerTextController = TextEditingController();
-
+  String selectedOrderTypeName = "";
   Rx<CustomerList> selectedCustomer = CustomerList(vBranchId: "", vCustomerId: "", vCustomerCode: "", 
   vCustomerName: "", vVatRegNo: "", vMobileNo: "", vEmailId: "", iCreditLimit: 0, 
   iActive: 0, vCreatedBy: "", dCreatedDate: DateTime.now(), vModifiedBy: "", 
@@ -36,7 +38,22 @@ class CustomerAndAddressController extends GetxController{
     super.onReady();
     setCustomerList();
   }
-
+  void refreshWhenSelectOrderType(int orderTypeIndex){
+    debugPrint("setOrderTypeData $orderTypeIndex");
+    selectedOrderTypeName = orderTypes[orderTypeIndex].name;
+    if(selectedOrderTypeName == "Dine In"){
+      //refreshProceedController();
+    }
+    else if(selectedOrderTypeName == "Take Away"){
+      
+    }
+    else if(selectedOrderTypeName == "Delivery" || selectedOrderTypeName == "Drive Through"){
+     // refreshProceedController();
+      if( selectedCustomer.value.vCustomerId.isNotEmpty && selectedCustomerAddress.vArea.isEmpty){
+        setCustomerAddressList(selectedCustomer.value.vCustomerId);
+      }
+    }
+  }
   void setCustomerList(){
     fatchCustomerInfo().then((value) => {
       customerList = value.customerList,

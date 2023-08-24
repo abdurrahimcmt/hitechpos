@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hitechpos/common/commondialogbox.dart';
 import 'package:hitechpos/common/palette.dart';
-import 'package:hitechpos/controllers/login_controller.dart';
+import 'package:hitechpos/controllers/ordersuccessfull_controller.dart';
 import 'package:hitechpos/views/menu/menu_screen.dart';
 import 'package:hitechpos/views/order/orderlist.dart';
 import 'package:hitechpos/views/profile/profile_page.dart';
@@ -19,6 +19,7 @@ class DashboardScreen extends StatefulWidget {
 }
 
 class _DashboardScreenState extends State<DashboardScreen> {
+  final orderSuccessFullController = Get.find<OrderSuccessfullController>();
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -126,6 +127,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   ),
                   TextButton(
                     onPressed: () {
+                      orderSuccessFullController.clearCartData();
                       Get.to(() => MenuScreen());
                     },
                     child: const CurbButton(
