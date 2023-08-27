@@ -65,32 +65,35 @@ class _DineInScreenState extends State<DineInScreen> {
                           scrollDirection: Axis.horizontal,
                           itemCount: snapshot.data!.onlineFloorTableList.length,
                           itemBuilder: (BuildContext context, int index) {
-                            return TextButton(
-                              onPressed:() {
-                                 controller.selectedFloor.value = snapshot.data!.onlineFloorTableList[index];
-                                 controller.fatchTableInfo(snapshot.data!.onlineFloorTableList[index].iFloorId);
-                              },
-                              child: Center(
-                                child: Container(
-                                  width: 100,
-                                  height: 50,
-                                  decoration:  const BoxDecoration(
-                                    gradient: Palette.btnGradientColor,
-                                    borderRadius: BorderRadius.all(Radius.circular(10)),
-                                  ),
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                    children: [
-                                      Text(snapshot.data!.onlineFloorTableList[index].vFloorName,
-                                          style: const TextStyle(
-                                            fontFamily: Palette.layoutFont,
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.white,
-                                          ),
-                                          overflow: TextOverflow.ellipsis,
-                                      )
-                                    ],
+                            return Obx(
+                              () => TextButton(
+                                onPressed:() {
+                                  controller.selectedFloorId.value = snapshot.data!.onlineFloorTableList[index].iFloorId;
+                                   controller.selectedFloor.value = snapshot.data!.onlineFloorTableList[index];
+                                   controller.fatchTableInfo(snapshot.data!.onlineFloorTableList[index].iFloorId);
+                                },
+                                child: Center(
+                                  child: Container(
+                                    width: 100,
+                                    height: 50,
+                                    decoration: BoxDecoration(
+                                      gradient: controller.selectedFloorId.value == snapshot.data!.onlineFloorTableList[index].iFloorId  ? Palette.btnGradientColorLight  : Palette.btnGradientColor,
+                                      borderRadius: BorderRadius.all(Radius.circular(10)),
+                                    ),
+                                    child: Column(
+                                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                      children: [
+                                        Text(snapshot.data!.onlineFloorTableList[index].vFloorName,
+                                            style: TextStyle(
+                                              fontFamily: Palette.layoutFont,
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.bold,
+                                              color: controller.selectedFloorId.value == snapshot.data!.onlineFloorTableList[index].iFloorId ? Palette.bgColorPerple : Colors.white,
+                                            ),
+                                            overflow: TextOverflow.ellipsis,
+                                        )
+                                      ],
+                                    ),
                                   ),
                                 ),
                               ),

@@ -120,6 +120,7 @@ class _DriveThroughScreenState extends State<DriveThroughScreen> {
                 Palette.sizeBoxVarticalSpace,
                 TextField(
                   controller: controller.carNumberController,
+                  keyboardType: TextInputType.number,
                   decoration: const InputDecoration(
                     hintText: "Car Number",
                     prefixIcon: Icon(

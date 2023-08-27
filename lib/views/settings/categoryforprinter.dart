@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:hitechpos/common/palette.dart';
-import 'package:hitechpos/models/categoryWithItemList.dart';
-import 'package:hitechpos/views/menu/menu_screen.dart';
+import 'package:hitechpos/controllers/menu_controller.dart';
+import 'package:hitechpos/models/categoryInfo.dart';
 import 'package:hitechpos/widgets/common_submit_button.dart';
 
 class CategoryforPrinter extends StatefulWidget {
@@ -12,16 +13,17 @@ class CategoryforPrinter extends StatefulWidget {
 }
 
 class _CategoryforPrinterState extends State<CategoryforPrinter> {
-  late Future<CategoryWithItemList> categoryWithItemList;
+  final menuController = Get.find<MenuScreenController>();
   bool isSelectedCategory = false;
   List<bool> selectedCategory =[];
+  late Future<CategoryInfo> categoryInfoList;
   //late Map<int,bool> selectedCategory;
   @override
   void initState(){
-    categoryWithItemList = fatchCategoryWithItemList("all","all","all");
     isSelectedCategory = false;
     selectedCategory =[];
     super.initState();
+    categoryInfoList = menuController.fatchCategoryInfo();
   }
   @override
   Widget build(BuildContext context) {
@@ -69,19 +71,19 @@ class _CategoryforPrinterState extends State<CategoryforPrinter> {
               ),
             ),
             Expanded(
-              child: FutureBuilder<CategoryWithItemList>(
-                future: categoryWithItemList,
+              child: FutureBuilder<CategoryInfo>(
+                future: menuController.categoryInfoList,
                 builder: (context, snapshot){
                   if(snapshot.hasData){
                     return SizedBox(
                       child: ListView.builder(
-                        itemCount: snapshot.data!.onlineCatWithItemLists.length,
+                        itemCount: snapshot.data!.categoryList.length,
                         padding: const EdgeInsets.symmetric(
                           horizontal: 5.0,
                           vertical: 5.0,
                         ),
                         itemBuilder: (BuildContext context, int index) {
-                        OnlineCatWithItemList foodCategory = snapshot.data!.onlineCatWithItemLists[index];
+                        CategoryList foodCategory = snapshot.data!.categoryList[index];
                         selectedCategory.add(false);
                           return Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,

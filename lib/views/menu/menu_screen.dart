@@ -41,7 +41,7 @@ class MenuScreen extends GetView<MenuScreenController> {
           backgroundColor: Palette.bgColorPerple,
           centerTitle: true,
           title: const Text(
-            "HIPOS",
+            "HiPOS",
             style: TextStyle(
               color: Colors.white,
             ),
@@ -54,7 +54,7 @@ class MenuScreen extends GetView<MenuScreenController> {
           ),
           actions: [
             TextButton(
-              onPressed: () => Get.to( () => const CartScreen()),
+              onPressed: () => cartController.cartDetailsModelList.value.length == 0 ? null : Get.to( () => const CartScreen()),
               child: badges.Badge(
                 badgeContent: Text(
                   cartController.cartDetailsModelList.value.length.toString(),
@@ -139,12 +139,14 @@ class MenuScreen extends GetView<MenuScreenController> {
                       controller: controller.searchTextEditingController,
                       onChanged: (value) {
                         if(value.isNotEmpty){
+                          controller.selectedCategoryName.value = "";
                           controller.fatchItemInfo("all",value);
                           // setState(() {
                           //   categoryWithItemList =fatchCategoryWithItemList("all","all",value);
                           // });
                         }
                         else{
+                          controller.selectedCategoryName.value = "";
                           controller.fatchItemInfo("all","all");
                           // setState(() {
                           //   categoryWithItemList =fatchCategoryWithItemList("all","all","all");
@@ -162,6 +164,7 @@ class MenuScreen extends GetView<MenuScreenController> {
                         ),
                         suffixIcon: IconButton(
                             onPressed: () {
+                              controller.selectedCategoryName.value = "";
                               controller.fatchItemInfo("all","all");
                               controller. searchTextEditingController.text = "";
                               // setState(() {
@@ -216,10 +219,13 @@ class MenuScreen extends GetView<MenuScreenController> {
                                 //   selectedCategoryName = foodCategory.vCategoryName;
                                 // });
                               },
-                              child: CreateCategory(
-                                categoryImage: "", 
-                                categoryName: foodCategory.vCategoryName,
+                              child: Obx(
+                                () => CreateCategory(
+                                  categoryImage: "", 
+                                  categoryName: foodCategory.vCategoryName,
+                                  isSelected: controller.selectedCategoryName.value == foodCategory.vCategoryName
                                 ),
+                              )
                             );
                           },
                         ),
@@ -430,15 +436,15 @@ class MenuScreen extends GetView<MenuScreenController> {
   }
 }
 //need to update
-Future<CategoryWithItemList> fatchCategoryWithItemList(String catid,String item,String searchText) async {
-  final response = await http.get(Uri.parse("https://hiposbh.com:84/api/AppsAPI/online/08f4f0d8-ddf4-4498-b878-2c69eec6452e/$catid/$item/$searchText"));
-  if(response.statusCode == 200){
-      return CategoryWithItemList.fromJson(jsonDecode(response.body));
-  }
-  else{
-    throw Exception('Failed to load Category');
-  }
-}
+// Future<CategoryWithItemList> fatchCategoryWithItemList(String catid,String item,String searchText) async {
+//   final response = await http.get(Uri.parse("https://hiposbh.com:84/api/AppsAPI/online/08f4f0d8-ddf4-4498-b878-2c69eec6452e/$catid/$item/$searchText"));
+//   if(response.statusCode == 200){
+//       return CategoryWithItemList.fromJson(jsonDecode(response.body));
+//   }
+//   else{
+//     throw Exception('Failed to load Category');
+//   }
+// }
 
 // Future<CategoryInfo> fatchCategoryInfo() async {
 //   final loginController = Get.find<LoginController>();

@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:hitechpos/common/commondialogbox.dart';
 import 'package:hitechpos/common/palette.dart';
 import 'package:hitechpos/controllers/login_controller.dart';
 import 'package:hitechpos/views/responsive/responsive_layout.dart';
@@ -12,36 +15,55 @@ class LoginScreen extends GetView<LoginController> {
   LoginScreen({Key? key}) : super(key: key);
  // final _formKey = GlobalKey<FormState>();
   final GlobalKey<FormState> loginFormKey = GlobalKey<FormState>();
-  
+  _yesAction(){
+    exit(0);
+  }
+  _noAction(){
+    Get.back();
+  }
   @override
   Widget build(BuildContext context) {
     //final loginController = Get.find<LoginController>();
       Size size = MediaQuery.of(context).size;
       int flexnumber = ResponsiveLayout.isDesktop(context) ? 4 : ResponsiveLayout.isTablet(context) ? 2 : 0;
-      return Scaffold(
-      backgroundColor: Colors.grey,
-      body: Container(
-        height: size.height,
-        decoration: BoxDecoration(
-          image: DecorationImage(
-          image: const AssetImage("assets/images/restaurant0.jpg"),
-          fit: BoxFit.cover,
-          colorFilter: ColorFilter.mode(
-            Colors.black.withOpacity(0.8),
-              BlendMode.darken
-            ),
-          ),
-        ),   
-        child: Row(
-          children: [
-              Expanded(
-                flex: flexnumber,
-                child: const SizedBox(
+      return WillPopScope(
+        onWillPop: () async {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return CommonDialogBoxes().alartDialogYesNoOption(
+                "Confirmation",
+                "Do you want to close the app?",
+                context,_yesAction,_noAction
+              );
+            },
+          );
+          return true;
+        },
+        child: Scaffold(
+          backgroundColor: Colors.grey,
+          body: Container(
+            height: size.height,
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: const AssetImage("assets/images/restaurant0.jpg"),
+                fit: BoxFit.cover,
+                colorFilter: ColorFilter.mode(
+                Colors.black.withOpacity(0.8),
+                  BlendMode.darken
                 ),
               ),
-            Expanded(
-              flex: 6,
-              child: SingleChildScrollView(
+            ),   
+            child: Row(
+              children: [
+                Expanded(
+                  flex: flexnumber,
+                  child: const SizedBox(
+                  ),
+                ),
+                Expanded(
+                  flex: 6,
+                  child: SingleChildScrollView(
                     child: Center(
                       child: Container(
                         decoration: const BoxDecoration(
@@ -76,7 +98,7 @@ class LoginScreen extends GetView<LoginController> {
                             Stack(
                               children: <Widget>[
                                 Container(
-                                  height: 700,
+                                  height: size.height*0.90,
                                   decoration: Palette.containerCurbBoxdecoration,
                                   child: Padding(
                                     padding: const EdgeInsets.all(30.0),
@@ -87,16 +109,13 @@ class LoginScreen extends GetView<LoginController> {
                                         mainAxisAlignment: MainAxisAlignment.start,
                                         children: [
                                           const SizedBox(
-                                            height: 20,
+                                            height: 10,
                                           ),
                                           const Text("Welcome",
                                             style: TextStyle(
                                               fontWeight: FontWeight.w700,
                                               fontSize: 30,
                                             ),
-                                          ),
-                                          const SizedBox(
-                                            height: 10,
                                           ),
                                             const Text("",
                                             style: TextStyle(
@@ -105,7 +124,7 @@ class LoginScreen extends GetView<LoginController> {
                                             ),
                                           ),
                                           const SizedBox(
-                                            height: 40,
+                                            height: 20,
                                           ),
                                           Obx(
                                             () { 
@@ -243,7 +262,7 @@ class LoginScreen extends GetView<LoginController> {
                                             ),
                                           ),
                                           const SizedBox(
-                                            height: 40,
+                                            height: 20,
                                           ),
                                           TextButton(
                                             onPressed: (){
@@ -253,7 +272,7 @@ class LoginScreen extends GetView<LoginController> {
                                                 Get.snackbar("Error", "Please register your account",snackPosition: SnackPosition.BOTTOM);
                                               }
                                               if (loginFormKey.currentState!.validate()) {
-                                                controller.login(controller.userNameController.text, controller.passwordController.text , controller.selectedBranchId.value);
+                                                controller.login(controller.userNameController.text.trim(), controller.passwordController.text.trim(), controller.selectedBranchId.value);
 
                                                   // print("yes");
                                                   // Navigator.of(context).pushAndRemoveUntil(
@@ -261,7 +280,7 @@ class LoginScreen extends GetView<LoginController> {
                                                   //   builder: (context) =>
                                                   //   const DashboardScreen()),
                                                   // (Route<dynamic> route) => false);
-                                                
+      
                                               }
                                               //Get.to(const DashboardScreen());
                                             },
@@ -271,20 +290,26 @@ class LoginScreen extends GetView<LoginController> {
                                                 child: Row(
                                                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                                                 children: [
-                                                  Text("LOGIN",style: TextStyle(
-                                                    fontFamily: Palette.layoutFont,
-                                                    fontWeight: Palette.btnFontWeight,
-                                                    fontSize: Palette.btnFontsize,
-                                                    color: Palette.btnTextColor,
-                                                  ),),
-                                                  Icon(Icons.arrow_forward,size: 20,color: Colors.white,),
+                                                  Expanded(flex: 2, child: SizedBox()),
+                                                  Expanded(
+                                                    flex: 6,
+                                                    child: Text("LOGIN",style: TextStyle(
+                                                      fontFamily: Palette.layoutFont,
+                                                      fontWeight: Palette.btnFontWeight,
+                                                      fontSize: Palette.btnFontsize,
+                                                      color: Palette.btnTextColor,
+                                                    ),),
+                                                  ),
+                                                  Expanded(
+                                                    flex: 4,
+                                                    child: Icon(Icons.login_outlined,size: 20,color: Colors.white,)),
                                                 ],
                                               ),
                                             ),
                                           ),
                                           
                                           const SizedBox(
-                                            height: 40,
+                                            height: 20,
                                           ),
                                           // Center(
                                           //   child: Column(
@@ -337,21 +362,58 @@ class LoginScreen extends GetView<LoginController> {
                                             },
                                             child: const CurbButtonLight(
                                               buttonPadding: EdgeInsets.only(left: 0,right: 0),
-                                              child: Center(
-                                                child: Text(
-                                                  "REGISTRATION",
-                                                  style: TextStyle(
-                                                    color: Color.fromARGB(255, 125, 95, 133),
-                                                    fontWeight: FontWeight.w600,
-                                                    fontSize: 20,
-                                                    fontFamily: Palette.layoutFont,
+                                              child: Row(
+                                                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                                children: [
+                                                  Expanded(flex: 2, child: SizedBox()),
+                                                  Expanded(
+                                                    flex: 6,
+                                                    child: Text(
+                                                      "REGISTRATION",
+                                                      style: TextStyle(
+                                                        color: Color.fromARGB(255, 125, 95, 133),
+                                                        fontFamily: Palette.layoutFont,
+                                                        fontWeight: Palette.btnFontWeight,
+                                                        fontSize: Palette.btnFontsize,
+                                                      ),
+                                                    ),
                                                   ),
-                                                  textAlign: TextAlign.center,
-                                                ),
+                                                  Expanded( 
+                                                    flex: 4,
+                                                    child: Icon(Icons.app_registration_sharp,size: 20,color: Color.fromARGB(255, 125, 95, 133),)),
+                                                ],
                                               ),
                                             ),
                                           ),
-                                        
+                                          // TextButton(
+                                          //   onPressed: (){
+                                          //     showDialog(
+                                          //       context: context,
+                                          //       builder: (BuildContext context) {
+                                          //         return CommonDialogBoxes().alartDialogYesNoOption(
+                                          //           "Confirmation",
+                                          //           "Do you want to close the app?",
+                                          //           context,_yesAction,_noAction
+                                          //         );
+                                          //       },
+                                          //     );
+                                          //   },
+                                          //   child: const CurbButtonLight(
+                                          //     buttonPadding: EdgeInsets.only(left: 0,right: 0),
+                                          //     child: Center(
+                                          //       child: Text(
+                                          //         "EXIT",
+                                          //         style: TextStyle(
+                                          //           color: Color.fromARGB(255, 125, 95, 133),
+                                          //           fontWeight: FontWeight.w600,
+                                          //           fontSize: 20,
+                                          //           fontFamily: Palette.layoutFont,
+                                          //         ),
+                                          //         textAlign: TextAlign.center,
+                                          //       ),
+                                          //     ),
+                                          //   ),
+                                          // ),
                                         ],
                                       ),
                                     ),
@@ -364,17 +426,16 @@ class LoginScreen extends GetView<LoginController> {
                       ),
                     ),
                   ),
+                ),
+                Expanded(
+                  flex: flexnumber,
+                  child: const SizedBox(
+                  ),
+                ),
+              ],
             ),
-            Expanded(
-              flex: flexnumber,
-              child: const SizedBox(
-              ),
-            ),
-          ],
-        ),
-      ),
-        
-      
+          ),
+       ),
     );
   }
 }

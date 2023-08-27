@@ -1,15 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:hitechpos/common/palette.dart';
-import 'package:hitechpos/controllers/login_controller.dart';
-import 'package:hitechpos/views/Registration/login_screen.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class CommonDialogBoxes {
 
-AlertDialog alartDialogYesNoOption(String title, String content, BuildContext context) {
-  // final loginController = Get.find<LoginController>();
-  // bool isloginRememberme = false; 
+AlertDialog alartDialogYesNoOption(String title, String content,
+ BuildContext context , VoidCallback yesAction,VoidCallback noAction) {
   return AlertDialog(
     shape: const ContinuousRectangleBorder(
       borderRadius: BorderRadius.all(Radius.circular(20)),
@@ -34,27 +29,7 @@ AlertDialog alartDialogYesNoOption(String title, String content, BuildContext co
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           TextButton(
-            onPressed: () {
-          // Clear login and password field when remember me false
-          // if(!loginController.isRememberMe.value){
-          //   loginController.refreshTextField();
-          // }
-            // void checkIsRememberbe() async {
-            //   try {
-            //     SharedPreferences prefs = await SharedPreferences.getInstance();
-            //     isloginRememberme = prefs.getBool("remember_me") ?? false;
-            //     debugPrint("Is remember me  $isloginRememberme");
-            //     if(!isloginRememberme){
-            //     loginController.refreshTextField();
-            //   }
-            //   } catch (e) {
-            //     debugPrint(e.toString());
-            //   }
-              
-            // }
-            // checkIsRememberbe();
-            Get.to(() => LoginScreen());
-            },
+            onPressed: yesAction,
             child: Container(
               height: 35,
               width: 70,
@@ -83,9 +58,7 @@ AlertDialog alartDialogYesNoOption(String title, String content, BuildContext co
               ),
             ),
             TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
+              onPressed: noAction,
               child: Container(
               height: 35,
               width: 70,

@@ -66,6 +66,7 @@ class RegistrationKeyScreen extends GetView<LoginController> {
                 height: 20,
               ),
               TextFormField(
+                keyboardType: TextInputType.number,
                 focusNode: controller.registrationPortFocus,
                 controller: controller.registrationPortController,
                 onChanged: (value) {
@@ -150,7 +151,7 @@ class RegistrationKeyScreen extends GetView<LoginController> {
                     child: TextButton(
                       onPressed: (){ 
                         if(registrationFormKey.currentState!.validate()){
-                          controller.registrationTest(controller.registrationKeyController.text);
+                          controller.registrationTest(controller.registrationKeyController.text.trim());
                           // if(controller.isRegistrationSuccessfull.value == false){
                           //    Get.snackbar("Invalid", "Please provide valid information",snackPosition: SnackPosition.BOTTOM);
                           // }
@@ -180,9 +181,9 @@ class RegistrationKeyScreen extends GetView<LoginController> {
                         onPressed: controller.isRegistrationSuccessfull.value ? (){ 
                           controller.saveRegistrationInformationInLocal(
                             controller.selectedSchema.value,
-                            controller.registrationDomainController.text,
-                            controller.registrationPortController.text,
-                            controller.registrationKeyController.text
+                            controller.registrationDomainController.text.trim(),
+                            controller.registrationPortController.text.trim(),
+                            controller.registrationKeyController.text.trim()
                           );
                         } : null, 
                         child: Padding(
@@ -258,9 +259,9 @@ class RegistrationKeyScreen extends GetView<LoginController> {
                 ),
               ),
             ],
-                 ),
-         ),
+          ),
+        ),
       ),
-        );
+    );
   }
 }

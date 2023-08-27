@@ -3,13 +3,13 @@ import 'package:get/get.dart';
 import 'package:hitechpos/common/commondialogbox.dart';
 import 'package:hitechpos/common/palette.dart';
 import 'package:hitechpos/controllers/ordersuccessfull_controller.dart';
+import 'package:hitechpos/views/Registration/login_screen.dart';
 import 'package:hitechpos/views/menu/menu_screen.dart';
 import 'package:hitechpos/views/order/orderlist.dart';
 import 'package:hitechpos/views/profile/profile_page.dart';
 import 'package:hitechpos/views/settings/settings_screen.dart';
 import 'package:hitechpos/widgets/curb_button.dart';
 import 'package:hitechpos/widgets/dashboardbutton.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -20,6 +20,14 @@ class DashboardScreen extends StatefulWidget {
 
 class _DashboardScreenState extends State<DashboardScreen> {
   final orderSuccessFullController = Get.find<OrderSuccessfullController>();
+
+  _yesAction(){
+    Get.to(() => LoginScreen());
+  }
+
+  _noAction(){
+    Get.back();
+  }
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -28,13 +36,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
     return WillPopScope(
       onWillPop: () async{
           //Clear Text data
-          showDialog(
+        showDialog(
           context: context,
           builder: (BuildContext context) {
             return CommonDialogBoxes().alartDialogYesNoOption(
-                "Confirmation",
-                "Do you want to logout? ",
-                context);
+              "Confirmation",
+              "Do you want to logout? ",
+              context,_yesAction,_noAction
+            );
           },
         );
         return true;
@@ -43,7 +52,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         appBar: AppBar(
           centerTitle: true,
           backgroundColor: Palette.bgColorPerple,
-          title: const Text('DashBoard'),
+          title: const Text('Dashboard'),
           leading: InkWell(
             onTap: () {
               setState(() {
@@ -53,7 +62,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     return CommonDialogBoxes().alartDialogYesNoOption(
                         "Confirmation",
                         "Do you want to log out?",
-                        context);
+                        context,_yesAction,_noAction
+                    );
                   },
                 );
               });

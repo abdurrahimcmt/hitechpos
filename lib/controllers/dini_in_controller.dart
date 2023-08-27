@@ -11,6 +11,7 @@ class DiniInController extends GetxController{
   List<String> isSelectedTabels = [];
 
   final newSelectedTable = "".obs;
+  final selectedFloorId = "".obs;
   final isTableInfoLoding = true.obs;
   //int selectcount = 0;
   Rx<OnlineFloorTableList> selectedFloor = OnlineFloorTableList(vBranchId: "", iFloorId: "", vFloorName: "", onlineTableList: []).obs;

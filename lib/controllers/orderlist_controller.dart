@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hitechpos/controllers/cart_controller.dart';
@@ -14,6 +13,7 @@ import 'package:hitechpos/models/invoiceinfodetails.dart';
 import 'package:hitechpos/models/itemdetails.dart';
 import 'package:hitechpos/models/orderlistmodel.dart';
 import 'package:hitechpos/views/cart/cart_screen.dart';
+import 'package:hitechpos/views/order/orderlist.dart';
 import 'package:hitechpos/widgets/loading_prograss_screen.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
@@ -53,7 +53,7 @@ class OrderListController extends GetxController{
   TextEditingController dateFieldFromDate = TextEditingController();
   TextEditingController dateFieldtoDate = TextEditingController();
 
-
+   bool isFilter = false; 
 
   get getIsFirstLoadRunning => _isFirstLoadRunning;
   get getHasNextPage => _hasNextPage;
@@ -68,6 +68,12 @@ class OrderListController extends GetxController{
   get getInvoiceNo => invoiceNo;
   get getSearchText => searchText;
 
+  set setHasNextPage(bool isNestPage){
+    this._hasNextPage.value = isNestPage;
+  }
+  set setIsFirstLoadRunning(bool isFirstLoad){
+    this._isFirstLoadRunning.value = isFirstLoad;
+  }
   set setSearchText(String searchText){
     this.searchText = searchText;
   }
@@ -100,10 +106,10 @@ class OrderListController extends GetxController{
   
   @override
   void onInit(){
+    super.onInit();
     if(scroolNumber == 0){
       scroolNumber++;
     }
-    super.onInit();
     fatchOrderList();
   }
 
@@ -132,7 +138,7 @@ class OrderListController extends GetxController{
     if(response.statusCode == 200){
       debugPrint(response.body);
       _isFirstLoadRunning.value = false;
-        return OrderListModel.fromJson(jsonDecode(response.body));
+      return OrderListModel.fromJson(jsonDecode(response.body));
     }
     else{
       throw Exception('Faild to load Order List');
@@ -167,7 +173,7 @@ class OrderListController extends GetxController{
   }
 
   void firstLoad() async{
-    
+    _isFirstLoadRunning.value = true;
     try {
       _page =0;
       _limit = 15;
@@ -178,7 +184,7 @@ class OrderListController extends GetxController{
     } catch (e) {
       debugPrint("Something went wrong");
     }
-    _isFirstLoadRunning.value = false;
+    _isFirstLoadRunning.value = false;;
   }
 
   void loadInvoiceDatafromDatabase(String invoiceId, String invoiceNo) async {

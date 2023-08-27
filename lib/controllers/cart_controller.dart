@@ -2,7 +2,6 @@ import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hitechpos/controllers/login_controller.dart';
-import 'package:hitechpos/controllers/orderlist_controller.dart';
 import 'package:hitechpos/data/data.dart';
 import 'package:hitechpos/models/cartDetailsmodel.dart';
 import 'package:hitechpos/models/invoiceinfodetails.dart';

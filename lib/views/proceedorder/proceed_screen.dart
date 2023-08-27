@@ -215,10 +215,11 @@ class _ProceedScreenState extends State<ProceedScreen> {
                 Palette.sizeBoxVarticalSpace,
                 if(selectedOrderType == 3) 
                 TextField(
-                    controller: customerAndAddressController.carNumberController,
-                    decoration: const InputDecoration(
-                      hintText: "Car Number",
-                      prefixIcon: Icon(
+                  keyboardType: TextInputType.number,
+                  controller: customerAndAddressController.carNumberController,
+                  decoration: const InputDecoration(
+                    hintText: "Car Number",
+                    prefixIcon: Icon(
                         Icons.car_crash,
                         color: Color.fromARGB(106, 113, 15, 131),
                       ),

@@ -14,10 +14,10 @@ class CurbButtonLight extends StatelessWidget {
       child: Container(
           decoration: const BoxDecoration(
           gradient: Palette.btnGradientColorLight,
-          borderRadius: BorderRadius.all(Radius.circular(30)),
+          borderRadius: BorderRadius.all(Radius.circular(20)),
           ),
           width: size.width,
-          height: 60,
+          height: 50,
           padding: const EdgeInsets.only(
             top: 15.0,
             bottom: 15.0,

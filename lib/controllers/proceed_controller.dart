@@ -94,8 +94,7 @@ class ProceedController extends GetxController {
   }
 
   void orderProceeedValidation(int selectedOrderType){
-    isProceedStart.value = true;
-    Get.to(() => LoadingPrograssScreen());
+
     if(selectedOrderType == 0){
       if(diniInController.selectedTable.value.vTableId.isNotEmpty){
         selectedFloorForParam = diniInController.selectedFloor.value.iFloorId;
@@ -116,6 +115,7 @@ class ProceedController extends GetxController {
       selectedTableForParam = "";
       customerAddress = "";
       carNumber = "";
+      valid = true;
     }
     else if(selectedOrderType == 2){
       customerId = customerAndAddressController.getSelectedCustomer().vCustomerId;
@@ -144,6 +144,7 @@ class ProceedController extends GetxController {
       carNumber = customerAndAddressController.carNumberController.text;
         selectedFloorForParam = "";
         selectedTableForParam = "";
+        valid = true;
     }
     else{
       selectedFloorForParam = "";
@@ -153,13 +154,15 @@ class ProceedController extends GetxController {
       carNumber = "";
     }
     if(valid){
-    Future<InvoiceInfoDetails> invoiceData = cartController.getInvoiceInfoDetails(
-      selectedOrderType + 1,
-        selectedFloorForParam,
-        selectedTableForParam, 
-        customerId,
-        customerAddress,
-        carNumber
+      isProceedStart.value = true;
+      Get.to(() => LoadingPrograssScreen());
+      Future<InvoiceInfoDetails> invoiceData = cartController.getInvoiceInfoDetails(
+        selectedOrderType + 1,
+          selectedFloorForParam,
+          selectedTableForParam, 
+          customerId,
+          customerAddress,
+          carNumber
       );
       proceedOrderPostRequest(invoiceData);
     }

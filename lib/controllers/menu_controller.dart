@@ -12,6 +12,7 @@ class MenuScreenController extends GetxController{
   final selectedOrderType = 0.obs;
   String selectedOrderTypeName = "Dine In";
   late Future<CategoryInfo> categoryInfoList;
+  CategoryList categoryAll = CategoryList(vCategoryId: "0", vCategoryName: "All");
   var itemInfo = ItemInfo(messageId: "", message: "", itemList: []).obs;
   var itemInfoIsloading = true.obs;
   //List<String> isSelectedTabels = <String>[].obs;
