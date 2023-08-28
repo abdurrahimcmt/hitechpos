@@ -13,7 +13,6 @@ import 'package:hitechpos/models/invoiceinfodetails.dart';
 import 'package:hitechpos/models/itemdetails.dart';
 import 'package:hitechpos/models/orderlistmodel.dart';
 import 'package:hitechpos/views/cart/cart_screen.dart';
-import 'package:hitechpos/views/order/orderlist.dart';
 import 'package:hitechpos/widgets/loading_prograss_screen.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
@@ -255,6 +254,7 @@ class OrderListController extends GetxController{
               InvoiceDetail invoicedetail = value.invoiceInfo.first.invoiceDetails[i];
               List<String> listOfString = [];
               String modifierId = '';
+              // ignore: unused_local_variable
               String itemExtraPrefex = '';
               if(invoicedetail.vItemExtra.contains("#")){
                 listOfString = invoicedetail.vItemExtra.split('#');
@@ -278,6 +278,7 @@ class OrderListController extends GetxController{
 
               List<InvoiceDetail> modifierListOfThisItem = modifierList.where((element) {
                   String modifierId = '';
+                  // ignore: unused_local_variable
                   String itemExtraPrefex = '';
                   List<String> listOfString = [];
                   if(element.vItemExtra.contains("#")){

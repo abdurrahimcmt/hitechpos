@@ -223,6 +223,7 @@ class InvoiceReport {
                       debugPrint("Prefex $itemExtraPrefex");
                       debugPrint("Modifier $modifierId");
 
+                      // ignore: unused_local_variable
                       String lastMainItemId = invoiceDetails.vItemId;
 
                       if(modifierId == invoiceDetails.vItemId){

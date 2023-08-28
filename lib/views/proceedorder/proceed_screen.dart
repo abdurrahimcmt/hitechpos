@@ -17,7 +17,6 @@ import 'package:hitechpos/models/invoiceinfodetails.dart';
 import 'package:hitechpos/views/cart/cart_screen.dart';
 import 'package:hitechpos/views/menu/component/dine_in.dart';
 import 'package:hitechpos/widgets/curb_button.dart';
-import 'package:hitechpos/widgets/loading_prograss_screen.dart';
 class ProceedScreen extends StatefulWidget {
   const ProceedScreen({super.key});
 

@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hitechpos/common/palette.dart';
@@ -6,7 +5,6 @@ import 'package:hitechpos/controllers/cart_controller.dart';
 import 'package:hitechpos/controllers/menu_controller.dart';
 import 'package:hitechpos/data/data.dart';
 import 'package:hitechpos/models/categoryInfo.dart';
-import 'package:hitechpos/models/categoryWithItemList.dart';
 import 'package:hitechpos/models/iteminfo.dart';
 import 'package:hitechpos/views/dashboard/dashboard_screen.dart';
 import 'package:hitechpos/views/menu/component/create_category.dart';
@@ -15,7 +13,6 @@ import 'package:hitechpos/views/menu/component/dine_in.dart';
 import 'package:hitechpos/views/menu/component/drive_through.dart';
 import 'package:hitechpos/views/menu/component/take_away.dart';
 import 'package:hitechpos/views/order/order_screen.dart';
-import 'package:http/http.dart' as http;
 import '../cart/cart_screen.dart';
 import 'package:badges/badges.dart' as badges;
 

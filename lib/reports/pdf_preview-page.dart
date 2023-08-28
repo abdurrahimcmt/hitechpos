@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hitechpos/models/invoice_report.dart';
 import 'package:hitechpos/reports/invoice_report.dart';
-import 'package:hitechpos/reports/invoice_report_new.dart';
 import 'package:printing/printing.dart';
 
 class PdfPreviewPage extends StatelessWidget {

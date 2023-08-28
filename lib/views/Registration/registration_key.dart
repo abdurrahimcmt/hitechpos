@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hitechpos/common/palette.dart';
 import 'package:hitechpos/views/Registration/login_screen.dart';
-import 'package:hitechpos/widgets/common_submit_button.dart';
 import 'package:hitechpos/widgets/curb_button.dart';
 
 import '../../controllers/login_controller.dart';

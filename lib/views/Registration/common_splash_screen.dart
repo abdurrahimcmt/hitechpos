@@ -16,7 +16,8 @@ class CommonSplashScreen extends StatefulWidget {
 }
 
 class _CommonSplashScreenState extends State<CommonSplashScreen> {
-  bool _isVisible = false;
+ // ignore: unused_field
+ bool _isVisible = false;
 
   _CommonSplashScreenState() {
     var isRegistrationSuccessfull = false;
@@ -41,8 +42,7 @@ class _CommonSplashScreenState extends State<CommonSplashScreen> {
 
     Timer(const Duration(milliseconds: 10), () {
       setState(() {
-        _isVisible =
-            true; // Now it is showing fade effect and navigating to Login page
+        _isVisible = true; // Now it is showing fade effect and navigating to Login page
       });
     });
   }

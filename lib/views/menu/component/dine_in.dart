@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hitechpos/common/palette.dart';
@@ -30,7 +29,6 @@ class _DineInScreenState extends State<DineInScreen> {
       }
       else{
         Timer(const Duration(milliseconds: 2000), () {
-          
           controller.fatchTableInfo(controller.selectedFloor.value.iFloorId);
         });
       }

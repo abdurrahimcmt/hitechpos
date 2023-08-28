@@ -1,10 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hitechpos/common/palette.dart';
 import 'package:hitechpos/views/Registration/common_splash_screen.dart';
-import 'package:hitechpos/views/Registration/login_screen.dart';
-import 'package:hitechpos/views/Registration/registration_key.dart';
-import 'package:hitechpos/views/Registration/registrationbeforelogin.dart';
-import 'package:hitechpos/views/dashboard/dashboard_screen.dart';
 import '../../data/onboarding.dart';
 
 class OnBoardingScreen extends StatefulWidget {

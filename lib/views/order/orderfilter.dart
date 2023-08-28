@@ -5,7 +5,6 @@ import 'package:get/get.dart';
 import 'package:hitechpos/common/palette.dart';
 import 'package:hitechpos/controllers/orderlist_controller.dart';
 import 'package:hitechpos/data/data.dart';
-import 'package:hitechpos/views/menu/menu_screen.dart';
 import 'package:hitechpos/views/order/orderlist.dart';
 import 'package:hitechpos/widgets/loading_prograss_screen.dart';
 import 'package:intl/intl.dart';

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:hitechpos/common/app_routes.dart';
-import 'package:hitechpos/controllers/network_controller.dart';
 import 'package:hitechpos/dependency/hiposbindings.dart';
 import 'package:get/get.dart';
 import 'package:hitechpos/dependency/network_dependency_injection.dart';
@@ -10,7 +9,6 @@ import 'package:hitechpos/dependency/network_dependency_injection.dart';
 // import 'package:hitechpos/views/onnboarding/onboarding_screen.dart';
 // import 'package:hitechpos/views/order/order_screen.dart';
 import 'package:hitechpos/views/Registration/splash_screen.dart';
-import 'package:hitechpos/widgets/loading_prograss_screen.dart';
 
 void main() {
   runApp(const MyApp());
