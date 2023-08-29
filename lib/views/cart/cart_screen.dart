@@ -59,12 +59,12 @@ class _CartScreenState extends State<CartScreen> {
       
       debugPrint(cartOrder.onlineModifierLists.length.toString());
       for(var modifier in cartOrder.onlineModifierLists){
-          modifierPrice += modifier.mFinalPrice;
-          modifiervat += modifier.mVatAmount;
-          modifierWithoutvatAmount += modifier.mWoVatAmount;
-        debugPrint("modifier.mFinalPrice ${modifier.mFinalPrice}");
-        debugPrint("modifier.mVatAmount ${modifier.mVatAmount}");
-        debugPrint("modifier.mWoVatAmount ${modifier.mWoVatAmount}");
+          modifierPrice += (modifier.mFinalPrice * modifier.mQuantity) ;
+          modifiervat += (modifier.mVatAmount * modifier.mQuantity);
+          modifierWithoutvatAmount += (modifier.mWoVatAmount * modifier.mQuantity);
+        debugPrint("modifier.mFinalPrice ${modifierPrice}");
+        debugPrint("modifier.mVatAmount ${modifiervat}");
+        debugPrint("modifier.mWoVatAmount ${modifierWithoutvatAmount}");
       }
       debugPrint("modifierWithoutvatAmount $modifierWithoutvatAmount");
       totalPrice += (modifierPrice * cartOrder.orderedQty) + (cartOrder.mFinalPrice * cartOrder.orderedQty);
@@ -301,7 +301,7 @@ class _CartScreenState extends State<CartScreen> {
                         
                       ],
                     ),
-                    //Second Row
+                    //Second Row //
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -333,7 +333,7 @@ class _CartScreenState extends State<CartScreen> {
                                             return Row(
                                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                               children: [
-                                                Text(order.onlineModifierLists[index].vItemName,
+                                                Text("${order.orderedQty} x ${order.onlineModifierLists[index].mQuantity.toStringAsFixed(0)} ${order.onlineModifierLists[index].vItemName}",
                                                     style: TextStyle(
                                                       fontSize: discriptionFontSize,
                                                       fontWeight: FontWeight.bold,
@@ -341,7 +341,7 @@ class _CartScreenState extends State<CartScreen> {
                                                     ),
                                                     overflow: TextOverflow.ellipsis,
                                                 ),
-                                                Text(order.onlineModifierLists[index].mFinalPrice.toStringAsFixed(3),
+                                                Text((order.orderedQty * (order.onlineModifierLists[index].mQuantity * order.onlineModifierLists[index].mFinalPrice)).toStringAsFixed(3),
                                                   style: TextStyle(
                                                     fontSize: discriptionFontSize,
                                                     fontWeight: FontWeight.bold,

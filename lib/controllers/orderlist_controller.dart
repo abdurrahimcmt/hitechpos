@@ -194,8 +194,8 @@ class OrderListController extends GetxController{
         loginController.setInvoiceId = invoiceId;
         loginController.setInvoiceNo = invoiceNo;
         cartController.cartDetailsModelList.value.clear();
-        List< InvoiceDetail> mainItemList = [];
-        List< InvoiceDetail> modifierList = [];
+        List<InvoiceDetail> mainItemList = [];
+        List<InvoiceDetail> modifierList = [];
         late String tableId;
         late String? floorId = "";
         late String customerId;
@@ -260,36 +260,44 @@ class OrderListController extends GetxController{
                 listOfString = invoicedetail.vItemExtra.split('#');
               }
               if(listOfString.isNotEmpty){
-                debugPrint("String List $listOfString");
                 itemExtraPrefex = listOfString[0];
                 modifierId = listOfString[1];
               }
               if(modifierId == invoicedetail.vItemId){
-                debugPrint("Main Item ${invoicedetail.vItemId}");
                 mainItemList.add(invoicedetail);
               }
               else{
                 modifierList.add(invoicedetail);
               }
-
             }
-            for(InvoiceDetail invoicedetail in mainItemList){
-              List<OnlineModifierList> onlineModifierList = []; 
-
+            for(int i = 0;i<mainItemList.length;i++){
+              
+              List<OnlineModifierList> onlineModifierList = [];
+              InvoiceDetail invoicedetail = mainItemList[i];
+              // Only for Avoid similar modifier Id of similar Main Item 
+              List<String> mainListOfString = [];
+              String mainItemExtraPrefexNumber = '';
+              if(invoicedetail.vItemExtra.contains("#")){
+                mainListOfString = invoicedetail.vItemExtra.split('#');
+              }
+              if(mainListOfString.isNotEmpty){
+                mainItemExtraPrefexNumber = mainListOfString[0];
+              }
+              // 
               List<InvoiceDetail> modifierListOfThisItem = modifierList.where((element) {
-                  String modifierId = '';
-                  // ignore: unused_local_variable
-                  String itemExtraPrefex = '';
-                  List<String> listOfString = [];
-                  if(element.vItemExtra.contains("#")){
-                    listOfString = element.vItemExtra.split('#');
-                  }
-                  if(listOfString.isNotEmpty){
-                    debugPrint("String List $listOfString");
-                    itemExtraPrefex = listOfString[0];
-                    modifierId = listOfString[1];
-                  }
-                return modifierId == invoicedetail.vItemId;
+                String modifierId = '';
+                // ignore: unused_local_variable
+                String itemExtraPrefex = '';
+                List<String> listOfString = [];
+                if(element.vItemExtra.contains("#")){
+                  listOfString = element.vItemExtra.split('#');
+                }
+                if(listOfString.isNotEmpty){
+                  debugPrint("String List $listOfString");
+                  itemExtraPrefex = listOfString[0];
+                  modifierId = listOfString[1];
+                }
+                return modifierId == invoicedetail.vItemId && mainItemExtraPrefexNumber == itemExtraPrefex;
               }).toList();
 
               for(InvoiceDetail item in modifierListOfThisItem){
@@ -299,9 +307,9 @@ class OrderListController extends GetxController{
                     vItemName: item.vItemName, 
                     iUnitId: item.vUnitId, 
                     vUnitName: item.vUnitName, 
-                    vQuantity: item.mQuantity.toString(), 
+                    vQuantity: (item.mQuantity/invoicedetail.mQuantity).toStringAsFixed(3), 
                     vMainPrice: item.mMainPrice.toString(), 
-                    mQuantity: item.mQuantity.toDouble(), 
+                    mQuantity: (item.mQuantity/invoicedetail.mQuantity).toDouble(), 
                     mMainPrice: item.mMainPrice,
                     mVatAmount: item.mTotalVatAmount/item.mQuantity.toDouble(), 
                     mWoVatAmount: item.mAmountWithoutVat/item.mQuantity.toDouble(), 

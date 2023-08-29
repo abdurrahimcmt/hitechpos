@@ -30,6 +30,7 @@ class InvoiceReport {
     try {
 
       final orderType = invoice.reportDetails.first.vSalesType;
+      double mainItemQty = 1.00;
 
       pdf.addPage(
 
@@ -200,12 +201,13 @@ class InvoiceReport {
                     borderStyle: pw.BorderStyle.dotted,
                   ),
                   pw.ListView.builder(
+
                     itemCount: invoice.reportDetails.length,
                     itemBuilder:(context, index) {
 
                       ReportDetail invoiceDetails = invoice.reportDetails[index];
                       bool isModifier = false;
-                      debugPrint( "Details ${invoiceDetails.vItemExtra}");
+
                       List<String> listOfString = [];
                       String modifierId = '';
                       String itemExtraPrefex = '';
@@ -215,25 +217,17 @@ class InvoiceReport {
                       }
 
                       if(listOfString.isNotEmpty){
-                        debugPrint("String List $listOfString");
                         itemExtraPrefex = listOfString[0];
                         modifierId = listOfString[1];
                       }
 
-                      debugPrint("Prefex $itemExtraPrefex");
-                      debugPrint("Modifier $modifierId");
-
-                      // ignore: unused_local_variable
-                      String lastMainItemId = invoiceDetails.vItemId;
-
                       if(modifierId == invoiceDetails.vItemId){
-                        debugPrint("Main Product with Modifier: ${invoiceDetails.vItemExtra} ");
-                        lastMainItemId = invoiceDetails.vItemId;
+                        //For show unit of multiple item
+                        mainItemQty = invoiceDetails.mQuantity;
                         isModifier = false;
                       }
 
                       if(modifierId != invoiceDetails.vItemId){
-                        debugPrint("${invoiceDetails.vItemExtra} is modifier of ${invoiceDetails.vItemId}");
                         isModifier = true;
                       }
                       
@@ -245,7 +239,7 @@ class InvoiceReport {
                             pw.Row(
                               children: [
                                 pw.Expanded(
-                                  flex: 10,
+                                  flex: 8,
                                   child: pw.Text(
                                     "${invoiceDetails.mQuantity.toStringAsFixed(0)} x ${invoiceDetails.vItemName}  - ${invoiceDetails.vUnitName}",
                                     textAlign: pw.TextAlign.left,
@@ -253,8 +247,8 @@ class InvoiceReport {
                                   ),
                                 ),
                                 pw.Expanded(
-                                  flex: 2,
-                                  child: pw.Text(invoiceDetails.mFinalAmount.toStringAsFixed(3),
+                                  flex: 4,
+                                  child: pw.Text(invoiceDetails.mFinalAmount.toStringAsFixed(3) + " BHD",
                                     textAlign: pw.TextAlign.right,
                                     style: textStyle,
                                   ),
@@ -282,16 +276,16 @@ class InvoiceReport {
                         return pw.Row(
                           children: [
                             pw.Expanded(
-                              flex: 10,
+                              flex: 8,
                               child: pw.Text(
-                                "   ${invoiceDetails.vItemName}  - ${invoiceDetails.vUnitName}",
+                                "   ${(invoiceDetails.mQuantity/(invoiceDetails.mQuantity/mainItemQty)).toStringAsFixed(0)} x ${(invoiceDetails.mQuantity/mainItemQty).toStringAsFixed(0)}  ${invoiceDetails.vItemName} - ${invoiceDetails.vUnitName}",
                                 textAlign: pw.TextAlign.left,
                                 style: textStyle,
                               ),
                             ),
                             pw.Expanded(
-                              flex: 2,
-                              child: pw.Text(invoiceDetails.mFinalAmount.toStringAsFixed(3),
+                              flex: 4,
+                              child: pw.Text(invoiceDetails.mFinalAmount.toStringAsFixed(3) + " BHD",
                                 textAlign: pw.TextAlign.right,
                                 style: textStyle,
                               ),

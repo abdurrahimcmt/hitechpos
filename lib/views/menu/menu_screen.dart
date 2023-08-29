@@ -382,7 +382,7 @@ class MenuScreen extends GetView<MenuScreenController> {
                 ),
               ),
               Text(
-                menuItem.vItemPrice,
+                "${menuItem.vItemPrice} BHD",
                 style: const TextStyle(
                   //color: Palette.bgColorPerple,
                   color: Colors.white,

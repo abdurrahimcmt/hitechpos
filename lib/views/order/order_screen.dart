@@ -31,7 +31,7 @@ class _OrderScreenState extends State<OrderScreen> {
   int orderQuentity = 1;
 
   List<OnlineModifierList> selectedModifierList = []; 
-  List<String> isSelectedModifier = <String>[];
+  List<int> isSelectedModifier = <int>[];
 
   List<String> isSelectedKitchenNotes = <String>[];
   String concatedKitchenNotes= "";
@@ -166,7 +166,7 @@ class _OrderScreenState extends State<OrderScreen> {
                                 ),
                                 Expanded(
                                   child: Text(
-                                    (price * orderQuentity).toStringAsFixed(3),
+                                    (price * orderQuentity).toStringAsFixed(3) + " BHD",
                                       textAlign: TextAlign.end,
                                       style: TextStyle( 
                                       fontFamily: Palette.layoutFont,
@@ -354,8 +354,8 @@ class _OrderScreenState extends State<OrderScreen> {
                                          });
                                        }, 
                                        child: Container(
-                                         width: 60,
-                                         height: 30,
+                                         width: 100,
+                                         height: 35,
                                          decoration: BoxDecoration(
                                            gradient: selectedFoodItemSizeIndex == index? Palette.btnGradientColor : Palette.bgGradient,
                                            borderRadius: Palette.textContainerBorderRadius,
@@ -368,7 +368,7 @@ class _OrderScreenState extends State<OrderScreen> {
                                            child: Padding(
                                              padding: const EdgeInsets.all(5.0),
                                              child: FittedBox(
-                                               child: Text("${itemPriceList[index].vUnitName}(${itemPriceList[index].mFinalPrice.toStringAsFixed(3)})",
+                                               child: Text("${itemPriceList[index].vUnitName}(${itemPriceList[index].mFinalPrice.toStringAsFixed(3)} BHD)",
                                                      style: TextStyle(
                                                        fontSize: discriptionFontSize,
                                                        fontWeight: FontWeight.bold,
@@ -386,12 +386,12 @@ class _OrderScreenState extends State<OrderScreen> {
                           ],
                         ),
                         //Modifier List Start
-                        Palette.sizeBoxVarticalSpace,
+                        itemModifierList.isNotEmpty? Palette.sizeBoxVarticalSpace : SizedBox(height: 0,),
                         Column(
                          crossAxisAlignment: CrossAxisAlignment.start,
                          children: [
                            Text(
-                             'Modifiers',
+                             itemModifierList.isNotEmpty?'Modifiers' : "",
                              style: TextStyle(
                                fontFamily: Palette.layoutFont,
                                color: Palette.textColorLightPurple,
@@ -413,26 +413,21 @@ class _OrderScreenState extends State<OrderScreen> {
                                    runSpacing: 0,
                                    children: List.generate(itemModifierList.length, (index) {
                                     String modifierName = itemModifierList[index].vItemName;
+                                    String modifierDiscription ="${itemModifierList[index].mQuantity.toStringAsFixed(0)} x ${itemModifierList[index].mFinalPrice.toStringAsFixed(3)}" ;
                                     double modifierPrice = itemModifierList[index].mFinalPrice;
-                                   //double modifierVat = itemModifierList[index].mVatAmount;
-                                   //double modifierWithoutVat = itemModifierList[index].mWoVatAmount;
+                                    double modifierQty = itemModifierList[index].mQuantity;
                                      return TextButton(
                                            onPressed: (){
-                                              //controller.modifierAction(modifierList[index].name, modifierList[index].price);
                                              setState(() {
-                                              if(!isSelectedModifier.contains(modifierName)){
-                                                 isSelectedModifier.add(modifierName);
+                                              if(!isSelectedModifier.contains(index)){
+                                                 isSelectedModifier.add(index);
                                                  selectedModifierList.add(itemModifierList[index]);
-                                                 modifierTotalPrice = modifierTotalPrice + modifierPrice;
-                                                 // modifierTotalVat = modifierTotalVat + modifierVat;
-                                                 // modifierTotalWithoutVatPrice = modifierTotalWithoutVatPrice + modifierWithoutVat;
+                                                 modifierTotalPrice = modifierTotalPrice + (modifierPrice * modifierQty);
                                                }
                                                else{
-                                                 isSelectedModifier.remove(modifierName);
+                                                 isSelectedModifier.remove(index);
                                                  selectedModifierList.remove(itemModifierList[index]);
-                                                 modifierTotalPrice = modifierTotalPrice - modifierPrice;
-                                                 // modifierTotalVat = modifierTotalVat - modifierVat;
-                                                 // modifierTotalWithoutVatPrice = modifierTotalWithoutVatPrice - modifierWithoutVat;
+                                                 modifierTotalPrice = modifierTotalPrice - (modifierPrice * modifierQty);
                                                }
                                              });
                                            }, 
@@ -440,7 +435,7 @@ class _OrderScreenState extends State<OrderScreen> {
                                              width: 70,
                                              height: 55,
                                              decoration: BoxDecoration(
-                                               gradient: isSelectedModifier.contains(modifierName)? Palette.btnGradientColor : Palette.bgGradient,
+                                               gradient: isSelectedModifier.contains(index)? Palette.btnGradientColor : Palette.bgGradient,
                                                borderRadius: Palette.textContainerBorderRadius,
                                                border: Border.all(
                                                  color: Palette.btnBoxShadowColor,
@@ -460,24 +455,24 @@ class _OrderScreenState extends State<OrderScreen> {
                                                               fontFamily: Palette.layoutFont,
                                                                fontSize: Palette.containerButtonFontSize,
                                                                fontWeight: FontWeight.bold,
-                                                               color: isSelectedModifier.contains(modifierName)? Colors.white: Palette.textColorLightPurple,
+                                                               color: isSelectedModifier.contains(index)? Colors.white: Palette.textColorLightPurple,
                                                              ),
                                                        ),
-                                                       Text("-",
+                                                       Text(modifierDiscription,
                                                              style: TextStyle(
                                                               fontFamily: Palette.layoutFont,
-                                                               fontSize: Palette.containerButtonFontSize,
-                                                               fontWeight: FontWeight.bold,
-                                                               color: isSelectedModifier.contains(modifierName)? Colors.white: Palette.textColorLightPurple,
+                                                               fontSize: Palette.discriptionFontSize,
+                                                               fontWeight: FontWeight.normal,
+                                                               color: isSelectedModifier.contains(index)? Colors.white: Palette.textColorLightPurple,
                                                              ),
                                                             overflow: TextOverflow.ellipsis,                                 
                                                        ),
-                                                       Text("(${modifierPrice.toStringAsFixed(3)})",
+                                                       Text("(${(modifierPrice * modifierQty).toStringAsFixed(3)} BHD)",
                                                              style: TextStyle(
                                                               fontFamily: Palette.layoutFont,
                                                                fontSize: Palette.containerButtonFontSize,
                                                                fontWeight: FontWeight.bold,
-                                                               color: isSelectedModifier.contains(modifierName)? Colors.white: Palette.textColorLightPurple,
+                                                               color: isSelectedModifier.contains(index)? Colors.white: Palette.textColorLightPurple,
                                                              ),
                                                              overflow: TextOverflow.ellipsis,
                                                        ),

@@ -92,7 +92,7 @@ class CartController extends GetxController{
     String itemExtra = '';
     // for maintaing modifier Serial number 
     int modifierItemExtraId = 1;
-
+    // total cart Item
     for (int i = 0; i < cartDetailsModelList.value.length; i++) {
 
       CartDetailsModel cartDetailsModel = cartDetailsModelList.value[i];
@@ -108,7 +108,6 @@ class CartController extends GetxController{
 
       invoiceDetailsList.add(
         // Main Item add
-
         InvoiceDetail(
           vInvoiceId: loginController.getInvoiceId, 
           vItemId: cartDetailsModel.itemId, 
@@ -147,13 +146,13 @@ class CartController extends GetxController{
           dModifiedDate: DateTime.now()
         )
       );
-
+      // add modifier
       if(cartDetailsModel.onlineModifierLists.isNotEmpty){ 
 
         for (var modifier in cartDetailsModel.onlineModifierLists) {
           // Modifier name starts with modifier serial 
           itemExtra = "$modifierItemExtraId#${cartDetailsModel.itemId}";
-
+          int qty = modifier.mQuantity.toInt() * cartDetailsModel.orderedQty;
           invoiceDetailsList.add(
             // Modifier add
             InvoiceDetail(
@@ -162,25 +161,25 @@ class CartController extends GetxController{
               vItemName: modifier.vItemName, 
               vUnitId: modifier.iUnitId,
               vUnitName: modifier.vUnitName,
-              mQuantity: cartDetailsModel.orderedQty,
+              mQuantity: qty,
               mCosting: 0.000, 
               vVatCatId: modifier.vVatCatId,
               mVatPercent: modifier.mPercentage,
               vVatOption: modifier.vVatOption, 
               mMainPrice: modifier.mMainPrice,
-              mNetAmount: (modifier.mFinalPrice * cartDetailsModel.orderedQty),
+              mNetAmount: (modifier.mFinalPrice * qty),
               mDisPercent: 0.000,
               mDisAmount: 0.000, 
               mDisCalculated: 0.000,
-              mAmountAfterDis: (modifier.mMainPrice * cartDetailsModel.orderedQty),
+              mAmountAfterDis: (modifier.mMainPrice * qty),
               mVoidPercent: 0.000,
               mVoidAmount: 0.000,
               mVoidCalculated: 0.000,
               mAmountAfterDisVoid: 0.000,
-              mAmountWithoutVat: (modifier.mWoVatAmount * cartDetailsModel.orderedQty),
-              mTotalVatAmount: (modifier.mVatAmount * cartDetailsModel.orderedQty), 
+              mAmountWithoutVat: (modifier.mWoVatAmount * qty),
+              mTotalVatAmount: (modifier.mVatAmount * qty), 
               mFinalPrice: modifier.mFinalPrice,
-              mFinalAmount: (modifier.mFinalPrice * cartDetailsModel.orderedQty),
+              mFinalAmount: (modifier.mFinalPrice * qty),
               iClosed: 0,
               vItemExtra: itemExtra,
               vKitchenNote: "",
