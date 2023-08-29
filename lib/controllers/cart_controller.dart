@@ -207,7 +207,7 @@ class CartController extends GetxController{
       vBranchId: loginController.branchIdFromLocalStorage,
       vInvoiceId: loginController.getInvoiceId,
       vInvoiceNo: loginController.getInvoiceNo,
-      vBarcode: "",
+      vBarcode: loginController.getBarCode,
       vSplitTicketId: "",
       iSalesTypeId: iSalesTypeId,
       iStatusId: 1, 

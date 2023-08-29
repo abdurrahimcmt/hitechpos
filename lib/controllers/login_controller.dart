@@ -41,15 +41,20 @@ class LoginController extends GetxController {
 
   late String invoiceId = "";
   late String invoiceNo = "";
+   late String barCode = "";
 
   get getInvoiceId => invoiceId;
   get getInvoiceNo => invoiceNo;
+  get getBarCode => barCode;
 
   set setInvoiceId(String invoiceId){
     this.invoiceId = invoiceId;
   }
   set setInvoiceNo(String invoiceNo){
     this.invoiceNo = invoiceNo;
+  }
+  set setBarCode(String barCode){
+    this.barCode = barCode;
   }
   
   @override

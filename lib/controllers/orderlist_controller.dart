@@ -193,6 +193,7 @@ class OrderListController extends GetxController{
         cartController.isDataUpdate = true;
         loginController.setInvoiceId = invoiceId;
         loginController.setInvoiceNo = invoiceNo;
+        
         cartController.cartDetailsModelList.value.clear();
         List<InvoiceDetail> mainItemList = [];
         List<InvoiceDetail> modifierList = [];
@@ -203,7 +204,7 @@ class OrderListController extends GetxController{
         
         invoiceInfoDetailsFuture = fatchInvoiceInfo(invoiceId);
         invoiceInfoDetailsFuture.then((value) {
-
+          loginController.setBarCode = value.invoiceInfo.first.vBarcode;
           if(value.invoiceInfo.isNotEmpty){
 
             tableId = value.invoiceInfo.first.vTableId;

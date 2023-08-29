@@ -31,7 +31,6 @@ class _CartScreenState extends State<CartScreen> {
   @override
   void initState() {
     cartDetailsModelList = cartController.cartDetailsModelList;
-    debugPrint(cartDetailsModelList.toString());
     super.initState();
   }
   @override
@@ -59,25 +58,18 @@ class _CartScreenState extends State<CartScreen> {
       
       debugPrint(cartOrder.onlineModifierLists.length.toString());
       for(var modifier in cartOrder.onlineModifierLists){
-          modifierPrice += (modifier.mFinalPrice * modifier.mQuantity) ;
-          modifiervat += (modifier.mVatAmount * modifier.mQuantity);
-          modifierWithoutvatAmount += (modifier.mWoVatAmount * modifier.mQuantity);
-        debugPrint("modifier.mFinalPrice ${modifierPrice}");
-        debugPrint("modifier.mVatAmount ${modifiervat}");
-        debugPrint("modifier.mWoVatAmount ${modifierWithoutvatAmount}");
+        modifierPrice += (modifier.mFinalPrice * modifier.mQuantity) ;
+        modifiervat += (modifier.mVatAmount * modifier.mQuantity);
+        modifierWithoutvatAmount += (modifier.mWoVatAmount * modifier.mQuantity);
       }
-      debugPrint("modifierWithoutvatAmount $modifierWithoutvatAmount");
+
       totalPrice += (modifierPrice * cartOrder.orderedQty) + (cartOrder.mFinalPrice * cartOrder.orderedQty);
       cartController.totalBillAmount = totalPrice;
       totalModifierAmount += (modifierPrice * cartOrder.orderedQty);
       totalModifierVatAmount += (modifiervat * cartOrder.orderedQty);
       totalModifierWithOutVatAmount += (modifierWithoutvatAmount * cartOrder.orderedQty.toDouble());
       totalPriceWithoutVate += (modifierWithoutvatAmount * cartOrder.orderedQty.toDouble()) + (cartOrder.mWoVatAmount * cartOrder.orderedQty.toDouble());
-      debugPrint("totalPriceWithoutVate $totalPriceWithoutVate");
-      debugPrint("totalModifierWithOutVatAmount $totalModifierWithOutVatAmount");
-      debugPrint("orderedQty ${cartOrder.orderedQty}");
-      debugPrint("cartOrder.mWoVatAmount ${cartOrder.mWoVatAmount}");
-
+      
       totalVatAmount += (modifiervat * cartOrder.orderedQty) + (cartOrder.mVatAmount * cartOrder.orderedQty);
     }
     return WillPopScope(

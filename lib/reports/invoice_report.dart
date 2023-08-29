@@ -210,6 +210,7 @@ class InvoiceReport {
 
                       List<String> listOfString = [];
                       String modifierId = '';
+                      // ignore: unused_local_variable
                       String itemExtraPrefex = '';
 
                       if(invoiceDetails.vItemExtra.contains("#")){
