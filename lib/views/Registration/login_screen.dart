@@ -272,7 +272,9 @@ class LoginScreen extends GetView<LoginController> {
                                                 Get.snackbar("Error", "Please register your account",snackPosition: SnackPosition.BOTTOM);
                                               }
                                               if (loginFormKey.currentState!.validate()) {
-                                                controller.login(controller.userNameController.text.trim(), controller.passwordController.text.trim(), controller.selectedBranchId.value);
+                                                controller.login(controller.userNameController.text.trim(), 
+                                                controller.passwordController.text.trim(), 
+                                                controller.selectedBranchId.value);
 
                                                   // print("yes");
                                                   // Navigator.of(context).pushAndRemoveUntil(

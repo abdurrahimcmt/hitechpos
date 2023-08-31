@@ -92,7 +92,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         flex: 6,
                         child: GestureDetector(
                           onTap: () {
-                            Get.to(const ProfilePage());
+                            Get.to(() => const ProfilePage());
                           },
                           child: const DashBoardButton(title: "Profile", buttonIcon: Icons.account_circle),
                         ),
@@ -119,7 +119,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         flex: 6,
                         child: GestureDetector(
                           onTap: () {
-                            Get.to(const SettingScreen());
+                            Get.to(() => const SettingScreen());
                           },
                           child: const DashBoardButton(title: "Settings", buttonIcon: Icons.settings
                           ),
