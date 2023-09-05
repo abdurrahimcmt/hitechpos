@@ -253,7 +253,7 @@ class _PrinterSettingScreenState extends State<PrinterSettingScreen> {
                         focusNode: controller.macAddressFocus,
                         controller: controller.macAddressController,
                         validator: (value) {
-                          if(value!.isEmpty){
+                          if(value!.isEmpty && selectedOption == "Bluetooth"){
                             controller.macAddressFocus.requestFocus();
                             return "Please enter mac address";
                           }
