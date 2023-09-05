@@ -30,7 +30,7 @@ class MenuScreen extends GetView<MenuScreenController> {
     //when user click on mobile back button then it will works
     return WillPopScope(
       onWillPop: () async {
-        Get.to(const DashboardScreen());
+        Get.to(() => const DashboardScreen());
         return true;
       },
       child: Scaffold(

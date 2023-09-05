@@ -577,10 +577,11 @@ class _CartScreenState extends State<CartScreen> {
                   //   ],
                   // ),
                 TextButton(
-                  onPressed: () {
-                    
-                    Get.to(() => const ProceedScreen(),);
-                  },
+                  onPressed: cartDetailsModelList.value.isNotEmpty ? () {
+                    if(cartDetailsModelList.value.isNotEmpty){
+                      Get.to(() => const ProceedScreen(),);
+                    }
+                  } : null,
                   child: CurbButton(
                     buttonPadding: const EdgeInsets.only(left: 0,right: 0),
                     child: Row(
