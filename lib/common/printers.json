@@ -1,0 +1,25 @@
+{
+    "totalPrinters": "200",
+    "printerList": [
+        {
+            "vPrinterType": "demo",
+            "vPrinterLocation": "demo",
+            "vPrinterId": "demo",
+            "vPrinterName": "demo",
+            "vPaperSize": "demo",
+            "vPrinterIp": "ip",
+            "vPort": "30254152",
+            "vMacAddress": "demo"
+        },
+        {
+            "vPrinterType": "demo",
+            "vPrinterLocation": "demo",
+            "vPrinterId": "demo",
+            "vPrinterName": "demo",
+            "vPaperSize": "demo",
+            "vPrinterIp": "ip",
+            "vPort": "30254152",
+            "vMacAddress": "demo"
+        }
+    ]
+}

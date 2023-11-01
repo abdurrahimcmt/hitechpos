@@ -219,13 +219,22 @@ class _OrderListScreenState extends State<OrderListScreen> {
                                       maxLines: 2,
                                       style: textStyle,
                                     ),
-                                  ))
+                                  )),
+                                  DataColumn(label: ConstrainedBox(
+                                    constraints: const BoxConstraints(minWidth: 120),
+                                    child: Text("Action",
+                                      textAlign: TextAlign.center,
+                                      overflow: TextOverflow.ellipsis,
+                                      maxLines: 2,
+                                      style: textStyle,
+                                    ),
+                                  )),
                                 ],
                                 rows: List<DataRow>.generate(
                                   orderListController.orderList.length,
                                   (index) => DataRow(
                                     onLongPress: () {
-                                      debugPrint(orderListController. orderList[index].vInvoiceNo);
+                                      debugPrint(orderListController.orderList[index].vInvoiceNo);
                                       orderListController.loadInvoiceDatafromDatabase(orderListController.orderList[index].vInvoiceId,orderListController.orderList[index].vInvoiceNo);
                                     },
                                     mouseCursor: MaterialStateMouseCursor.clickable,
@@ -300,6 +309,68 @@ class _OrderListScreenState extends State<OrderListScreen> {
                                               : orderListController. orderList[index].vStatusId == "2"? Colors.greenAccent
                                               : orderListController. orderList[index].vStatusId == "3"?Colors.redAccent : null,
                                             ),
+                                          ),
+                                        ),
+                                      ),
+                                      DataCell(
+                                        ConstrainedBox(
+                                          constraints: const BoxConstraints(minWidth: 50),
+                                          child: Row(
+                                            children: [
+                                              TextButton(
+                                                onPressed: (){
+                                                  orderListController.priviewReceiptByInvoiceId(orderListController.orderList[index].vInvoiceId);
+                                                }, 
+                                                child: Container(
+                                                  height: 50,
+                                                  width: 40,
+                                                  decoration:  const BoxDecoration(
+                                                    gradient: Palette.btnGradientColor,
+                                                    borderRadius: BorderRadius.all(Radius.circular(5)),
+                                                    boxShadow: [
+                                                      BoxShadow(
+                                                        color: Palette.btnBoxShadowColor,
+                                                        spreadRadius: 2,
+                                                        blurRadius: 2,
+                                                        offset: Offset(0,1),
+                                                      )
+                                                    ],
+                                                  ),
+                                                  child: const Icon(
+                                                    Icons.visibility,
+                                                    color: Colors.white,
+                                                    size: 22,
+                                                  ),
+                                                ),
+                                              ),
+
+                                              TextButton(
+                                                onPressed: (){
+                                                 orderListController.printReceiptByInvoiceId(orderListController.orderList[index].vInvoiceId);
+                                                }, 
+                                                child: Container(
+                                                  height: 50,
+                                                  width: 40,
+                                                  decoration:  const BoxDecoration(
+                                                    gradient: Palette.btnGradientColor,
+                                                    borderRadius: BorderRadius.all(Radius.circular(5)),
+                                                    boxShadow: [
+                                                      BoxShadow(
+                                                        color: Palette.btnBoxShadowColor,
+                                                        spreadRadius: 2,
+                                                        blurRadius: 2,
+                                                        offset: Offset(0,1),
+                                                      )
+                                                    ],
+                                                  ),
+                                                  child: const Icon(
+                                                    Icons.print,
+                                                    color: Colors.white,
+                                                    size: 22,
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
                                           ),
                                         ),
                                       ),

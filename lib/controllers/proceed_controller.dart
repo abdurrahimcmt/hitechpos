@@ -27,6 +27,7 @@ class ProceedController extends GetxController {
   var uniqueId = "";
   final isDataLoading = true.obs;
   final isProceedStart = false.obs;
+  bool isReportPrint = false;
 
   String selectedOrderTypeName = "";
 
@@ -243,11 +244,12 @@ class ProceedController extends GetxController {
           invoiceReportData = InvoiceReportModel.fromJson(jsonData);
 
           debugPrint(invoiceReportData.toString());
+          isReportPrint = true;
           Get.to(() => OrderSuccessfulScreen(), arguments: Future.value(invoiceReportData));
           isProceedStart.value = false;
         }
       }
     }
   }
-
+  
 }

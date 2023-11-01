@@ -7,11 +7,14 @@ import 'package:hitechpos/controllers/customer_and_address_controller.dart';
 import 'package:hitechpos/controllers/dini_in_controller.dart';
 import 'package:hitechpos/controllers/login_controller.dart';
 import 'package:hitechpos/controllers/menu_controller.dart';
+import 'package:hitechpos/controllers/ordersuccessfull_controller.dart';
 import 'package:hitechpos/controllers/proceed_controller.dart';
 import 'package:hitechpos/models/customeraddress.dart';
+import 'package:hitechpos/models/invoice_report.dart';
 import 'package:hitechpos/models/invoiceinfodetails.dart';
 import 'package:hitechpos/models/itemdetails.dart';
 import 'package:hitechpos/models/orderlistmodel.dart';
+import 'package:hitechpos/reports/pdf_preview-page.dart';
 import 'package:hitechpos/views/cart/cart_screen.dart';
 import 'package:hitechpos/widgets/loading_prograss_screen.dart';
 import 'package:intl/intl.dart';
@@ -25,6 +28,7 @@ class OrderListController extends GetxController{
   final menuController = Get.find<MenuScreenController>();
   final dineInController = Get.find<DiniInController>();
   final customerAndAddressController = Get.find<CustomerAndAddressController>();
+  final orderSuccessfullController = Get.find<OrderSuccessfullController>();
 
   TextEditingController searchTextEditingController = TextEditingController();
   int scroolNumber = 0;
@@ -185,7 +189,6 @@ class OrderListController extends GetxController{
     }
     _isFirstLoadRunning.value = false;;
   }
-
   void loadInvoiceDatafromDatabase(String invoiceId, String invoiceNo) async {
     Get.to(() => const LoadingPrograssScreen());
       try {
@@ -356,6 +359,39 @@ class OrderListController extends GetxController{
       }
   }
 
+  void priviewReceiptByInvoiceId(String invoiceId) async
+  {
+    Get.to(() => const LoadingPrograssScreen());
+    InvoiceReportModel invoiceReportModel = await fatchReportInvoiceInfo(invoiceId);
+    Get.to(() =>  PdfPreviewPage(invoice: invoiceReportModel, screen: 'OrderListScreen',));
+  }
+
+  void printReceiptByInvoiceId(String invoiceId) async
+  {
+    Get.to(() => const LoadingPrograssScreen());
+    InvoiceReportModel invoiceReportModel = await fatchReportInvoiceInfo(invoiceId);
+    orderSuccessfullController.printReceipt(invoiceReportModel);
+    Get.back();
+  }
+
+  Future<InvoiceReportModel> fatchReportInvoiceInfo(String invoiceId) async {
+    String baseurl = loginController.baseurlFromLocalStorage;
+    final url = Uri.parse("${baseurl}api/waiterapp/invoicereport?invoiceid=$invoiceId");
+    debugPrint(url.toString());
+    final headers = {
+      'Key': loginController.registrationKeyFromLocalStorage.toString(),
+      'Content-Type': 'application/json',
+    };
+    final response = await http.get(url,headers: headers);
+    if(response.statusCode == 200){
+        debugPrint(response.body);
+        return InvoiceReportModel.fromJson(jsonDecode(response.body));
+    }
+    else{
+      throw Exception('Failed to load invoice');
+    }
+  }
+  
   Future<InvoiceInfoDetails> fatchInvoiceInfo(String invoiceId) async {
     String baseurl = loginController.baseurlFromLocalStorage;
     final url = Uri.parse("${baseurl}api/waiterapp/invoicedetails?invoiceid=$invoiceId");
@@ -370,7 +406,7 @@ class OrderListController extends GetxController{
         return InvoiceInfoDetails.fromJson(jsonDecode(response.body));
     }
     else{
-      throw Exception('Failed to load Category');
+      throw Exception('Failed to load invoice');
     }
   }
 

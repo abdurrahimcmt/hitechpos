@@ -3,12 +3,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hitechpos/common/palette.dart';
-import 'package:hitechpos/controllers/cart_controller.dart';
 import 'package:hitechpos/controllers/customer_and_address_controller.dart';
 import 'package:hitechpos/controllers/dini_in_controller.dart';
-import 'package:hitechpos/controllers/login_controller.dart';
 import 'package:hitechpos/controllers/menu_controller.dart';
-import 'package:hitechpos/controllers/orderlist_controller.dart';
 import 'package:hitechpos/controllers/proceed_controller.dart';
 import 'package:hitechpos/data/data.dart';
 import 'package:hitechpos/models/customeraddress.dart';
@@ -29,9 +26,6 @@ class _ProceedScreenState extends State<ProceedScreen> {
   final menuController = Get.find<MenuScreenController>();
   final customerAndAddressController = Get.find<CustomerAndAddressController>();
   final diniInController = Get.find<DiniInController>();
-  final cartController = Get.find<CartController>();
-  final loginController = Get.find<LoginController>();
-  final orderListController = Get.find<OrderListController>();
 
   late String combinedAddress = "";
   String floorAndTableName = "";
