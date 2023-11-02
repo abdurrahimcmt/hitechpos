@@ -1,7 +1,9 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:hitechpos/common/customnotification.dart';
 import 'package:hitechpos/common/palette.dart';
+import 'package:hitechpos/data/notificationdata.dart';
 import 'package:hitechpos/models/branchinfo.dart';
 import 'package:hitechpos/views/dashboard/dashboard_screen.dart';
 import 'package:hitechpos/services/createbaseurl.dart';
@@ -64,10 +66,11 @@ class LoginController extends GetxController {
     passwordController = TextEditingController();
     userNameFocus = FocusNode();
     passwordFocus = FocusNode();
-    registrationKeyFocus = FocusNode();
+    
     registrationSchemaFocus = FocusNode();
     registrationPortFocus = FocusNode();
     registrationDomainFocus = FocusNode();
+    registrationKeyFocus = FocusNode();
     loginBranchFocus = FocusNode();
     // if(isRememberMe.value){
      
@@ -323,8 +326,8 @@ class LoginController extends GetxController {
       isSaveRegistrationData.value = true;
       setRegistrationInformationFromLocalstorage();
       setBaseUrl();
-      Get.snackbar("Successfull", "Your registration information save successfully",snackPosition: SnackPosition.BOTTOM);
-      
+      //Get.snackbar("Successfull", "Your registration information save successfully",snackPosition: SnackPosition.BOTTOM);
+      CustomNotification().notification(NotificationData.success.name, "Success", "Your registration information save successfully", "bottom");
     }
   }
   
@@ -372,10 +375,12 @@ class LoginController extends GetxController {
         if(data['messageId'] == '200'){
           isRegistrationSuccessfull(true);
           //setBaseUrl();
-          Get.snackbar("Information", "Registration Successfull",snackPosition: SnackPosition.BOTTOM);
+          //Get.snackbar("Information", "Registration Successfull",snackPosition: SnackPosition.BOTTOM);
+          CustomNotification().notification(NotificationData.success.name, "Success", "Registration Successfull", "top");
         }
         else{
-          Get.snackbar("Invalid", "Please provide valid information",snackPosition: SnackPosition.BOTTOM);
+          //Get.snackbar("Invalid", "Please provide valid information",snackPosition: SnackPosition.BOTTOM);
+          CustomNotification().notification(NotificationData.error.name, "Invalid", "Please provide valid information", "top");
         }
       }
     } 
@@ -427,15 +432,18 @@ class LoginController extends GetxController {
             Get.to(() => const DashboardScreen());
           }
           else{
-            Get.snackbar("Error", "Incorrect username or password",snackPosition: SnackPosition.BOTTOM);
+           // Get.snackbar("Error", "Incorrect username or password",snackPosition: SnackPosition.BOTTOM);
+            CustomNotification().notification(NotificationData.error.name, "Error", "Please provide valid information", "top");
           }
         } 
         else {
-          Get.snackbar("Error",'Login Failed - Status Code: ${response.statusCode}',snackPosition: SnackPosition.BOTTOM);
+          //Get.snackbar("Error",'Login Failed - Status Code: ${response.statusCode}',snackPosition: SnackPosition.BOTTOM);
+          CustomNotification().notification(NotificationData.error.name, "Error", "Login Failed - Status Code: ${response.statusCode}", "top");
         }
       }
       else{
-        Get.snackbar("Information", "Please register your account",snackPosition: SnackPosition.BOTTOM);
+        //Get.snackbar("Information", "Please register your account",snackPosition: SnackPosition.BOTTOM);
+        CustomNotification().notification(NotificationData.warning.name, "Warning", "Please register your account", "top");
       }
     } 
     catch (e) {
@@ -469,7 +477,8 @@ class LoginController extends GetxController {
         }
       } 
       else {
-        Get.snackbar("Error",'Login Failed - Status Code: ${response.statusCode}',snackPosition: SnackPosition.BOTTOM);
+        //Get.snackbar("Error",'Login Failed - Status Code: ${response.statusCode}',snackPosition: SnackPosition.BOTTOM);
+        CustomNotification().notification(NotificationData.error.name, "error", "Please register your account", "top");
       }
     } 
     catch (e) {

@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:hitechpos/common/customnotification.dart';
 import 'package:hitechpos/common/palette.dart';
 import 'package:hitechpos/controllers/cart_controller.dart';
 import 'package:hitechpos/controllers/login_controller.dart';
 import 'package:hitechpos/controllers/order_controller.dart';
+import 'package:hitechpos/data/notificationdata.dart';
 import 'package:hitechpos/models/itemdetails.dart';
 import 'package:hitechpos/models/kitchennotes.dart';
 import 'package:hitechpos/views/menu/menu_screen.dart';
@@ -277,6 +279,7 @@ class _OrderScreenState extends State<OrderScreen> {
                                               if(_txtQuntityController.text.isEmpty ||  int.parse( _txtQuntityController.text) < 1 ){
                                                 _txtQuntityController.text = "1";
                                                 Get.snackbar("Worning", "Quentity must be getter then 0");
+                                                CustomNotification().notification(NotificationData.warning.name, "Worning", "Quentity must be getter then 0", "bottom");
                                               }
                                               orderQuentity = int.parse(_txtQuntityController.text);
                                             }); 

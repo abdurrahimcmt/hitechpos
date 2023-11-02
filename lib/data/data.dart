@@ -73,8 +73,6 @@ extension KeyValue on SharedPreferencesKeys {
   }
 }
 
-
-
 List<Ordertype> orderTypes = [
   Ordertype(
     imageUrl: "assets/images/dining-table.png",

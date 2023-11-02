@@ -3,8 +3,11 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hitechpos/common/commondialogbox.dart';
+import 'package:hitechpos/common/customnotification.dart';
 import 'package:hitechpos/common/palette.dart';
 import 'package:hitechpos/controllers/login_controller.dart';
+import 'package:hitechpos/data/notificationdata.dart';
+import 'package:hitechpos/views/Registration/registrationbeforelogin.dart';
 import 'package:hitechpos/views/responsive/responsive_layout.dart';
 import 'package:hitechpos/widgets/curb_button.dart';
 import 'package:hitechpos/widgets/curb_buttonlight.dart';
@@ -269,7 +272,8 @@ class LoginScreen extends GetView<LoginController> {
                                             // Navigator.push(context,
                                             // MaterialPageRoute(builder: (_) => const MenuScreen(),),);
                                               if(!controller.isRegistrationSuccessfull.value){
-                                                Get.snackbar("Error", "Please register your account",snackPosition: SnackPosition.BOTTOM);
+                                                //Get.snackbar("Error", "Please register your account",snackPosition: SnackPosition.BOTTOM);
+                                                CustomNotification().notification(NotificationData.error.name, "Error", "Please register your account", "top");
                                               }
                                               if (loginFormKey.currentState!.validate()) {
                                                 controller.login(controller.userNameController.text.trim(), 
@@ -350,17 +354,24 @@ class LoginScreen extends GetView<LoginController> {
                                           // ),
                                           TextButton(
                                             onPressed: (){
-                                              showModalBottomSheet(context: context,
-                                                isScrollControlled: true,
-                                                shape: const RoundedRectangleBorder(
-                                                  borderRadius: BorderRadius.vertical(
-                                                    top: Radius.circular(40),
-                                                  )
-                                                ), 
-                                                builder: (BuildContext context){
-                                                  return RegistrationKeyScreen();
-                                                }
-                                              );
+                                              Get.to(() => const RegistrationBeforeLogin());
+                                              // showModalBottomSheet(context: context,
+                                              //   isScrollControlled: true,
+                                              //   shape: const RoundedRectangleBorder(
+                                              //     borderRadius: BorderRadius.vertical(
+                                              //       top: Radius.circular(40),
+                                              //     )
+                                              //   ), 
+                                              //   builder: (BuildContext context){
+                                              //     return SingleChildScrollView(
+                                              //       child: Column(
+                                              //         children: [
+                                              //           RegistrationKeyScreen(),
+                                              //         ],
+                                              //       )
+                                              //       );
+                                              //   }
+                                              // );
                                             },
                                             child: const CurbButtonLight(
                                               buttonPadding: EdgeInsets.only(left: 0,right: 0),

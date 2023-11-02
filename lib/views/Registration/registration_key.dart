@@ -227,7 +227,7 @@ class RegistrationKeyScreen extends GetView<LoginController> {
               //const CommonSubmitButton(title: "Continue"),
               Obx(
                 () => TextButton(onPressed: controller.isSaveRegistrationData.value == false ? null :   (){
-                  Get.to(LoginScreen());
+                  Get.to(() => LoginScreen());
                 },
                 child: Container(
                   width: MediaQuery.of(context).size.width*0.4,

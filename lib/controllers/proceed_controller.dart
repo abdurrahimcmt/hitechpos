@@ -1,12 +1,14 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:hitechpos/common/customnotification.dart';
 import 'package:hitechpos/controllers/cart_controller.dart';
 import 'package:hitechpos/controllers/customer_and_address_controller.dart';
 import 'package:hitechpos/controllers/dini_in_controller.dart';
 import 'package:hitechpos/controllers/login_controller.dart';
 import 'package:hitechpos/controllers/menu_controller.dart';
 import 'package:hitechpos/data/data.dart';
+import 'package:hitechpos/data/notificationdata.dart';
 import 'package:hitechpos/models/customeraddress.dart';
 import 'package:hitechpos/models/customerinfo.dart';
 import 'package:hitechpos/models/invoice_report.dart';
@@ -106,7 +108,8 @@ class ProceedController extends GetxController {
         carNumber = "";
       }
       else{
-        Get.snackbar("Error", "Please select table",snackPosition: SnackPosition.BOTTOM);
+        //Get.snackbar("Error", "Please select table",snackPosition: SnackPosition.BOTTOM);
+        CustomNotification().notification(NotificationData.error.name, "Error", "Please select table", "bottom");
         valid = false;
       }
     }
@@ -130,12 +133,14 @@ class ProceedController extends GetxController {
           valid = true;
         }
         else{
-          Get.snackbar("Error", "Please select Address", snackPosition: SnackPosition.BOTTOM);
+          //Get.snackbar("Error", "Please select Address", snackPosition: SnackPosition.BOTTOM);
+          CustomNotification().notification(NotificationData.error.name, "Error", "Please select address", "bottom");
           valid = false;
         }
       }
       else{
-        Get.snackbar("Error", "Please select Customer", snackPosition: SnackPosition.BOTTOM);
+        //Get.snackbar("Error", "Please select Customer", snackPosition: SnackPosition.BOTTOM);
+        CustomNotification().notification(NotificationData.error.name, "Error", "Please select customer", "bottom");
         valid = false;
       }
     }

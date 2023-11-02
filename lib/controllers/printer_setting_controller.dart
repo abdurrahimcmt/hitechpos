@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_esc_pos_utils/flutter_esc_pos_utils.dart';
 import 'package:get/get.dart';
+import 'package:hitechpos/common/customnotification.dart';
+import 'package:hitechpos/data/notificationdata.dart';
 import 'package:hitechpos/models/printersmodel.dart';
 import 'package:hitechpos/reports/printingservices.dart';
 import 'package:hitechpos/views/settings/printermanagment_screen.dart';
@@ -120,9 +122,11 @@ class PrinterSettingController extends GetxController{
       int deleteIndex = printerList.indexWhere((PrinterList) => PrinterList.vPrinterId == deletePrinterData.vPrinterId);
       printerList.removeAt(deleteIndex);
       await setPrintersData(printers);
-      Get.snackbar("Information", "Delete successful", snackPosition: SnackPosition.BOTTOM);
+      //Get.snackbar("Information", "Delete successful", snackPosition: SnackPosition.BOTTOM);
+      CustomNotification().notification(NotificationData.delete.name, "Delete", "Delete successful", "top");
     } catch (e) {
-      Get.snackbar("Error", "delete failed", snackPosition: SnackPosition.BOTTOM);
+      //Get.snackbar("Error", "delete failed", snackPosition: SnackPosition.BOTTOM);
+      CustomNotification().notification(NotificationData.error.name, "Error", "Delete failed", "top");
       debugPrint("deletePrinterData : " + e.toString());
     }
   }
@@ -139,7 +143,8 @@ class PrinterSettingController extends GetxController{
         }
         else{
           duplicate = true;
-          Get.snackbar("Error", "This printer name already exists", snackPosition: SnackPosition.BOTTOM);
+          //Get.snackbar("Error", "This printer name already exists", snackPosition: SnackPosition.BOTTOM);
+          CustomNotification().notification(NotificationData.error.name, "Error", "This printer name already exists", "top");
         }
       }
       if(!duplicate){
@@ -153,11 +158,13 @@ class PrinterSettingController extends GetxController{
           printerList[editIndex].vMacAddress = macAddressController.text;
           await setPrintersData(printers);
           edit = false;
-          Get.snackbar("Information", "Update successful", snackPosition: SnackPosition.BOTTOM);
+          //Get.snackbar("Information", "Update successful", snackPosition: SnackPosition.BOTTOM);
+          CustomNotification().notification(NotificationData.success.name, "Success", "Update successful", "top");
           Get.to(() => const PrinterManagemntScreen());
       }
     } catch (e) {
-      Get.snackbar("Error", "Update failed", snackPosition: SnackPosition.BOTTOM);
+      //Get.snackbar("Error", "Update failed", snackPosition: SnackPosition.BOTTOM);
+      CustomNotification().notification(NotificationData.error.name, "Error", "Update failed", "top");
       debugPrint("updatePrinterDat : " + e.toString());
     }
   }
@@ -271,14 +278,17 @@ class PrinterSettingController extends GetxController{
         saveSuccess = false;
       }
       if (saveSuccess) {
-        Get.snackbar("Information", "Save successful", snackPosition: SnackPosition.BOTTOM);
+        //Get.snackbar("Information", "Save successful", snackPosition: SnackPosition.BOTTOM);
+        CustomNotification().notification(NotificationData.success.name, "Success", "Save successful", "top");
         Get.to(() => const PrinterManagemntScreen());
       } else {
-        Get.snackbar("Error", "Failed to save data", snackPosition: SnackPosition.BOTTOM);
+        //Get.snackbar("Error", "Failed to save data", snackPosition: SnackPosition.BOTTOM);
+        CustomNotification().notification(NotificationData.error.name, "Error", "Failed to save data", "top");
       }
     }
     else{
-      Get.snackbar("Error", "This printer name already exists", snackPosition: SnackPosition.BOTTOM);
+      //Get.snackbar("Error", "This printer name already exists", snackPosition: SnackPosition.BOTTOM);
+      CustomNotification().notification(NotificationData.error.name, "Error", "This printer name already exists", "top");
     }
   }
 
