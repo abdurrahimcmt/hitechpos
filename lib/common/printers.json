@@ -9,7 +9,8 @@
             "vPaperSize": "demo",
             "vPrinterIp": "ip",
             "vPort": "30254152",
-            "vMacAddress": "demo"
+            "vMacAddress": "demo",
+            "isDefault": 0
         },
         {
             "vPrinterType": "demo",
@@ -19,7 +20,8 @@
             "vPaperSize": "demo",
             "vPrinterIp": "ip",
             "vPort": "30254152",
-            "vMacAddress": "demo"
+            "vMacAddress": "demo",
+            "isDefault": 0
         }
     ]
 }

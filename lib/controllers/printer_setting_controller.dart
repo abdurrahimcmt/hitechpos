@@ -115,6 +115,25 @@ class PrinterSettingController extends GetxController{
     }
   }
   
+  void setDefaultPrinter(PrinterList defaultPrinter) async{
+    try {
+      Printers printers = await getPrinterData();
+      List<PrinterList> printerList = printers.printerList;
+      for(PrinterList printer in printerList){
+        printer.isDefault = 0;
+      }
+      int defaultindex = printerList.indexWhere((PrinterList) => PrinterList.vPrinterId == defaultPrinter.vPrinterId);
+      printerList[defaultindex].isDefault = 1;
+      await setPrintersData(printers);
+      //Get.snackbar("Information", "Delete successful", snackPosition: SnackPosition.BOTTOM);
+      CustomNotification().notification(NotificationData.info.name, "Info", "${printerList[defaultindex].vPrinterName} set as default printer", "top");
+    } catch (e) {
+      //Get.snackbar("Error", "delete failed", snackPosition: SnackPosition.BOTTOM);
+      CustomNotification().notification(NotificationData.error.name, "Error", "Default printer set failed", "top");
+      debugPrint("setDefaultPrinter : " + e.toString());
+    }
+  }
+
   void deletePrinterData(PrinterList deletePrinterData) async{
     try {
       Printers printers = await getPrinterData();
@@ -244,6 +263,7 @@ class PrinterSettingController extends GetxController{
             vPrinterIp: printerIp,
             vPort: printerPort,
             vMacAddress: macAddress,
+            isDefault: 0
           );
 
           printerList.add(printer);
@@ -260,7 +280,8 @@ class PrinterSettingController extends GetxController{
             vPaperSize: paperSize,
             vPrinterIp: printerIp,
             vPort: printerPort,
-            vMacAddress: macAddress,
+            vMacAddress: macAddress, 
+            isDefault: 1,
           );
 
           printerList.add(printer);

@@ -133,38 +133,41 @@ class OrderSuccessfulScreen extends GetView<OrderSuccessfullController> {
                                 ),
                               ),
                           ),
-                          // TextButton(onPressed: (){
-                          //     Get.to(() => PrintReportPdf(invoice: snapshot.data!));
-                          //     //Get.to(() => PdfPreviewPage(invoice: snapshot.data!));
-                          //   },
-                          //   child: Container(
-                          //     width: MediaQuery.of(context).size.width*0.4,
-                          //     height: 50,
-                          //     decoration:  const BoxDecoration(
-                          //       gradient: Palette.btnGradientColor,
-                          //       borderRadius: BorderRadius.all(Radius.circular(10)),
-                          //       boxShadow: [
-                          //         BoxShadow(
-                          //           color: Palette.btnBoxShadowColor,
-                          //           spreadRadius: 5,
-                          //           blurRadius: 7,
-                          //           offset: Offset(0, 2),
-                          //         )
-                          //       ],
-                          //     ),
-                          //     child: const Center(
-                          //       child: Text("Report print",
-                          //             style: TextStyle(
-                          //             fontFamily: Palette.layoutFont,
-                          //             fontWeight: Palette.btnFontWeight,
-                          //             fontSize: Palette.btnFontsize,
-                          //             color: Palette.btnTextColor,
-                          //           ),
-                          //         ),
-                          //       ),
-                          //     ),
-                          // ),
 
+                          /*
+                          TextButton(onPressed: (){
+                              Get.to(() => PrintReportPdf(invoice: snapshot.data!));
+                              //Get.to(() => PdfPreviewPage(invoice: snapshot.data!));
+                            },
+                            child: Container(
+                              width: MediaQuery.of(context).size.width*0.4,
+                              height: 50,
+                              decoration:  const BoxDecoration(
+                                gradient: Palette.btnGradientColor,
+                                borderRadius: BorderRadius.all(Radius.circular(10)),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Palette.btnBoxShadowColor,
+                                    spreadRadius: 5,
+                                    blurRadius: 7,
+                                    offset: Offset(0, 2),
+                                  )
+                                ],
+                              ),
+                              child: const Center(
+                                child: Text("Report print",
+                                      style: TextStyle(
+                                      fontFamily: Palette.layoutFont,
+                                      fontWeight: Palette.btnFontWeight,
+                                      fontSize: Palette.btnFontsize,
+                                      color: Palette.btnTextColor,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                          ),
+                          */
+                          
                           TextButton(onPressed: (){
                               Get.to(() => PdfPreviewPage(invoice: snapshot.data!, screen: 'OrderSuccessScreen'));
                             },

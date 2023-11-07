@@ -3,10 +3,11 @@ import 'package:hitechpos/controllers/cart_controller.dart';
 import 'package:hitechpos/controllers/dini_in_controller.dart';
 import 'package:hitechpos/controllers/login_controller.dart';
 import 'package:hitechpos/controllers/menu_controller.dart';
+import 'package:hitechpos/controllers/printer_setting_controller.dart';
 import 'package:hitechpos/controllers/proceed_controller.dart';
 import 'package:hitechpos/models/invoice_report.dart';
+import 'package:hitechpos/models/printersmodel.dart';
 import 'package:hitechpos/reports/invoice_receipt.dart';
-import 'package:hitechpos/reports/printingservices.dart';
 
 class OrderSuccessfullController extends GetxController{
 
@@ -28,17 +29,18 @@ class OrderSuccessfullController extends GetxController{
   final diniInController = Get.find<DiniInController>();
   final menuController = Get.find<MenuScreenController>();
   final loginController = Get.find<LoginController>();
+  final printerSettingController = Get.find<PrinterSettingController>();
 
   void printReceipt(InvoiceReportModel invoiceReportData) async {
     try {
+      Printers printers = await printerSettingController.getPrinterData();
+      List<PrinterList> printerList = printers.printerList;
+      int  index = printerList.indexWhere((PrinterList) => PrinterList.isDefault == 1);
       List<int> pdfContent = await InvoiceReceipt().makeReceipt(invoiceReportData);
-      //Uint8List pdfContent = await InvoiceReport().makePdf(invoice); // Your generated PDF content
-      String printerIp = '192.168.2.100'; // Replace with the printer's IP address
-      int printerPort = 9100; // Replace with the printer's port
-      print("printer Ip :" + printerIp);
-      print("printer port :" + printerPort.toString());
-      print(pdfContent);
-      printViaWiFi(printerIp, printerPort, pdfContent);
+      String printerIp = printerList[index].vPrinterIp;
+      int printerPort = int.parse(printerList[index].vPort);
+      //printViaWiFi(printerIp, printerPort, pdfContent);
+      printerSettingController.printProcess(printerIp, printerPort, "80mm", pdfContent);
       proceedController.isReportPrint = false;
     } catch (e) {
       print('Error printing: $e');

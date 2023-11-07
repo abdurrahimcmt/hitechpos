@@ -12,8 +12,6 @@ import 'package:hitechpos/views/responsive/responsive_layout.dart';
 import 'package:hitechpos/widgets/curb_button.dart';
 import 'package:hitechpos/widgets/curb_buttonlight.dart';
 
-import 'registration_key.dart';
-
 class LoginScreen extends GetView<LoginController> {
   LoginScreen({Key? key}) : super(key: key);
  // final _formKey = GlobalKey<FormState>();

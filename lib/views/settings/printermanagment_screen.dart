@@ -100,6 +100,42 @@ class _PrinterManagemntScreenState extends State<PrinterManagemntScreen> {
                                           ),
                                         ),
                                       ),
+                                      
+                                      //Set as defauld button
+                                      TextButton(
+                                        onPressed: snapshot.data!.printerList[index].isDefault == 0 ? (){
+                                          setState(() {
+                                            controller.setDefaultPrinter(snapshot.data!.printerList[index]);
+                                          });
+                                          //controller.setEditPrinterData(snapshot.data!.printerList[index]);
+                                        } : null, 
+                                        child: Container(
+                                          height: 50,
+                                          width: 100,
+                                          decoration: BoxDecoration(
+                                            gradient: snapshot.data!.printerList[index].isDefault == 1 ? Palette.btnGradientColor : Palette.btnGradientColorLight,
+                                            borderRadius: BorderRadius.all(Radius.circular(5)),
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: Palette.btnBoxShadowColor,
+                                                spreadRadius: 2,
+                                                blurRadius: 2,
+                                                offset: Offset(0,1),
+                                              )
+                                            ],
+                                          ),
+                                          child: Center(
+                                            child: Text(snapshot.data!.printerList[index].isDefault == 1 ? "Default" : "Set as default",
+                                              style: TextStyle(
+                                                fontFamily: Palette.layoutFont,
+                                                fontWeight: FontWeight.w700,
+                                                fontSize: Palette.contentTitleFontSize,
+                                                color: snapshot.data!.printerList[index].isDefault == 1 ? Colors.white : Colors.black,
+                                              ),
+                                            ),
+                                          )
+                                        ),
+                                      ),
                                       //Edit Button
                                       TextButton(
                                         onPressed: (){

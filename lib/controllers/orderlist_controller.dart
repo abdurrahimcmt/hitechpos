@@ -189,6 +189,7 @@ class OrderListController extends GetxController{
     }
     _isFirstLoadRunning.value = false;;
   }
+  
   void loadInvoiceDatafromDatabase(String invoiceId, String invoiceNo) async {
     Get.to(() => const LoadingPrograssScreen());
       try {

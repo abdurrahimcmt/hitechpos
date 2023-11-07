@@ -37,6 +37,7 @@ class PrinterList {
     String vPrinterIp;
     String vPort;
     String vMacAddress;
+    int isDefault;
 
     PrinterList({
         required this.vPrinterType,
@@ -47,6 +48,7 @@ class PrinterList {
         required this.vPrinterIp,
         required this.vPort,
         required this.vMacAddress,
+        required this.isDefault,
     });
 
     factory PrinterList.fromJson(Map<String, dynamic> json) => PrinterList(
@@ -58,6 +60,7 @@ class PrinterList {
         vPrinterIp: json["vPrinterIp"],
         vPort: json["vPort"],
         vMacAddress: json["vMacAddress"],
+        isDefault: json["isDefault"],
     );
 
     Map<String, dynamic> toJson() => {
@@ -69,5 +72,6 @@ class PrinterList {
         "vPrinterIp": vPrinterIp,
         "vPort": vPort,
         "vMacAddress": vMacAddress,
+        "isDefault": isDefault,
     };
 }
