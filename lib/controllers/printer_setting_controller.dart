@@ -12,12 +12,16 @@ import 'package:hitechpos/views/settings/printersetting_screen.dart';
 import 'package:hitechpos/widgets/loading_prograss_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class PrinterSettingController extends GetxController{
+class PrinterSettingController extends GetxController {
+  late TextEditingController printerNameController,
+      printerIpAddressController,
+      printerPortController,
+      macAddressController;
 
-  late TextEditingController printerNameController,printerIpAddressController,printerPortController,
-  macAddressController;
-
-  late FocusNode printerNameFocus,printerIpAddressFocus,printerPortFocus,macAddressFocus;
+  late FocusNode printerNameFocus,
+      printerIpAddressFocus,
+      printerPortFocus,
+      macAddressFocus;
   var printerLocation = "Kitchen".obs;
   var selectedPaperSize = "80mm".obs;
   var printerTest = true.obs;
@@ -40,7 +44,7 @@ class PrinterSettingController extends GetxController{
     macAddressFocus = FocusNode();
   }
 
-  void refreshPrinterSettingController(){
+  void refreshPrinterSettingController() {
     selectedOption = "len";
     printerLocation.value = "Kitchen";
     selectedPaperSize.value = "80mm";
@@ -51,7 +55,8 @@ class PrinterSettingController extends GetxController{
     edit = false;
   }
 
-  Future<void> printProcess(String printerIp, int printerPort, String paperSize, List<int> pdfContent) async {
+  Future<void> printProcess(String printerIp, int printerPort, String paperSize,
+    List<int> pdfContent) async {
     try {
       print("printer Ip :" + printerIp);
       print("printer port :" + printerPort.toString());
@@ -61,8 +66,8 @@ class PrinterSettingController extends GetxController{
       print('Error printing: $e');
     }
   }
-  
-  Future<Printers> getPrinterData() async{
+
+  Future<Printers> getPrinterData() async {
     Printers printers = new Printers(totalPrinters: "", printerList: []);
     SharedPreferences prefs = await SharedPreferences.getInstance();
     // if(prefs.getString('printers') != null){
@@ -70,16 +75,17 @@ class PrinterSettingController extends GetxController{
     // }
     if (prefs.getString('printers') != null) {
       String? storedPrinterData = await prefs.getString('printers');
-        if (storedPrinterData != null) {
-          try {
-            Map<String, dynamic> printerDataMap = await jsonDecode(storedPrinterData);
-            printers = await Printers.fromJson(printerDataMap);
-          } catch (e) {
-            debugPrint('Error parsing JSON data: $e');
-          }
+      if (storedPrinterData != null) {
+        try {
+          Map<String, dynamic> printerDataMap =
+              await jsonDecode(storedPrinterData);
+          printers = await Printers.fromJson(printerDataMap);
+        } catch (e) {
+          debugPrint('Error parsing JSON data: $e');
         }
+      }
     }
-    return printers; 
+    return printers;
   }
 
   Future<void> setPrintersData(Printers printers) async {
@@ -92,13 +98,14 @@ class PrinterSettingController extends GetxController{
       debugPrint('Error save data: $e');
     }
   }
-  
-  void setEditPrinterData(PrinterList printerData) async{
+
+  void setEditPrinterData(PrinterList printerData) async {
     try {
       Printers printers = await getPrinterData();
       List<PrinterList> printerList = printers.printerList;
-      int editIndex = printerList.indexWhere((PrinterList) => PrinterList.vPrinterId == printerData.vPrinterId);
-      PrinterList editedPrinter =  printerList[editIndex];
+      int editIndex = printerList.indexWhere(
+          (PrinterList) => PrinterList.vPrinterId == printerData.vPrinterId);
+      PrinterList editedPrinter = printerList[editIndex];
       refreshPrinterSettingController();
       printerId = editedPrinter.vPrinterId;
       selectedOption = editedPrinter.vPrinterType;
@@ -114,110 +121,129 @@ class PrinterSettingController extends GetxController{
       debugPrint("SetEditPrinterData : " + e.toString());
     }
   }
-  
-  void setDefaultPrinter(PrinterList defaultPrinter) async{
+
+  void setDefaultPrinter(PrinterList defaultPrinter) async {
     try {
       Printers printers = await getPrinterData();
       List<PrinterList> printerList = printers.printerList;
-      for(PrinterList printer in printerList){
+      for (PrinterList printer in printerList) {
         printer.isDefault = 0;
       }
-      int defaultindex = printerList.indexWhere((PrinterList) => PrinterList.vPrinterId == defaultPrinter.vPrinterId);
+      int defaultindex = printerList.indexWhere(
+          (PrinterList) => PrinterList.vPrinterId == defaultPrinter.vPrinterId);
       printerList[defaultindex].isDefault = 1;
       await setPrintersData(printers);
       //Get.snackbar("Information", "Delete successful", snackPosition: SnackPosition.BOTTOM);
-      CustomNotification().notification(NotificationData.info.name, "Info", "${printerList[defaultindex].vPrinterName} set as default printer", "top");
+      CustomNotification().notification(
+          NotificationData.info.name,
+          "Info",
+          "${printerList[defaultindex].vPrinterName} set as default printer",
+          "top");
     } catch (e) {
       //Get.snackbar("Error", "delete failed", snackPosition: SnackPosition.BOTTOM);
-      CustomNotification().notification(NotificationData.error.name, "Error", "Default printer set failed", "top");
+      CustomNotification().notification(NotificationData.error.name, "Error",
+          "Default printer set failed", "top");
       debugPrint("setDefaultPrinter : " + e.toString());
     }
   }
 
-  void deletePrinterData(PrinterList deletePrinterData) async{
+  void deletePrinterData(PrinterList deletePrinterData) async {
     try {
       Printers printers = await getPrinterData();
       List<PrinterList> printerList = printers.printerList;
-      int deleteIndex = printerList.indexWhere((PrinterList) => PrinterList.vPrinterId == deletePrinterData.vPrinterId);
+      int deleteIndex = printerList.indexWhere((PrinterList) =>
+          PrinterList.vPrinterId == deletePrinterData.vPrinterId);
       printerList.removeAt(deleteIndex);
       await setPrintersData(printers);
       //Get.snackbar("Information", "Delete successful", snackPosition: SnackPosition.BOTTOM);
-      CustomNotification().notification(NotificationData.delete.name, "Delete", "Delete successful", "top");
+      CustomNotification().notification(
+          NotificationData.delete.name, "Delete", "Delete successful", "top");
     } catch (e) {
       //Get.snackbar("Error", "delete failed", snackPosition: SnackPosition.BOTTOM);
-      CustomNotification().notification(NotificationData.error.name, "Error", "Delete failed", "top");
+      CustomNotification().notification(
+          NotificationData.error.name, "Error", "Delete failed", "top");
       debugPrint("deletePrinterData : " + e.toString());
     }
   }
 
-  void updatePrinterDat(String editPrinterId) async{
+  void updatePrinterDat(String editPrinterId) async {
     try {
       bool duplicate = false;
       Printers printers = await getPrinterData();
       List<PrinterList> printerList = printers.printerList;
-      int editIndex = printerList.indexWhere((PrinterList) => PrinterList.vPrinterId == editPrinterId);
-      if(printerList[editIndex].vPrinterName != printerNameController.text){
-        if(await updateIsNotDuplicate(printerNameController.text, editPrinterId)){
+      int editIndex = printerList
+          .indexWhere((PrinterList) => PrinterList.vPrinterId == editPrinterId);
+      if (printerList[editIndex].vPrinterName != printerNameController.text) {
+        if (await updateIsNotDuplicate(
+            printerNameController.text, editPrinterId)) {
           duplicate = false;
-        }
-        else{
+        } else {
           duplicate = true;
           //Get.snackbar("Error", "This printer name already exists", snackPosition: SnackPosition.BOTTOM);
-          CustomNotification().notification(NotificationData.error.name, "Error", "This printer name already exists", "top");
+          CustomNotification().notification(NotificationData.error.name,
+              "Error", "This printer name already exists", "top");
         }
       }
-      if(!duplicate){
-          printerList[editIndex].vPrinterId = editPrinterId;
-          printerList[editIndex].vPrinterType = selectedOption;
-          printerList[editIndex].vPrinterLocation = printerLocation.value;
-          printerList[editIndex].vPaperSize = selectedPaperSize.value;
-          printerList[editIndex].vPrinterName = printerNameController.text;
-          printerList[editIndex].vPrinterIp = printerIpAddressController.text;
-          printerList[editIndex].vPort = printerPortController.text;
-          printerList[editIndex].vMacAddress = macAddressController.text;
-          await setPrintersData(printers);
-          edit = false;
-          //Get.snackbar("Information", "Update successful", snackPosition: SnackPosition.BOTTOM);
-          CustomNotification().notification(NotificationData.success.name, "Success", "Update successful", "top");
-          Get.to(() => const PrinterManagemntScreen());
+      if (!duplicate) {
+        printerList[editIndex].vPrinterId = editPrinterId;
+        printerList[editIndex].vPrinterType = selectedOption;
+        printerList[editIndex].vPrinterLocation = printerLocation.value;
+        printerList[editIndex].vPaperSize = selectedPaperSize.value;
+        printerList[editIndex].vPrinterName = printerNameController.text;
+        printerList[editIndex].vPrinterIp = printerIpAddressController.text;
+        printerList[editIndex].vPort = printerPortController.text;
+        printerList[editIndex].vMacAddress = macAddressController.text;
+        await setPrintersData(printers);
+        edit = false;
+        //Get.snackbar("Information", "Update successful", snackPosition: SnackPosition.BOTTOM);
+        CustomNotification().notification(NotificationData.success.name,
+            "Success", "Update successful", "top");
+        Get.to(() => const PrinterManagemntScreen());
       }
     } catch (e) {
       //Get.snackbar("Error", "Update failed", snackPosition: SnackPosition.BOTTOM);
-      CustomNotification().notification(NotificationData.error.name, "Error", "Update failed", "top");
+      CustomNotification().notification(
+          NotificationData.error.name, "Error", "Update failed", "top");
       debugPrint("updatePrinterDat : " + e.toString());
     }
   }
-  
-  Future<bool> updateIsNotDuplicate(String printerName , String printerId) async{
+
+  Future<bool> updateIsNotDuplicate(
+      String printerName, String printerId) async {
     bool isDuplicate = true;
     try {
       Printers printers = await getPrinterData();
       List<PrinterList> printerList = printers.printerList;
-      printerList.forEach((element) {
-        if(element.vPrinterName.isNotEmpty && element.vPrinterId != printerId){
-          if(element.vPrinterName == printerName){
+      printerList.forEach(
+        (element) {
+          if (element.vPrinterName.isNotEmpty &&
+              element.vPrinterId != printerId) {
+            if (element.vPrinterName == printerName) {
               isDuplicate = false;
+            }
           }
-        }
-      },);
+        },
+      );
     } catch (e) {
       debugPrint("isDuplicate : " + e.toString());
     }
     return isDuplicate;
   }
 
-  Future<bool> isNotDuplicate(String printerName) async{
+  Future<bool> isNotDuplicate(String printerName) async {
     bool isDuplicate = true;
     try {
       Printers printers = await getPrinterData();
       List<PrinterList> printerList = printers.printerList;
-      printerList.forEach((element) {
-        if(element.vPrinterName.isNotEmpty){
-          if(element.vPrinterName == printerName){
+      printerList.forEach(
+        (element) {
+          if (element.vPrinterName.isNotEmpty) {
+            if (element.vPrinterName == printerName) {
               isDuplicate = false;
+            }
           }
-        }
-      },);
+        },
+      );
     } catch (e) {
       debugPrint("isDuplicate : " + e.toString());
     }
@@ -229,9 +255,10 @@ class PrinterSettingController extends GetxController{
     bool saveSuccess;
     String printerType = "";
     String printerName = printerNameController.text;
-    String printerIp = printerIpAddressController.text.toString().trim().isNotEmpty
-        ? printerIpAddressController.text.toString().trim()
-        : "";
+    String printerIp =
+        printerIpAddressController.text.toString().trim().isNotEmpty
+            ? printerIpAddressController.text.toString().trim()
+            : "";
     String printerPort = printerPortController.text.toString().trim().isNotEmpty
         ? printerPortController.text.toString().trim()
         : "";
@@ -240,8 +267,7 @@ class PrinterSettingController extends GetxController{
         : "";
     String paperSize = selectedPaperSize.value;
 
-    if(await isNotDuplicate(printerName))
-    {
+    if (await isNotDuplicate(printerName)) {
       try {
         if (selectedOption == "len") {
           printerType = "len";
@@ -251,25 +277,25 @@ class PrinterSettingController extends GetxController{
         Printers printers = await getPrinterData();
 
         if (printers.printerList.isNotEmpty) {
-          printers.totalPrinters = (int.parse(printers.totalPrinters) + 1).toString();
+          printers.totalPrinters =
+              (int.parse(printers.totalPrinters) + 1).toString();
           List<PrinterList> printerList = printers.printerList;
 
           PrinterList printer = new PrinterList(
-            vPrinterType: printerType,
-            vPrinterLocation: printerLocation.value,
-            vPrinterId: printers.totalPrinters,
-            vPrinterName: printerName,
-            vPaperSize: paperSize,
-            vPrinterIp: printerIp,
-            vPort: printerPort,
-            vMacAddress: macAddress,
-            isDefault: 0
-          );
+              vPrinterType: printerType,
+              vPrinterLocation: printerLocation.value,
+              vPrinterId: printers.totalPrinters,
+              vPrinterName: printerName,
+              vPaperSize: paperSize,
+              vPrinterIp: printerIp,
+              vPort: printerPort,
+              vMacAddress: macAddress,
+              isDefault: 0);
 
           printerList.add(printer);
-          printers = Printers(totalPrinters: printers.totalPrinters, printerList: printerList);
+          printers = Printers(
+              totalPrinters: printers.totalPrinters, printerList: printerList);
           await setPrintersData(printers);
-
         } else {
           List<PrinterList> printerList = [];
           PrinterList printer = new PrinterList(
@@ -280,17 +306,18 @@ class PrinterSettingController extends GetxController{
             vPaperSize: paperSize,
             vPrinterIp: printerIp,
             vPort: printerPort,
-            vMacAddress: macAddress, 
+            vMacAddress: macAddress,
             isDefault: 1,
           );
 
           printerList.add(printer);
-          Printers printers = Printers(totalPrinters: '1', printerList: printerList);
+          Printers printers =
+              Printers(totalPrinters: '1', printerList: printerList);
           await setPrintersData(printers);
         }
 
         // Read Data
-        
+
         String? getPrefs = await prefs.getString('printers');
         debugPrint('SAVE TO LOCAL $getPrefs');
         saveSuccess = true;
@@ -300,31 +327,32 @@ class PrinterSettingController extends GetxController{
       }
       if (saveSuccess) {
         //Get.snackbar("Information", "Save successful", snackPosition: SnackPosition.BOTTOM);
-        CustomNotification().notification(NotificationData.success.name, "Success", "Save successful", "top");
+        CustomNotification().notification(
+            NotificationData.success.name, "Success", "Save successful", "top");
         Get.to(() => const PrinterManagemntScreen());
       } else {
         //Get.snackbar("Error", "Failed to save data", snackPosition: SnackPosition.BOTTOM);
-        CustomNotification().notification(NotificationData.error.name, "Error", "Failed to save data", "top");
+        CustomNotification().notification(
+            NotificationData.error.name, "Error", "Failed to save data", "top");
       }
-    }
-    else{
+    } else {
       //Get.snackbar("Error", "This printer name already exists", snackPosition: SnackPosition.BOTTOM);
-      CustomNotification().notification(NotificationData.error.name, "Error", "This printer name already exists", "top");
+      CustomNotification().notification(NotificationData.error.name, "Error",
+          "This printer name already exists", "top");
     }
   }
 
-  void testBluetoothPrinter(){
+  void testBluetoothPrinter() {}
 
-  }
-  
-  void testWifiPrinter() async{
+  void testWifiPrinter() async {
     try {
       Get.to(() => const LoadingPrograssScreen());
       String printerIp = printerIpAddressController.text.toString().trim();
       String printerPort = printerPortController.text.toString().trim();
       String paperSize = printerIpAddressController.text;
       List<int> pdfContent = await testReceiptGenerator();
-      await printProcess(printerIp, int.parse(printerPort), paperSize, pdfContent);
+      await printProcess(
+          printerIp, int.parse(printerPort), paperSize, pdfContent);
       Get.back();
     } catch (e) {
       debugPrint(e.toString());
@@ -337,12 +365,13 @@ class PrinterSettingController extends GetxController{
       final generator = Generator(PaperSize.mm80, profile);
       List<int> bytes = [];
       bytes += generator.text('Print Test Successfully',
-        styles: const PosStyles(
-          align: PosAlign.center,
-          underline: true,
-          height: PosTextSize.size2,
-          width: PosTextSize.size2,
-        ),linesAfter: 1);
+          styles: const PosStyles(
+            align: PosAlign.center,
+            underline: true,
+            height: PosTextSize.size2,
+            width: PosTextSize.size2,
+          ),
+          linesAfter: 1);
       bytes += generator.feed(2);
       bytes += generator.cut();
       return bytes;
